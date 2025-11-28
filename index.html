@@ -501,9 +501,18 @@
                 <div class="email-address">katekyo.kazuki@gmail.com</div>
                 
                 <p style="font-weight: bold; color: var(--yt-red);">費用は無料、何度でも大歓迎です！</p>
-                <a href="mailto:katekyo.kazuki@gmail.com" class="btn btn-primary" style="margin-top: 20px;">
-                    <i class="fa-solid fa-envelope"></i> 質問を送る
-                </a>
+                <!-- 質問ボタンを2つに分割し、コンテナで囲む -->
+                <div class="qa-buttons">
+                    <!-- メールで質問を送るボタン (Primary) -->
+                    <a href="mailto:katekyo.kazuki@gmail.com" class="btn btn-primary">
+                        <i class="fa-solid fa-envelope"></i> 質問をメールで送る
+                    </a>
+                    <!-- フォームで質問を送るボタン (Secondary) -->
+                    <!-- フォームURLが決まっていないため、JavaScriptでメッセージを表示する処理を追加 -->
+                    <a href="https://forms.gle/kvQPAFcSyY3VsDxT7" id="form-question-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-list-check"></i> 質問をフォームで送る
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -512,12 +521,13 @@
     <footer>
         <div class="container">
             <div class="footer-links">
-                <a href="[https://www.youtube.com/@YourChannelHandle](https://www.youtube.com/@YourChannelHandle)" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.youtube.com/channel/UCDb8mF_dkaK2v4u3lysW11A" target="_blank"><i class="fa-brands fa-youtube"></i></a>
                 <a href="#" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
             </div>
             <p>&copy; 2024 生物専門オンライン予備校. All Rights Reserved.</p>
         </div>
     </footer>
 
+    
 </body>
 </html>

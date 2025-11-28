@@ -559,7 +559,7 @@
                         <i class="fa-solid fa-envelope"></i> 質問をメールで送る
                     </a>
                     <!-- フォームで質問を送るボタン (Secondary) -->
-                    <a href="#" id="form-question-btn" class="btn btn-secondary">
+                    <a href="https://forms.gle/xqFWMbk4CCN96Dag6" id="form-question-btn" class="btn btn-secondary">
                         <i class="fa-solid fa-list-check"></i> 質問をフォームで送る
                     </a>
                 </div>
@@ -578,55 +578,5 @@
             <p>&copy; 2024 生物専門オンライン予備校. All Rights Reserved.</p>
         </div>
     </footer>
-
-    <script>
-        // 「質問をフォームで送る」ボタンの処理 (メッセージ表示に戻す)
-        document.getElementById('form-question-btn').addEventListener('click', function(e) {
-            e.preventDefault(); // リンクへの移動をキャンセル
-            
-            // シンプルなモーダル風メッセージを表示
-            const messageBox = document.createElement('div');
-            // CSS変数を使用するための処理
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
-            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-
-            messageBox.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: white;
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-                z-index: 1000;
-                text-align: center;
-                border: 3px solid ${primaryColor};
-                font-family: 'Noto Sans JP', sans-serif;
-            `;
-            messageBox.innerHTML = `
-                <h3 style="color: ${primaryColor}; margin-bottom: 15px;">フォームは現在準備中です！</h3>
-                <p style="margin-bottom: 20px;">フォームでの受付は近日中に開始します。<br>それまでは**「質問をメールで送る」**をご利用ください。</p>
-                <button onclick="this.parentNode.remove()" style="
-                    background-color: ${accentColor};
-                    color: ${primaryColor};
-                    border: none;
-                    padding: 8px 20px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    font-weight: 700;
-                ">閉じる</button>
-            `;
-            document.body.appendChild(messageBox);
-        });
-
-        // プレースホルダー画像のonerrorハンドリング
-        document.querySelectorAll('img[src*="placehold.co"]').forEach(img => {
-            img.onerror = function() {
-                this.style.backgroundColor = '#ccc';
-                this.alt = '画像読み込みエラー';
-            };
-        });
-    </script>
 </body>
 </html>

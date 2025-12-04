@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校生物：知識の抜け漏れゼロ化ダッシュボード</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chosen Palette: Warm Natural Harmony -->
+    <!-- Primary Background: Warm Off-White (#FDFCF8) -->
+    <!-- Primary Text: Soft Charcoal (#374151) -->
+    <!-- Accents: Sage Green (#84A98C), Muted Earth (#D4A373), Soft Clay (#E6B8A2) -->
+    
+    <!-- Application Structure Plan: 
+         1. Dashboard Header: Introduction and high-level progress tracking.
+         2. Analytics Section: Visualizing the distribution of knowledge (Core vs. Flow) and overall progress using Chart.js.
+         3. Theme Navigator: A card-based layout to select one of the 5 biological themes.
+         4. Active Learning Zone: The core interaction area. Displays the specific checklist items for the selected theme.
+            - Split into Level 1 (Terms) and Level 2 (Processes).
+            - Users interact by clicking checkmarks, which dynamically updates the state and charts.
+         5. Action & Resources: Next steps and download options.
+         
+         WHY: This structure moves from the "Big Picture" (how am I doing overall?) to "Focused Action" (what do I need to learn in this specific topic?), facilitating a metacognitive approach to learning.
+    -->
+
+    <!-- Visualization & Content Choices:
+         1. Overall Mastery (Doughnut Chart): Goal -> Inform/Motivate. Viz -> Simple doughnut showing % complete. Interaction -> Updates on every checkbox click. Justification -> Immediate feedback on progress.
+         2. Theme Breakdown (Stacked Bar Chart): Goal -> Compare/Organize. Viz -> Stacked bar of L1 vs L2 counts per theme. Interaction -> Static overview, updates with data state. Justification -> Shows which themes are "heavy" on terms vs flows.
+         3. Interactive Checklists (DOM Elements): Goal -> Inform/Change. Viz -> Styled list items with checkboxes. Interaction -> Click to toggle state, triggers global update. Justification -> The core task is self-assessment.
+         
+         CONFIRMATION: NO SVG graphics used (FontAwesome used for icons). NO Mermaid JS used.
+    -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFCF8; /* Warm off-white */
+            color: #374151;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4A373; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b58b61; 
+        }
+
+        /* Chart Container Styling per Requirements */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Constraint for readability */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .checkbox-wrapper input:checked + div {
+            background-color: #84A98C;
+            border-color: #84A98C;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+        
+        .theme-card.active {
+            border-color: #84A98C;
+            background-color: #F0FDF4;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-green-100 text-green-700 p-2 rounded-lg">
+                    <i class="fa-solid fa-dna text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold text-gray-800 tracking-tight">生物学習：知識の抜け漏れゼロ化ダッシュボード</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-500 hidden sm:block">全体の進捗:</div>
+                <div class="w-32 h-4 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="header-progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-600 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="header-progress-text" class="text-sm font-bold text-emerald-700">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- Intro Section -->
+        <section class="mb-10 text-center max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">「理解→定着→応用」の学習サイクルを可視化する</h2>
+            <p class="text-gray-600 leading-relaxed text-lg">
+                このアプリケーションは、単なる用語の暗記リストではありません。高校生物における「コア知識（レベル1）」と「プロセスの流れ（レベル2）」の理解度を自己診断し、弱点を可視化するためのツールです。
+                各テーマの理解度をチェックし、グラフで学習のバランスを確認しましょう。
+            </p>
+        </section>
+
+        <!-- Dashboard / Analytics Section -->
+        <section class="mb-12">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    
+                    <!-- Left: Overall Progress Visualization -->
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-center">
+                            <h3 class="text-lg font-bold text-gray-700">全体の習得状況</h3>
+                            <p class="text-sm text-gray-500">全項目の理解度チェック</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overallProgressChart"></canvas>
+                        </div>
+                        <div class="mt-4 flex gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                                <span class="text-gray-600">習得済み</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-gray-200"></span>
+                                <span class="text-gray-600">未習得</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Theme Breakdown Visualization -->
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-center">
+                            <h3 class="text-lg font-bold text-gray-700">テーマ別 知識構成比</h3>
+                            <p class="text-sm text-gray-500">レベル1（用語）とレベル2（流れ）のバランス</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="themeBreakdownChart"></canvas>
+                        </div>
+                         <div class="mt-4 flex gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-indigo-400"></span>
+                                <span class="text-gray-600">レベル1: コア知識</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                                <span class="text-gray-600">レベル2: 流れ・プロセス</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content: Interactive Themes -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Sidebar: Theme Navigation -->
+            <div class="lg:col-span-4 xl:col-span-3 space-y-4">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 px-2 border-l-4 border-emerald-500 pl-3">学習テーマを選択</h3>
+                <div id="theme-nav-container" class="space-y-3">
+                    <!-- Navigation items will be injected here via JS -->
+                </div>
+                
+                <div class="bg-blue-50 p-4 rounded-xl mt-8 border border-blue-100">
+                    <h4 class="font-bold text-blue-800 mb-2 text-sm"><i class="fa-solid fa-circle-info mr-2"></i>チェックの基準</h4>
+                    <ul class="text-sm text-blue-800 space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold bg-blue-200 px-1.5 rounded text-xs mt-0.5">L1</span>
+                            <span>その用語の意味を説明できる</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="font-bold bg-amber-200 px-1.5 rounded text-xs mt-0.5 text-amber-900">L2</span>
+                            <span>その現象の流れを誰かに口頭で説明できる</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Area: Active Checklist -->
+            <div class="lg:col-span-8 xl:col-span-9">
+                <div id="checklist-content-area" class="bg-white rounded-2xl shadow-sm border border-gray-100 min-h-[500px] p-6 md:p-8 relative">
+                    <!-- Dynamic Content Loaded Here -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50 border-t border-gray-200 py-12 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">学習を次のステップへ</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto mb-8">
+                弱点が明確になったら、該当する単元のYouTube動画に戻り、「理解」を深めましょう。
+                このリストは、定期的に見直すことで記憶の定着を助けます。
+            </p>
+            <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
+                <i class="fa-solid fa-print mr-2"></i> 現在の状態を保存（印刷/PDF）
+            </button>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- DATA SOURCE ---
+        const biologyData = [
+            {
+                id: "theme1",
+                title: "1. 細胞と分子",
+                subtitle: "生命の基本単位とエネルギー",
+                icon: "fa-dna",
+                color: "indigo",
+                description: "生物の最小単位である細胞の構造、細胞小器官の役割、そして生命活動のエネルギー源であるATPや酵素の働きについて確認します。",
+                level1: [
+                    { id: "t1_l1_1", term: "細胞膜", check: "主成分と構造（流動モザイクモデル）" },
+                    { id: "t1_l1_2", term: "核", check: "役割と構成物（DNA、染色体）" },
+                    { id: "t1_l1_3", term: "ミトコンドリア", check: "役割（呼吸）、内外膜の構造" },
+                    { id: "t1_l1_4", term: "葉緑体", check: "役割（光合成）、チラコイド・ストロマの構造" },
+                    { id: "t1_l1_5", term: "酵素", check: "主成分、触媒作用、特異性、活性部位" },
+                    { id: "t1_l1_6", term: "ATP", check: "役割、エネルギーの受け渡し方" },
+                    { id: "t1_l1_7", term: "細胞壁", check: "役割と主成分（セルロース）" }
+                ],
+                level2: [
+                    { id: "t1_l2_1", process: "細胞内共生説", check: "ミトコンドリア・葉緑体の起源を説明できるか" },
+                    { id: "t1_l2_2", process: "細胞の働き", check: "原核細胞と真核細胞の違いを説明できるか" },
+                    { id: "t1_l2_3", process: "酵素の反応条件", check: "温度・pHの変化が酵素活性に与える影響" }
+                ]
+            },
+            {
+                id: "theme2",
+                title: "2. 代謝",
+                subtitle: "エネルギーの収支と物質変換",
+                icon: "fa-bolt",
+                color: "amber",
+                description: "同化（光合成など）と異化（呼吸など）の仕組みを理解し、物質がどのように変化しエネルギーが出入りするかを流れで押さえます。",
+                level1: [
+                    { id: "t2_l1_1", term: "同化 / 異化", check: "具体的な反応例を挙げられるか" },
+                    { id: "t2_l1_2", term: "光合成色素", check: "クロロフィル、カロテノイドの役割" },
+                    { id: "t2_l1_3", term: "解糖系", check: "発生場所と生成物（ATP、ピルビン酸）" },
+                    { id: "t2_l1_4", term: "クエン酸回路", check: "発生場所と生成物" },
+                    { id: "t2_l1_5", term: "電子伝達系", check: "発生場所とATPの生成原理" }
+                ],
+                level2: [
+                    { id: "t2_l2_1", process: "呼吸の全過程", check: "解糖系から電子伝達系までの流れと物質の移動" },
+                    { id: "t2_l2_2", process: "光合成の反応", check: "光化学反応とカルビン・ベンソン回路の役割分担" },
+                    { id: "t2_l2_3", process: "発酵", check: "呼吸との違いと、生成物（乳酸、エタノール）" },
+                    { id: "t2_l2_4", process: "呼吸商", check: "呼吸基質によって値が異なる理由" }
+                ]
+            },
+            {
+                id: "theme3",
+                title: "3. 遺伝情報",
+                subtitle: "DNAからタンパク質へ",
+                icon: "fa-stairs",
+                color: "rose",
+                description: "セントラルドグマを中心とした遺伝情報の流れ、細胞分裂による情報の継承、バイオテクノロジーの基礎を確認します。",
+                level1: [
+                    { id: "t3_l1_1", term: "DNA / RNA", check: "構成単位と構造、種類の違い" },
+                    { id: "t3_l1_2", term: "セントラルドグマ", check: "流れ（複製、転写、翻訳）を説明できるか" },
+                    { id: "t3_l1_3", term: "遺伝暗号", check: "トリプレット、コドン、アンチコドン" },
+                    { id: "t3_l1_4", term: "ゲノム", check: "定義とヒトのゲノムサイズ" },
+                    { id: "t3_l1_5", term: "PCR法", check: "原理と必要な材料" }
+                ],
+                level2: [
+                    { id: "t3_l2_1", process: "DNAの複製", check: "半保存的複製とは何か" },
+                    { id: "t3_l2_2", process: "転写と翻訳", check: "流れと関わる酵素、細胞内の場所" },
+                    { id: "t3_l2_3", process: "体細胞分裂", check: "前期・中期・後期・終期の変化" },
+                    { id: "t3_l2_4", process: "減数分裂", check: "相同染色体の分離と組換えの意義" }
+                ]
+            },
+            {
+                id: "theme4",
+                title: "4. 恒常性",
+                subtitle: "内部環境の維持システム",
+                icon: "fa-heart-pulse",
+                color: "emerald",
+                description: "体液、自律神経、ホルモン、免疫系が連携して、体内環境を一定に保つ仕組み（ホメオスタシス）を理解します。",
+                level1: [
+                    { id: "t4_l1_1", term: "体液", check: "構成要素（血しょう、組織液、リンパ液）" },
+                    { id: "t4_l1_2", term: "フィードバック", check: "負のフィードバックの意義" },
+                    { id: "t4_l1_3", term: "ホルモン", check: "特徴（内分泌、標的細胞）と主要なホルモン名" },
+                    { id: "t4_l1_4", term: "自律神経", check: "交感神経と副交感神経の働き（対立作用）" },
+                    { id: "t4_l1_5", term: "抗体", check: "主成分と特異性" }
+                ],
+                level2: [
+                    { id: "t4_l2_1", process: "血糖値の調節", check: "インスリンとグルカゴンの働きとその経路" },
+                    { id: "t4_l2_2", process: "腎臓の尿生成", check: "ろ過、再吸収、分泌の流れと関わる部位" },
+                    { id: "t4_l2_3", process: "体温調節", check: "寒冷時・暑熱時の調節経路" },
+                    { id: "t4_l2_4", process: "獲得免疫", check: "細胞性免疫と体液性免疫の役割と流れ" },
+                    { id: "t4_l2_5", process: "血液凝固", check: "流れと関わる細胞・物質" }
+                ]
+            },
+            {
+                id: "theme5",
+                title: "5. 生態と進化",
+                subtitle: "マクロな視点と多様性",
+                icon: "fa-tree",
+                color: "teal",
+                description: "個体群から生態系全体の物質循環、そして生物の進化のメカニズムと多様性の由来について学びます。",
+                level1: [
+                    { id: "t5_l1_1", term: "遷移", check: "一次遷移、二次遷移の例" },
+                    { id: "t5_l1_2", term: "生産者/消費者/分解者", check: "各役割と具体例" },
+                    { id: "t5_l1_3", term: "窒素固定 / 脱窒", check: "担い手となる微生物と反応" },
+                    { id: "t5_l1_4", term: "自然選択", check: "変異と適応が関わる仕組み" },
+                    { id: "t5_l1_5", term: "種分化", check: "隔離の重要性" }
+                ],
+                level2: [
+                    { id: "t5_l2_1", process: "炭素循環", check: "生物圏・大気圏の関わり" },
+                    { id: "t5_l2_2", process: "窒素循環", check: "アンモニアから硝酸塩への変化" },
+                    { id: "t5_l2_3", process: "生態ピラミッド", check: "エネルギー効率の考え方" },
+                    { id: "t5_l2_4", process: "ハーディ・ワインベルグの法則", check: "成立条件と遺伝子頻度の計算" }
+                ]
+            }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let appState = {
+            activeThemeId: biologyData[0].id,
+            checkedItems: {} // Format: { "t1_l1_1": true, ... }
+        };
+
+        // Initialize Charts Variables
+        let overallChartInstance = null;
+        let breakdownChartInstance = null;
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderNavigation();
+            renderContent(appState.activeThemeId);
+            initCharts();
+            updateStats();
+        });
+
+        // --- RENDER FUNCTIONS ---
+        
+        function renderNavigation() {
+            const container = document.getElementById('theme-nav-container');
+            container.innerHTML = '';
+
+            biologyData.forEach(theme => {
+                const isCompleted = isThemeCompleted(theme.id);
+                const isActive = theme.id === appState.activeThemeId;
+                
+                const card = document.createElement('div');
+                card.className = `theme-card p-4 rounded-xl border border-gray-100 bg-white cursor-pointer hover:border-emerald-300 transition-all duration-200 group ${isActive ? 'active' : ''}`;
+                card.onclick = () => switchTheme(theme.id);
+
+                const progress = calculateThemeProgress(theme.id);
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-${theme.color}-100 text-${theme.color}-600 flex items-center justify-center">
+                                <i class="fa-solid ${theme.icon} text-sm"></i>
+                            </div>
+                            <h4 class="font-bold text-gray-700 text-sm group-hover:text-emerald-700">${theme.title}</h4>
+                        </div>
+                        ${progress === 100 ? '<i class="fa-solid fa-check-circle text-emerald-500"></i>' : ''}
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+                        <div class="bg-${theme.color}-400 h-1.5 rounded-full" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="text-right text-xs text-gray-400 mt-1">${Math.round(progress)}%</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderContent(themeId) {
+            const theme = biologyData.find(t => t.id === themeId);
+            const container = document.getElementById('checklist-content-area');
+            
+            // Animation for transition
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div class="mb-8 border-b border-gray-100 pb-6">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 class="text-2xl font-bold text-gray-800">${theme.title}</h2>
+                            <span class="px-3 py-1 bg-${theme.color}-100 text-${theme.color}-800 text-xs font-bold rounded-full">${theme.subtitle}</span>
+                        </div>
+                        <p class="text-gray-600">${theme.description}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <!-- Level 1 Column -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="bg-indigo-100 text-indigo-700 p-1.5 rounded text-xs font-bold">Level 1</span>
+                                <h3 class="font-bold text-gray-700">コア知識（用語の意味）</h3>
+                            </div>
+                            <div class="space-y-3">
+                                ${theme.level1.map(item => createCheckboxItem(item, 'indigo')).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Level 2 Column -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="bg-amber-100 text-amber-700 p-1.5 rounded text-xs font-bold">Level 2</span>
+                                <h3 class="font-bold text-gray-700">流れ・プロセス（説明力）</h3>
+                            </div>
+                            <div class="space-y-3">
+                                ${theme.level2.map(item => createCheckboxItem(item, 'amber')).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.style.opacity = '1';
+                container.style.transition = 'opacity 0.3s ease';
+            }, 150);
+        }
+
+        function createCheckboxItem(item, colorClass) {
+            const isChecked = appState.checkedItems[item.id] || false;
+            // The item object has slightly different keys for Level 1 (term) vs Level 2 (process)
+            const mainText = item.term || item.process;
+            
+            return `
+                <label class="checkbox-wrapper flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
+                    <div class="relative flex items-center mt-1">
+                        <input type="checkbox" 
+                               class="peer sr-only" 
+                               id="${item.id}" 
+                               ${isChecked ? 'checked' : ''} 
+                               onchange="toggleCheck('${item.id}')">
+                        <div class="w-5 h-5 border-2 border-gray-300 rounded bg-white transition-all peer-checked:border-${colorClass}-500 peer-checked:bg-${colorClass}-500">
+                            <svg class="w-3 h-3 text-white absolute top-1 left-1 hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800 ${isChecked ? 'text-gray-400 line-through' : ''} transition-colors">${mainText}</div>
+                        <div class="text-sm text-gray-500 mt-0.5 ${isChecked ? 'text-gray-300' : ''}">${item.check}</div>
+                    </div>
+                </label>
+            `;
+        }
+
+        // --- LOGIC FUNCTIONS ---
+
+        function toggleCheck(itemId) {
+            appState.checkedItems[itemId] = !appState.checkedItems[itemId];
+            saveState();
+            updateStats();
+            
+            // Re-render nav to update progress bars there
+            renderNavigation(); 
+            
+            // Local style update (optional optimization to avoid full re-render of content)
+            const input = document.getElementById(itemId);
+            if(input) {
+                const labelDiv = input.closest('label').querySelector('.flex-1');
+                const title = labelDiv.querySelector('.font-bold');
+                const desc = labelDiv.querySelector('.text-sm');
+                
+                if(appState.checkedItems[itemId]) {
+                    title.classList.add('text-gray-400', 'line-through');
+                    desc.classList.add('text-gray-300');
+                    desc.classList.remove('text-gray-500');
+                } else {
+                    title.classList.remove('text-gray-400', 'line-through');
+                    desc.classList.remove('text-gray-300');
+                    desc.classList.add('text-gray-500');
+                }
+            }
+        }
+
+        function switchTheme(themeId) {
+            appState.activeThemeId = themeId;
+            renderNavigation();
+            renderContent(themeId);
+        }
+
+        function calculateThemeProgress(themeId) {
+            const theme = biologyData.find(t => t.id === themeId);
+            const totalItems = theme.level1.length + theme.level2.length;
+            let checkedCount = 0;
+            
+            [...theme.level1, ...theme.level2].forEach(item => {
+                if(appState.checkedItems[item.id]) checkedCount++;
+            });
+
+            return totalItems === 0 ? 0 : (checkedCount / totalItems) * 100;
+        }
+
+        function getAllStats() {
+            let totalL1 = 0, checkedL1 = 0;
+            let totalL2 = 0, checkedL2 = 0;
+
+            biologyData.forEach(theme => {
+                theme.level1.forEach(i => {
+                    totalL1++;
+                    if(appState.checkedItems[i.id]) checkedL1++;
+                });
+                theme.level2.forEach(i => {
+                    totalL2++;
+                    if(appState.checkedItems[i.id]) checkedL2++;
+                });
+            });
+
+            return { totalL1, checkedL1, totalL2, checkedL2, total: totalL1+totalL2, checkedTotal: checkedL1+checkedL2 };
+        }
+
+        function isThemeCompleted(themeId) {
+            return calculateThemeProgress(themeId) === 100;
+        }
+
+        function updateStats() {
+            const stats = getAllStats();
+            const percent = Math.round((stats.checkedTotal / stats.total) * 100);
+
+            // Update Header
+            document.getElementById('header-progress-bar').style.width = `${percent}%`;
+            document.getElementById('header-progress-text').innerText = `${percent}%`;
+
+            // Update Charts
+            updateCharts(stats);
+        }
+
+        // --- CHART.JS CONFIGURATION ---
+
+        function initCharts() {
+            // 1. Overall Progress Doughnut
+            const ctxOverall = document.getElementById('overallProgressChart').getContext('2d');
+            overallChartInstance = new Chart(ctxOverall, {
+                type: 'doughnut',
+                data: {
+                    labels: ['習得済み', '未習得'],
+                    datasets: [{
+                        data: [0, 100],
+                        backgroundColor: ['#10B981', '#E5E7EB'], // Emerald-500, Gray-200
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '項目';
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'textCenter',
+                    beforeDraw: function(chart) {
+                        var width = chart.width,
+                            height = chart.height,
+                            ctx = chart.ctx;
+                        
+                        ctx.restore();
+                        var fontSize = (height / 114).toFixed(2);
+                        ctx.font = "bold " + fontSize + "em sans-serif";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = "#374151";
+
+                        var stats = getAllStats();
+                        var text = Math.round((stats.checkedTotal / stats.total) * 100) + "%",
+                            textX = Math.round((width - ctx.measureText(text).width) / 2),
+                            textY = height / 2;
+
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }]
+            });
+
+            // 2. Theme Breakdown Stacked Bar
+            const ctxBreakdown = document.getElementById('themeBreakdownChart').getContext('2d');
+            
+            // Prepare Data labels
+            const labels = biologyData.map(t => t.title.split('. ')[1]); // Just name, remove number
+            const l1Counts = biologyData.map(t => t.level1.length);
+            const l2Counts = biologyData.map(t => t.level2.length);
+
+            breakdownChartInstance = new Chart(ctxBreakdown, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Level 1 (コア)',
+                            data: l1Counts,
+                            backgroundColor: '#818CF8', // Indigo-400
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Level 2 (流れ)',
+                            data: l2Counts,
+                            backgroundColor: '#FBBF24', // Amber-400
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, beginAtZero: true, grid: { color: '#F3F4F6' } }
+                    },
+                    plugins: {
+                        legend: { display: false }, // Custom legend used in HTML
+                        tooltip: {
+                            callbacks: {
+                                title: (items) => biologyData[items[0].dataIndex].title
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts(stats) {
+            if (overallChartInstance) {
+                overallChartInstance.data.datasets[0].data = [stats.checkedTotal, stats.total - stats.checkedTotal];
+                overallChartInstance.update();
+            }
+            // Breakdown chart is static in structure, but ideally we could visualize completion within it.
+            // For now, let's keep it as a structural overview to show "Weight" of each topic.
+        }
+
+        // --- STORAGE HELPER ---
+        function saveState() {
+            localStorage.setItem('bioChecklistState', JSON.stringify(appState.checkedItems));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('bioChecklistState');
+            if (saved) {
+                appState.checkedItems = JSON.parse(saved);
+            }
+        }
+
+    </script>
+</body>
+</html>

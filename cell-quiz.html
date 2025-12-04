@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>細胞研究の歴史 - 確認テスト（10問）</title>
+    <!-- Tailwind CSSの読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans JP の読み込み -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* Tailwind: slate-50 */
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .question-card {
+            border: 1px solid #e2e8f0; /* Tailwind: slate-200 */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #ffffff;
+            transition: box-shadow 0.3s ease;
+        }
+        .question-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            text-align: left;
+            border: 2px solid #cbd5e1; /* Tailwind: slate-300 */
+            border-radius: 0.5rem;
+            background-color: #f1f5f9; /* Tailwind: slate-100 */
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .option-button:hover:not(.disabled):not(.correct):not(.incorrect) {
+            background-color: #e2e8f0; /* Tailwind: slate-200 */
+            border-color: #94a3b8; /* Tailwind: slate-400 */
+        }
+        .option-button.disabled {
+            cursor: default;
+        }
+
+        /* 正解/不正解のスタイル */
+        .option-button.correct {
+            background-color: #d1fae5; /* Tailwind: green-100 */
+            border-color: #10b981; /* Tailwind: green-500 */
+            font-weight: 700;
+        }
+        .option-button.incorrect {
+            background-color: #fee2e2; /* Tailwind: red-100 */
+            border-color: #ef4444; /* Tailwind: red-500 */
+        }
+
+        /* 解説・ヒントのスタイル */
+        .rationale {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #f0f9ff; /* Tailwind: sky-50 */
+            border-left: 4px solid #0ea5e9; /* Tailwind: sky-500 */
+            color: #1e293b; /* Tailwind: slate-800 */
+            font-size: 0.9rem;
+            display: none; /* 初期状態では非表示 */
+        }
+        .hint {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: #fffbeb; /* Tailwind: amber-50 */
+            color: #78350f; /* Tailwind: amber-900 */
+            font-size: 0.85rem;
+            border: 1px dashed #fcd34d; /* Tailwind: amber-300 */
+        }
+
+        /* 最終結果 */
+        #results {
+            padding: 2rem;
+            text-align: center;
+            border: 3px solid #1e40af; /* Tailwind: blue-800 */
+            border-radius: 1rem;
+            background-color: #eff6ff; /* Tailwind: blue-50 */
+            margin-top: 2rem;
+        }
+        #results h2 {
+            color: #1e40af;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .score-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #059669; /* Tailwind: green-600 */
+        }
+        .restart-button {
+            background-color: #1d4ed8; /* Tailwind: blue-700 */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .restart-button:hover {
+            background-color: #1e40af; /* Tailwind: blue-800 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">細胞研究の歴史 - 確認テスト（10問）</h1>
+    <p class="text-center text-gray-600 mb-8">動画「#2 細胞の構造と働き」の内容チェック用チャレンジテストです。この動画の学習内容に限定した全10問です。</p>
+
+    <div id="quiz-area">
+        <!-- 問題はJavaScriptで挿入されます -->
+    </div>
+
+    <div id="results" class="hidden">
+        <h2>テスト終了！</h2>
+        <p class="text-gray-700 mt-4 mb-2">あなたの正解数は...</p>
+        <p><span id="score" class="score-text">0/10</span></p>
+        <p id="feedback-message" class="text-lg mt-4"></p>
+        <button id="restart-btn" class="restart-button">もう一度チャレンジする</button>
+    </div>
+</div>
+
+<script>
+    // 確認テストのデータ (細胞研究の歴史に限定し、10問に拡張)
+    const quizData = {
+        questions: [
+            // 問1 (難易度を下げた新しい問題)
+            {
+                questionNumber: 1,
+                question: "生物の体は細胞からできているという考え方を何と呼びますか？",
+                answerOptions: [
+                    { text: "遺伝子説", rationale: "遺伝子説は遺伝子が生物の形質を決定するという考え方です。", isCorrect: false },
+                    { text: "細胞説", rationale: "生物の体は細胞からできているという考え方を細胞説といいます。", isCorrect: true },
+                    { text: "進化論", rationale: "進化論は生物が時間をかけて変化していくという考え方です。", isCorrect: false },
+                    { text: "生気説", rationale: "生気説は生命には特殊な力があるという考え方ですが、現在は否定されています。", isCorrect: false }
+                ],
+                hint: "生物学の基本的な考え方の一つで、シュライデンとシュワンによって提唱されました。"
+            },
+            // 問2
+            {
+                questionNumber: 2,
+                question: "1665年に自作の顕微鏡でコルクの小部屋を観察し、'Cell'（細胞）と名付けた人物は誰ですか？",
+                answerOptions: [
+                    { text: "アントニ・ファン・レーウェンフック", rationale: "レーウェンフックは生きた細胞（微生物）を最初に観察しました。", isCorrect: false },
+                    { text: "ロバート・フック", rationale: "ロバート・フックはコルク片の観察から小部屋状の構造（細胞壁）を発見し、'Cell'と名付けました。", isCorrect: true },
+                    { text: "テオドール・シュワン", rationale: "シュワンは動物細胞の研究から細胞説を提唱した人物の一人です。", isCorrect: false },
+                    { text: "ルドルフ・ウィルヒョー", rationale: "ウィルヒョーは「全ての細胞は細胞から生じる」という考えを付け加えました。", isCorrect: false }
+                ],
+                hint: "彼の観察結果は『ミクログラフィア』という本にまとめられました。"
+            },
+            // 問3
+            {
+                questionNumber: 3,
+                question: "ロバート・フックがコルク片の観察から「Cell」という用語を名付けたとき、彼が主に見ていた構造は何ですか？",
+                answerOptions: [
+                    { text: "細胞膜", rationale: "フックが観察したコルク片は死んだ細胞であり、細胞膜は見えていませんでした。", isCorrect: false },
+                    { text: "細胞壁", rationale: "ロバート・フックが観察したコルク片は死んだ植物細胞で、残っていた堅い構造が細胞壁でした。", isCorrect: true },
+                    { text: "核", rationale: "コルク片は死んだ細胞であり、核は見えていませんでした。", isCorrect: false },
+                    { text: "細胞質基質", rationale: "細胞質基質は細胞内の液体成分ですが、コルク片は空洞でした。", isCorrect: false }
+                ],
+                hint: "コルクは木の組織であり、フックは小さな空洞を観察していました。"
+            },
+            // 問4 (新しい問題)
+            {
+                questionNumber: 4,
+                question: "ロバート・フックが「Cell」と名付けた構造が示す通り、この言葉の元々の意味として最も近いものは何ですか？",
+                answerOptions: [
+                    { text: "生命の源", rationale: "生命の源ではありません。", isCorrect: false },
+                    { text: "小さな部屋", rationale: "フックは顕微鏡でコルクの小部屋状の構造を観察し、ラテン語の'cella'（小さな部屋/独房）から'Cell'と名付けました。", isCorrect: true },
+                    { text: "粒状の物質", rationale: "粒状ではなく、部屋のような構造でした。", isCorrect: false },
+                    { text: "透明な液体", rationale: "透明な液体ではありません。", isCorrect: false }
+                ],
+                hint: "フックの時代、修道院などで使われていた「独房」や「小室」を意味する言葉が語源です。"
+            },
+            // 問5
+            {
+                questionNumber: 5,
+                question: "細胞説を提唱した学者である、マティアス・シュライデンが主に研究対象とした生物は何ですか？",
+                answerOptions: [
+                    { text: "動物", rationale: "動物を主に研究したのはシュワンです。", isCorrect: false },
+                    { text: "菌類", rationale: "菌類ではありません。", isCorrect: false },
+                    { text: "植物", rationale: "シュライデンは植物学者で、植物について細胞説を提唱しました。", isCorrect: true },
+                    { text: "細菌", rationale: "細菌ではありません。", isCorrect: false }
+                ],
+                hint: "彼はドイツの植物学者です。"
+            },
+            // 問6
+            {
+                questionNumber: 6,
+                question: "細胞説を提唱した学者である、テオドール・シュワンが主に研究対象とした生物は何ですか？",
+                answerOptions: [
+                    { text: "動物", rationale: "シュワンは動物学者で、動物について細胞説を提唱しました。", isCorrect: true },
+                    { text: "植物", rationale: "植物を主に研究したのはシュライデンです。", isCorrect: false },
+                    { text: "原生動物", rationale: "原生動物も細胞ですが、彼の主要な提唱の根拠ではありません。", isCorrect: false },
+                    { text: "微生物", rationale: "微生物全体ではなく、彼は動物の組織の研究を行いました。", isCorrect: false }
+                ],
+                hint: "彼はドイツの動物学者です。"
+            },
+            // 問7
+            {
+                questionNumber: 7,
+                question: "細胞説を提唱した主要な学者2名の組み合わせとして正しいものはどれですか？",
+                answerOptions: [
+                    { text: "ロバート・フックとアントニ・ファン・レーウェンフック", rationale: "フックは細胞の発見者、レーウェンフックは生きた細胞の最初の観察者です。", isCorrect: false },
+                    { text: "シュライデンとシュワン", rationale: "シュライデン（植物）とシュワン（動物）は、それぞれの研究を統合して細胞説を提唱しました。", isCorrect: true },
+                    { text: "シュワンとウィルヒョー", rationale: "ウィルヒョーは細胞説の補強者であり、提唱者ではありません。", isCorrect: false },
+                    { text: "メンデルとダーウィン", rationale: "メンデルは遺伝学、ダーウィンは進化論で知られる学者です。", isCorrect: false }
+                ],
+                hint: "彼らはそれぞれ異なる分野（植物学と動物学）の学者でした。"
+            },
+            // 問8
+            {
+                questionNumber: 8,
+                question: "ルドルフ・ウィルヒョーが細胞説に付け加えた、細胞の増殖に関する重要な考え方は何ですか？",
+                answerOptions: [
+                    { text: "細胞は自然に発生する", rationale: "この考え方は否定されました。", isCorrect: false },
+                    { text: "新しい細胞は、常に古い細胞から生じる", rationale: "ウィルヒョーは「全ての細胞は細胞から生じる（Omnis cellula e cellula）」という考えを提唱し、細胞分裂による増殖の原理を確立しました。", isCorrect: true },
+                    { text: "細胞は体内で無機物から合成される", rationale: "無機物からの合成ではありません。", isCorrect: false },
+                    { text: "細胞は核からのみ生成される", rationale: "細胞分裂によって全体が増殖します。", isCorrect: false }
+                ],
+                hint: "彼の提唱は、細胞の「起源」について、それまでの曖昧な部分を明確にしました。"
+            },
+            // 問9
+            {
+                questionNumber: 9,
+                question: "ウィルヒョーの考えを端的に示すラテン語の表現「Omnis cellula e cellula」の日本語訳として正しいものはどれですか？",
+                answerOptions: [
+                    { text: "細胞は生命の基本単位である", rationale: "これは細胞説の一般的な要約です。", isCorrect: false },
+                    { text: "全ての細胞は細胞から生じる", rationale: "この表現は、細胞が自己複製によって増えることを示し、ウィルヒョーの重要な貢献です。", isCorrect: true },
+                    { text: "細胞は動物と植物に共通する構造である", rationale: "これはシュワンとシュライデンの発見です。", isCorrect: false },
+                    { text: "細胞は絶えず分裂している", rationale: "分裂しているとは限らず、分裂'によって'生じるという意味です。", isCorrect: false }
+                ],
+                hint: "「Omnis」は「全ての」、「e cellula」は「細胞から」という意味です。"
+            },
+            // 問10 (新しい問題)
+            {
+                questionNumber: 10,
+                question: "アントニ・ファン・レーウェンフックが自作の高性能な顕微鏡を使って、世界で最初に観察したとされるものは何ですか？",
+                answerOptions: [
+                    { text: "タマネギの表皮細胞", rationale: "タマネギ細胞はフックの時代から知られていました。", isCorrect: false },
+                    { text: "生きた微生物（微生物や精子など）", rationale: "レーウェンフックは池の水などから、自作のレンズで倍率の高い顕微鏡を作り、生きた微生物を最初に観察し、'animalcules'（微小動物）と呼びました。", isCorrect: true },
+                    { text: "植物の葉の葉緑体", rationale: "葉緑体の観察はさらに後の時代です。", isCorrect: false },
+                    { text: "細胞の核", rationale: "核はロバート・ブラウンによって発見されました。", isCorrect: false }
+                ],
+                hint: "彼はコルク片のような死んだ組織ではなく、動いているものを発見しました。"
+            }
+        ]
+    };
+
+    let score = 0;
+    const quizArea = document.getElementById('quiz-area');
+    const resultsDiv = document.getElementById('results');
+    const scoreSpan = document.getElementById('score');
+    const feedbackMessage = document.getElementById('feedback-message');
+    const restartBtn = document.getElementById('restart-btn');
+
+    // 問題をランダムに並べ替える関数
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // クイズのレンダリング
+    function renderQuiz() {
+        score = 0;
+        quizArea.innerHTML = '';
+        resultsDiv.classList.add('hidden');
+        // 問題文の順番は固定しないため、シャッフルを適用
+        const questionsToRender = [...quizData.questions]; 
+        shuffleArray(questionsToRender);
+
+        questionsToRender.forEach((q, qIndex) => {
+            // 問題カードの作成
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+            questionCard.id = `q-${qIndex}`;
+
+            // 問題文 (通し番号はレンダリング順)
+            const questionText = document.createElement('h3');
+            questionText.className = 'text-xl font-bold mb-3 text-gray-800';
+            questionText.innerHTML = `問${qIndex + 1}: ${q.question}`;
+            questionCard.appendChild(questionText);
+
+            // ヒント
+            const hintDiv = document.createElement('div');
+            hintDiv.className = 'hint';
+            hintDiv.innerHTML = `💡 ヒント: ${q.hint}`;
+            questionCard.appendChild(hintDiv);
+
+            // 選択肢コンテナ
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'mt-4 space-y-2';
+
+            // 選択肢ボタンの作成
+            shuffleArray(q.answerOptions); // 選択肢もランダムに並べ替え
+            q.answerOptions.forEach((option, oIndex) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option.text;
+                // qIndex（表示順）をインデックスとして使用
+                button.setAttribute('data-q-index', qIndex); 
+                button.setAttribute('data-o-index', oIndex);
+                button.setAttribute('data-is-correct', option.isCorrect);
+                button.onclick = handleAnswer;
+                optionsDiv.appendChild(button);
+            });
+
+            questionCard.appendChild(optionsDiv);
+
+            // 解説
+            const rationaleDiv = document.createElement('div');
+            rationaleDiv.className = 'rationale';
+            rationaleDiv.id = `rationale-${qIndex}`;
+            questionCard.appendChild(rationaleDiv);
+
+            quizArea.appendChild(questionCard);
+        });
+
+        // ページ全体で使えるように、レンダリングされた問題の配列をグローバルに保持
+        quizArea.dataset.questionsJson = JSON.stringify(questionsToRender);
+    }
+
+    // 回答処理
+    function handleAnswer(event) {
+        const selectedButton = event.target;
+        // qIndexはレンダリング順のインデックス
+        const qIndex = parseInt(selectedButton.getAttribute('data-q-index')); 
+        const isCorrect = selectedButton.getAttribute('data-is-correct') === 'true';
+        
+        // レンダリングされた問題データをJSONから取得
+        const questionsRendered = JSON.parse(quizArea.dataset.questionsJson);
+        const questionData = questionsRendered[qIndex];
+        
+        // 正解の選択肢を見つけるために、元のデータ（isCorrectがtrueのもの）を探す
+        const correctOption = questionData.answerOptions.find(opt => opt.isCorrect);
+
+        const rationaleDiv = document.getElementById(`rationale-${qIndex}`);
+        const optionsDiv = selectedButton.parentNode;
+
+        // すでに回答済みの場合は何もしない
+        if (optionsDiv.querySelector('.option-button.disabled')) {
+            return;
+        }
+
+        // 選択肢を無効化
+        optionsDiv.querySelectorAll('.option-button').forEach(btn => {
+            btn.classList.add('disabled');
+        });
+
+        // 正解/不正解のハイライトとスコア更新
+        if (isCorrect) {
+            selectedButton.classList.add('correct');
+            score++;
+            rationaleDiv.innerHTML = `<span class="font-bold text-green-700">✅ 正解です！</span><br>${correctOption.rationale}`;
+        } else {
+            selectedButton.classList.add('incorrect');
+            // 正解のボタンを探してハイライト
+            optionsDiv.querySelectorAll('.option-button').forEach(btn => {
+                // ここで元のquestionDataから正しい答えのテキストを探し、ボタンのテキストと比較する
+                const buttonText = btn.textContent;
+                const originalOption = questionData.answerOptions.find(opt => opt.text === buttonText);
+
+                if (originalOption && originalOption.isCorrect) {
+                    btn.classList.add('correct');
+                }
+            });
+            rationaleDiv.innerHTML = `<span class="font-bold text-red-700">❌ 不正解...</span> 正解は「${correctOption.text}」です。<br>${correctOption.rationale}`;
+        }
+        
+        rationaleDiv.style.display = 'block';
+
+        // 全ての問題に回答したかチェック
+        const totalQuestions = questionsRendered.length;
+        // 回答済みの問題数をカウント（各問題の最初のボタンにdisabledが付いているかを確認）
+        const answeredCount = document.querySelectorAll('.question-card .option-button.disabled').length / 4; 
+        
+        if (answeredCount >= totalQuestions) {
+            showResults(totalQuestions);
+        }
+    }
+
+    // 結果表示
+    function showResults(totalQuestions) {
+        scoreSpan.textContent = `${score}/${totalQuestions}`;
+        quizArea.style.display = 'none';
+        resultsDiv.classList.remove('hidden');
+
+        let message = '';
+        if (score === totalQuestions) {
+            message = '🎊 全問正解おめでとうございます！動画の内容を完璧に理解できていますね。この調子で頑張りましょう！';
+            feedbackMessage.classList.add('text-green-600');
+            feedbackMessage.classList.remove('text-yellow-700', 'text-red-600');
+        } else if (score >= totalQuestions * 0.7) {
+            message = '👍 あと一歩です！間違えた問題の解説を読んで、知識を定着させましょう。';
+            feedbackMessage.classList.remove('text-green-600', 'text-red-600');
+            feedbackMessage.classList.add('text-yellow-700');
+        } else {
+            message = 'もう一度動画を見直して、基本的な知識をしっかり固めましょう。繰り返し挑戦することが大切です！';
+            feedbackMessage.classList.remove('text-green-600', 'text-yellow-700');
+            feedbackMessage.classList.add('text-red-600');
+        }
+        feedbackMessage.textContent = message;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // リスタート処理
+    restartBtn.addEventListener('click', () => {
+        quizArea.style.display = 'block';
+        feedbackMessage.classList.remove('text-green-600', 'text-yellow-700', 'text-red-600');
+        renderQuiz();
+    });
+
+    // 初期化
+    document.addEventListener('DOMContentLoaded', renderQuiz);
+</script>
+
+</body>
+</html>

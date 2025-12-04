@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知識の抜け漏れゼロ化ダッシュボード</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN for visual progress -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+        }
+        .container {
+            max-width: 1000px;
+        }
+        .progress-bar-container {
+            height: 12px;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+        }
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+            background-color: #10b981; /* Emerald */
+            border-radius: 9999px;
+        }
+        .checklist-item:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <!-- メインコンテナ -->
+    <div id="app" class="container mx-auto bg-white rounded-xl shadow-2xl p-6 sm:p-10">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">🧬 知識の抜け漏れゼロ化ダッシュボード</h1>
+        <p class="text-gray-500 mb-8">「最小暗記戦略」実践用チェックリスト。説明できる項目にチェックを入れ、弱点を可視化しましょう。</p>
+
+        <!-- Firestore/Auth Status -->
+        <div id="status-message" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6 rounded-lg" role="alert">
+            <p class="font-bold">初期化中...</p>
+            <p>データをロードしています。しばらくお待ちください。</p>
+        </div>
+
+        <!-- 総合進捗ダッシュボード -->
+        <div class="bg-gray-50 p-6 rounded-lg mb-8 shadow-inner">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">✅ 総合進捗</h2>
+            <div id="overall-progress">
+                <!-- 進捗率とプログレスバーはJSで更新 -->
+            </div>
+            <div class="flex flex-col sm:flex-row justify-between mt-6 space-y-4 sm:space-y-0">
+                <div class="w-full sm:w-1/3 p-2">
+                    <canvas id="levelChart"></canvas>
+                    <p class="text-center text-sm mt-2 text-gray-600">L1/L2習得バランス</p>
+                </div>
+                <div class="w-full sm:w-2/3 p-2">
+                    <canvas id="themeChart"></canvas>
+                    <p class="text-center text-sm mt-2 text-gray-600">テーマ別習得率</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- チェックリストエリア -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- テーマ選択 -->
+            <div class="md:col-span-1">
+                <label for="theme-select" class="block text-sm font-medium text-gray-700 mb-2">学習テーマを選択</label>
+                <select id="theme-select" class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                    <!-- Options populated by JS -->
+                </select>
+                <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm">
+                    <p class="font-semibold">💡 使い方：</p>
+                    <ul class="list-disc list-inside mt-1 space-y-1">
+                        <li>「人に説明できる」項目だけチェックしましょう。</li>
+                        <li>チェックを外すと、グラフが自動で弱点を教えてくれます。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- チェックリスト表示 -->
+            <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="current-theme-title" class="text-2xl font-semibold text-gray-800">テーマを選択してください</h2>
+                    <span id="theme-progress-text" class="text-xl font-bold text-emerald-600">0%</span>
+                </div>
+                <div id="checklist" class="space-y-3">
+                    <!-- Checklist items populated by JS -->
+                    <p class="text-gray-500 text-center">左側のドロップダウンからテーマを選んでください。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User ID for reference -->
+        <div id="user-id-display" class="mt-8 p-3 bg-gray-100 rounded-lg text-sm text-gray-600 hidden">
+             <!-- User ID will be shown here for support -->
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // setLogLevelはfirebase-auth.jsではエクスポートされていないため削除
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebaseの設定と初期化 (__firebase_config, __app_id, __initial_auth_token はグローバルで提供されます)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // 修正: __initialAuthToken ではなく __initial_auth_token を使用するように修正
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        if (!firebaseConfig) {
+            document.getElementById('status-message').innerHTML = '<p class="font-bold">エラー:</p><p>Firebase設定が利用できません。</p>';
+            console.error("Firebase config is missing. Cannot initialize Firebase.");
+        }
+
+        // デバッグログを有効化（setLogLevelのインポートエラーを避けるためコメントアウト）
+        // setLogLevel('Debug');
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let userId = null;
+        let isAuthReady = false;
+        let checklistData = {}; // ユーザーのチェック状態を保持するオブジェクト
+        let currentThemeId = 'T1'; // 初期表示テーマ
+
+        // 学習テーマとチェック項目（コア知識と流れ/プロセス）の定義
+        const BIOLOGY_TOPICS = {
+            'T1': {
+                name: '1. 細胞と分子',
+                items: {
+                    L1_A: { text: "L1 コア知識: 細胞膜の流動モザイクモデル", level: 1 },
+                    L1_B: { text: "L1 コア知識: 酵素の基質特異性と最適温度/pH", level: 1 },
+                    L1_C: { text: "L1 コア知識: ATPの構造とエネルギー通貨としての役割", level: 1 },
+                    L2_A: { text: "L2 流れ: 物質の能動輸送と受動輸送の仕組み", level: 2 },
+                    L2_B: { text: "L2 流れ: 酵素反応速度に影響を与える因子のグラフ解釈", level: 2 },
+                }
+            },
+            'T2': {
+                name: '2. 代謝とエネルギー',
+                items: {
+                    L1_A: { text: "L1 コア知識: 呼吸と光合成の全体反応式と場所", level: 1 },
+                    L1_B: { text: "L1 コア知識: 解糖系、クエン酸回路、電子伝達系の名称と役割", level: 1 },
+                    L2_A: { text: "L2 流れ: 呼吸におけるATP生成量のプロセス（各ステップでのATP数）", level: 2 },
+                    L2_B: { text: "L2 流れ: 光合成の光化学系I・IIの水の分解からNADPH生成までの流れ", level: 2 },
+                }
+            },
+            'T3': {
+                name: '3. 遺伝情報',
+                items: {
+                    L1_A: { text: "L1 コア知識: セントラルドグマ（複製、転写、翻訳）の定義", level: 1 },
+                    L1_B: { text: "L1 コア知識: コドンとアミノ酸の関係（遺伝暗号表の仕組み）", level: 1 },
+                    L2_A: { text: "L2 流れ: DNA複製時の半保存的複製と関わる酵素群の働き", level: 2 },
+                    L2_B: { text: "L2 流れ: 翻訳におけるtRNAとリボソームの具体的な動き", level: 2 },
+                }
+            },
+            'T4': {
+                name: '4. 恒常性',
+                items: {
+                    L1_A: { text: "L1 コア知識: ホルモンと自律神経の役割分担", level: 1 },
+                    L1_B: { text: "L1 コア知識: 免疫の自然免疫と獲得免疫の違い", level: 1 },
+                    L2_A: { text: "L2 流れ: 血糖値の調節機構（インスリンとグルカゴンのフィードバック）", level: 2 },
+                    L2_B: { text: "L2 流れ: 獲得免疫におけるヘルパーT細胞の活性化と抗体産生までのプロセス", level: 2 },
+                }
+            },
+            'T5': {
+                name: '5. 生態系',
+                items: {
+                    L1_A: { text: "L1 コア知識: 独立栄養生物と従属栄養生物の定義", level: 1 },
+                    L1_B: { text: "L1 コア知識: 窒素同化と窒素固定の違い", level: 1 },
+                    L2_A: { text: "L2 流れ: 遷移の初期段階から極相までの変遷と構成種の例", level: 2 },
+                    L2_B: { text: "L2 流れ: 生態系における炭素・窒素・水の物質循環", level: 2 },
+                }
+            },
+        };
+        const ALL_ITEMS = Object.values(BIOLOGY_TOPICS).flatMap(t => Object.keys(t.items)).length;
+
+        // --- Chart.js 初期化 ---
+        const levelChartCtx = document.getElementById('levelChart').getContext('2d');
+        const themeChartCtx = document.getElementById('themeChart').getContext('2d');
+        let levelChart = null;
+        let themeChart = null;
+
+        // --- Firebase 認証と初期データ読み込み ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                userId = user.uid;
+                isAuthReady = true;
+                
+                document.getElementById('status-message').innerHTML = `<p class="font-bold">認証完了!</p><p>ユーザーID: ${userId.substring(0, 8)}...</p>`;
+                document.getElementById('user-id-display').classList.remove('hidden');
+                document.getElementById('user-id-display').textContent = `Full User ID (Support): ${userId}`;
+
+                // Firestoreからデータを購読
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'biology_checklist', 'checklist_data');
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        checklistData = docSnap.data();
+                        console.log("Data loaded from Firestore:", checklistData);
+                    } else {
+                        checklistData = {};
+                        console.log("No data found, starting fresh.");
+                    }
+                    // データロード後にUIを更新
+                    updateThemeSelect();
+                    renderChecklist();
+                    updateDashboard();
+                }, (error) => {
+                    console.error("Firestore onSnapshot error:", error);
+                    document.getElementById('status-message').innerHTML = `<p class="font-bold">エラー:</p><p>データ取得中にエラーが発生しました。${error.code}</p>`;
+                });
+
+            } else {
+                // 初回アクセス時または認証切れの場合、カスタムトークンまたは匿名認証を試行
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                        document.getElementById('status-message').innerHTML = `<p class="font-bold">認証試行中...</p><p>カスタム認証トークンを使用しています。</p>`;
+                    } else {
+                        await signInAnonymously(auth);
+                        document.getElementById('status-message').innerHTML = `<p class="font-bold">認証試行中...</p><p>匿名認証を使用しています。</p>`;
+                    }
+                } catch (error) {
+                    console.error("Authentication error:", error);
+                    document.getElementById('status-message').innerHTML = `<p class="font-bold">エラー:</p><p>認証に失敗しました。${error.code}</p>`;
+                }
+            }
+        });
+
+        // --- Firestore データ更新関数 ---
+        async function saveChecklistData() {
+            if (!isAuthReady || !userId) {
+                console.error("Auth not ready. Cannot save data.");
+                return;
+            }
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'biology_checklist', 'checklist_data');
+            try {
+                // setDocで上書き保存
+                await setDoc(docRef, checklistData, { merge: true });
+                console.log("Checklist data saved successfully.");
+            } catch (error) {
+                console.error("Error saving data to Firestore:", error);
+            }
+        }
+
+        // --- UIレンダリングとイベントハンドラ ---
+
+        // テーマ選択ドロップダウンの更新
+        function updateThemeSelect() {
+            const select = document.getElementById('theme-select');
+            select.innerHTML = ''; // クリア
+
+            // オプションを生成
+            Object.keys(BIOLOGY_TOPICS).forEach(id => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = BIOLOGY_TOPICS[id].name;
+                select.appendChild(option);
+            });
+            
+            // 選択されているテーマを設定
+            select.value = currentThemeId;
+
+            // 選択変更イベントリスナー
+            select.addEventListener('change', (e) => {
+                currentThemeId = e.target.value;
+                renderChecklist();
+            });
+        }
+
+        // チェックリストのレンダリング
+        function renderChecklist() {
+            const theme = BIOLOGY_TOPICS[currentThemeId];
+            const checklistContainer = document.getElementById('checklist');
+            document.getElementById('current-theme-title').textContent = theme ? theme.name : 'テーマを選択してください';
+            checklistContainer.innerHTML = ''; // クリア
+
+            if (!theme) return;
+
+            // テーマの進捗を計算し表示
+            const currentThemeItems = Object.keys(theme.items).length;
+            const checkedItemsInTheme = Object.keys(theme.items).filter(itemId => checklistData[itemId]).length;
+            const themeProgress = currentThemeItems > 0 ? Math.round((checkedItemsInTheme / currentThemeItems) * 100) : 0;
+            document.getElementById('theme-progress-text').textContent = `${themeProgress}%`;
+
+            // チェックリスト項目を生成
+            Object.keys(theme.items).forEach(itemId => {
+                const item = theme.items[itemId];
+                const isChecked = !!checklistData[itemId];
+                const itemHtml = `
+                    <div class="checklist-item flex items-start p-3 rounded-lg border border-gray-200 shadow-sm transition duration-150 ease-in-out">
+                        <input type="checkbox" id="${itemId}" data-item-id="${itemId}" class="mt-1 h-5 w-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500" ${isChecked ? 'checked' : ''}>
+                        <label for="${itemId}" class="ml-3 text-base text-gray-700 cursor-pointer">
+                            <span class="font-semibold ${item.level === 1 ? 'text-blue-600' : 'text-purple-600'}">${item.level === 1 ? 'L1 コア知識' : 'L2 流れ・プロセス'}：</span> ${item.text.replace(/L\d\s(コア知識|流れ・プロセス):?\s*/, '')}
+                        </label>
+                    </div>
+                `;
+                checklistContainer.insertAdjacentHTML('beforeend', itemHtml);
+            });
+
+            // チェックボックスのイベントリスナーを設定
+            checklistContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const itemId = e.target.dataset.itemId;
+                    checklistData[itemId] = e.target.checked;
+                    saveChecklistData();
+                    updateDashboard();
+                    
+                    // 現在のテーマ進捗もリアルタイムで更新
+                    const updatedCheckedItems = Object.keys(theme.items).filter(id => checklistData[id]).length;
+                    const updatedProgress = currentThemeItems > 0 ? Math.round((updatedCheckedItems / currentThemeItems) * 100) : 0;
+                    document.getElementById('theme-progress-text').textContent = `${updatedProgress}%`;
+                });
+            });
+        }
+
+        // --- ダッシュボードの更新 ---
+        function updateDashboard() {
+            // 全体項目のチェック状態を計算
+            const totalItemsInTopics = Object.values(BIOLOGY_TOPICS).flatMap(t => Object.keys(t.items));
+            const checkedCount = totalItemsInTopics.filter(itemId => checklistData[itemId]).length;
+
+            const totalCount = ALL_ITEMS;
+            const progress = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+
+            // 1. 全体進捗バーの更新
+            document.getElementById('overall-progress').innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <p class="text-lg font-medium text-gray-800">全体習得率</p>
+                    <span class="text-2xl font-extrabold text-emerald-600">${progress}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: ${progress}%;"></div>
+                </div>
+            `;
+            
+            // 2. L1/L2習得バランスチャートの更新
+            const levelCounts = calculateLevelProgress();
+            updateLevelChart(levelCounts);
+
+            // 3. テーマ別習得率チャートの更新
+            const themeProgress = calculateThemeProgress();
+            updateThemeChart(themeProgress);
+        }
+
+        // アイテムIDからテーマIDを取得するヘルパー関数
+        function getThemeId(itemId) {
+            for (const themeId in BIOLOGY_TOPICS) {
+                if (BIOLOGY_TOPICS[themeId].items[itemId]) {
+                    return themeId;
+                }
+            }
+            return null;
+        }
+
+        // L1/L2の進捗を計算
+        function calculateLevelProgress() {
+            let totalL1 = 0;
+            let checkedL1 = 0;
+            let totalL2 = 0;
+            let checkedL2 = 0;
+
+            Object.values(BIOLOGY_TOPICS).forEach(theme => {
+                Object.keys(theme.items).forEach(itemId => {
+                    const item = theme.items[itemId];
+                    const isChecked = checklistData[itemId];
+                    
+                    if (item.level === 1) {
+                        totalL1++;
+                        if (isChecked) checkedL1++;
+                    } else if (item.level === 2) {
+                        totalL2++;
+                        if (isChecked) checkedL2++;
+                    }
+                });
+            });
+
+            return {
+                L1: { checked: checkedL1, total: totalL1, progress: totalL1 > 0 ? Math.round((checkedL1 / totalL1) * 100) : 0 },
+                L2: { checked: checkedL2, total: totalL2, progress: totalL2 > 0 ? Math.round((checkedL2 / totalL2) * 100) : 0 }
+            };
+        }
+
+        // テーマ別進捗を計算
+        function calculateThemeProgress() {
+            const progressData = {};
+            Object.keys(BIOLOGY_TOPICS).forEach(themeId => {
+                const theme = BIOLOGY_TOPICS[themeId];
+                const total = Object.keys(theme.items).length;
+                const checked = Object.keys(theme.items).filter(itemId => checklistData[itemId]).length;
+                progressData[theme.name] = total > 0 ? Math.round((checked / total) * 100) : 0;
+            });
+            return progressData;
+        }
+
+        // L1/L2チャートを更新
+        function updateLevelChart(counts) {
+            
+            const config = {
+                type: 'doughnut',
+                data: {
+                    labels: ['習得済', '未習得'],
+                    datasets: [
+                        {
+                            label: 'L1 コア知識',
+                            data: [counts.L1.checked, counts.L1.total - counts.L1.checked],
+                            backgroundColor: ['#3b82f6', '#dbeafe'],
+                            hoverBackgroundColor: ['#2563eb', '#bfdbfe'],
+                            borderWidth: 0,
+                            // Doughnutチャートでは不要なため 'stack' プロパティを削除
+                        },
+                        {
+                            label: 'L2 流れ・プロセス',
+                            data: [counts.L2.checked, counts.L2.total - counts.L2.checked],
+                            backgroundColor: ['#a855f7', '#f3e8ff'],
+                            hoverBackgroundColor: ['#9333ea', '#e9d5ff'],
+                            borderWidth: 0,
+                            // Doughnutチャートでは不要なため 'stack' プロパティを削除
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'L1/L2 習得バランス',
+                            font: { size: 14 }
+                        }
+                    }
+                }
+            };
+
+            if (levelChart) levelChart.destroy();
+            levelChart = new Chart(levelChartCtx, config);
+        }
+
+        // テーマ別チャートを更新
+        function updateThemeChart(progress) {
+            const themeNames = Object.keys(progress);
+            const progressValues = Object.values(progress);
+
+            const data = {
+                labels: themeNames,
+                datasets: [{
+                    label: '習得率 (%)',
+                    data: progressValues,
+                    backgroundColor: progressValues.map(v => v === 100 ? '#059669' : '#34d399'), // 100%は濃い緑
+                    borderColor: progressValues.map(v => v === 100 ? '#047857' : '#059669'),
+                    borderWidth: 1,
+                    hoverBackgroundColor: progressValues.map(v => v === 100 ? '#047857' : '#10b981'),
+                }]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    indexAxis: 'y', // 横棒グラフ
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '習得率 (%)'
+                            }
+                        },
+                        y: {
+                            // stacked: true, // これは棒グラフで適切ですが、データ構造が積み上げ（stack）ではないため、不要
+                            title: {
+                                display: true,
+                                text: '学習テーマ'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'テーマ別習得率',
+                            font: { size: 14 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.x}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (themeChart) themeChart.destroy();
+            themeChart = new Chart(themeChartCtx, config);
+        }
+        
+    </script>
+</body>
+</html>

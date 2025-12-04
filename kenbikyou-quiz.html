@@ -14,7 +14,7 @@
             background-color: #f1f5f9; /* Slate 100 */
         }
         .quiz-card {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 4px, 6px, 0.05);
         }
         .correct-answer {
             background-color: #d1fae5; /* Green 100 */
@@ -130,27 +130,27 @@
             },
             {
                 "questionNumber": 6,
-                "question": "高倍率で観察しているとき、低倍率で観察していたときに比べて変化する現象として誤っているものはどれですか。",
+                "question": "高倍率で観察しているとき、低倍率で観察していたときに比べて**誤っている**変化はどれですか。",
                 "imageUrl": "",
                 "answerOptions": [
-                    { "text": "視野が暗くなる。", "rationale": "高倍率になると光を集める範囲が狭くなるため、視野は暗くなります。", "isCorrect": false },
-                    { "text": "視野が狭くなる。", "rationale": "倍率が上がると見える範囲（視野）は狭くなります。", "isCorrect": false },
-                    { "text": "ピントの合う範囲（深さ）が深くなる。", "rationale": "高倍率になるとピントの合う範囲（焦点深度）は浅くなり、ピント合わせが難しくなります。", "isCorrect": true },
-                    { "text": "観察対象が大きく見える。", "rationale": "高倍率の観察では、像は当然ながら大きく拡大されます。", "isCorrect": false }
+                    { "text": "視野が暗くなる。", "rationale": "高倍率になると光を集める範囲が狭くなるため、視野は暗くなります。これは正しい変化です（つまり、誤っている選択肢ではない）。", "isCorrect": false },
+                    { "text": "視野が狭くなる。", "rationale": "倍率が上がると見える範囲（視野）は狭くなります。これは正しい変化です。", "isCorrect": false },
+                    { "text": "ピントの合う範囲（深さ）が深くなる。", "rationale": "高倍率になるとピントの合う範囲（焦点深度）は浅くなります。この選択肢は実際とは逆の記述であり、誤っているため、この問題の正解となります。", "isCorrect": true },
+                    { "text": "観察対象が大きく見える。", "rationale": "高倍率の観察では、像は大きく拡大されます。これは正しい変化です。", "isCorrect": false }
                 ],
-                "hint": "ピント合わせの難しさや、光の入り方に着目して、高倍率での特徴を思い出しましょう。"
+                "hint": "倍率が高くなると、光の集光範囲とピントの深さに変化が起こります。"
             },
             {
                 "questionNumber": 7,
                 "question": "顕微鏡下で観察している像が視野の左下にずれてしまいました。この像を視野の中心に戻すために、プレパラートを移動させる正しい方向はどれですか。",
                 "imageUrl": "",
                 "answerOptions": [
-                    { "text": "そのまま左下に移動させる。", "rationale": "顕微鏡で観察される像は、プレパラートの実際の動きと逆向きに動くため、左下にある像を左下に動かしても中心には戻りません。", "isCorrect": false },
-                    { "text": "右上に移動させる。", "rationale": "像は上下左右が反転して見えるため、左下にずれた像を中心に戻すには、プレパラートを像と**同じ**方向に動かす必要があります。", "isCorrect": true },
-                    { "text": "そのまま右上に移動させる。", "rationale": "像が左下にずれた場合、プレパラートを左下に動かせば中心に戻ります。右上に移動させると像は左下にさらにずれます。", "isCorrect": false },
-                    { "text": "左上に移動させる。", "rationale": "この操作では像は右下に移動します。", "isCorrect": false }
+                    { "text": "そのまま左下に移動させる。", "rationale": "顕微鏡で見える像は上下左右が反転しています。像を動かしたい方向（この場合、視野の中心方向＝右上に動かしたい）と**同じ方向**にプレパラートを動かす必要があります。像が左下にずれている場合、プレパラートを左下に動かすと、像は視野の中心（右上方）に戻ります。", "isCorrect": true },
+                    { "text": "右上に移動させる。", "rationale": "像は上下左右が反転しているため、右上に動かすと像は左下にさらにずれてしまいます。", "isCorrect": false },
+                    { "text": "そのまま右上に移動させる。", "rationale": "この操作では、像は左下にさらにずれてしまいます。", "isCorrect": false },
+                    { "text": "左上に移動させる。", "rationale": "この操作では、像は右下に移動します。", "isCorrect": false }
                 ],
-                "hint": "顕微鏡で見える像は、プレパラート上での実際の物体とは上下左右が**反転**して見えます。像を動かしたい方向と**同じ方向**にプレパラートを動かす必要があります。"
+                "hint": "顕微鏡で見える像は、プレパラート上での実際の物体とは上下左右が**逆**に見えることを利用して、像を動かしたい方向と**同じ方向**にプレパラートを動かすのが正解です。"
             },
             {
                 "questionNumber": 8,
@@ -198,7 +198,7 @@
                     { "text": "レボルバーを回転させて、対物レンズがない状態にする", "rationale": "対物レンズを光軸上から完全に外すと、移動や保管の際に埃が入りやすくなる可能性があります。", "isCorrect": false },
                     { "text": "特に倍率は気にしなくて良い", "rationale": "保管時の安全性を考慮すると、ステージから最も離れた位置にある対物レンズを光軸上に置くのが最良です。", "isCorrect": false }
                 ],
-                "hint": "保管・運搬時に、ステージとレンズの先端が最も遠い状態になるように調整します。"
+                "hint": "保管・運搬時に、レンズがステージから最も離れた状態になるように調整します。"
             },
             {
                 "questionNumber": 12,
@@ -292,7 +292,10 @@
                 `;
             }
 
-            const imageHtml = q.imageUrl ? `<img src="${q.imageUrl}" alt="問題に関する図" class="w-full max-h-64 object-contain rounded-lg mb-6 border border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/400x250/ccc/333?text=図の表示エラー';">` : '';
+            // Q1の画像パスのみを使用 (他の問題は画像なし)
+            const imageHtml = q.questionNumber === 1 && q.imageUrl ? 
+                `<img src="${q.imageUrl}" alt="光学顕微鏡の図" class="w-full max-h-64 object-contain rounded-lg mb-6 border border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/400x250/ccc/333?text=図の表示エラー';">` 
+                : '';
 
             quizContent.innerHTML = `
                 <div class="mb-4 text-sm text-gray-500">問題 ${currentQuestionIndex + 1} / ${quizData.length}</div>

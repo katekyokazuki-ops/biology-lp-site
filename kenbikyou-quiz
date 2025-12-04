@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顕微鏡の各部名称と使用法 確認テスト</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter and Noto Sans JP -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: #f1f5f9; /* Slate 100 */
+        }
+        .quiz-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .correct-answer {
+            background-color: #d1fae5; /* Green 100 */
+            border-color: #10b981; /* Green 500 */
+        }
+        .incorrect-answer {
+            background-color: #fee2e2; /* Red 100 */
+            border-color: #ef4444; /* Red 500 */
+        }
+        /* Custom style for math symbols (like μm) */
+        .math-symbol {
+            font-family: serif; /* 記号が見やすいフォント */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af', // Blue 700
+                        accent: '#f59e0b', // Amber 500
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="quiz-container" class="max-w-4xl mx-auto my-6 bg-white rounded-xl quiz-card p-6 md:p-10">
+        <h1 class="text-3xl font-bold text-primary mb-2 text-center">顕微鏡の各部名称と使用法 確認テスト</h1>
+        <p class="text-center text-gray-600 mb-6">全12問。光学顕微鏡の基礎知識と計測方法をチェックしましょう。</p>
+
+        <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+            <div id="progress-fill" class="bg-accent h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        
+        <div id="quiz-content">
+            <!-- Question and options will be rendered here -->
+        </div>
+
+        <div id="result-screen" class="hidden text-center mt-8 p-6 border-2 border-primary rounded-lg">
+            <h2 class="text-4xl font-extrabold text-primary mb-4">テスト結果</h2>
+            <p class="text-2xl mb-6">あなたのスコア: <span id="final-score" class="font-bold text-accent"></span> / 12 問</p>
+            <p id="score-message" class="text-lg text-gray-700 mb-8"></p>
+            <button id="restart-button" class="bg-primary hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+                最初からやり直す
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                "questionNumber": 1,
+                "question": "以下の図は光学顕微鏡の一部を示しています。プレパラートを載せ、対物レンズとの距離を大きく大まかに調節するための大きなネジの名称として正しいものを選択してください。",
+                "imageUrl": "https://placehold.co/400x250/1e40af/ffffff?text=光学顕微鏡の図",
+                "answerOptions": [
+                    { "text": "レボルバー", "rationale": "レボルバーは、倍率を変えるために複数の対物レンズを回転させる部分の名称です。", "isCorrect": false },
+                    { "text": "粗動ねじ（そうどうねじ）", "rationale": "粗動ねじは、対物レンズとプレパラートの距離を大きく動かし、大まかなピントを合わせるために使用されます。", "isCorrect": true },
+                    { "text": "微動ねじ（びどうねじ）", "rationale": "微動ねじは、大まかなピントが合った後、より正確なピントを微調整するために使用されます。", "isCorrect": false },
+                    { "text": "絞り（しぼり）", "rationale": "絞りは、視野に入る光の量を調節するための機構であり、ピント調節には関与しません。", "isCorrect": false }
+                ],
+                "hint": "このネジは、低倍率で観察する際に最初に使う、大きな動きをするネジです。"
+            },
+            {
+                "questionNumber": 2,
+                "question": "顕微鏡の構造のうち、観察中に倍率を変更するために回転させる円盤状の部分の名称はどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "接眼レンズ", "rationale": "接眼レンズは、覗き込む側のレンズであり、回転する円盤状の部分ではありません。", "isCorrect": false },
+                    { "text": "ステージ", "rationale": "ステージは、プレパラートを載せる台であり、倍率変更のために回転させる機構ではありません。", "isCorrect": false },
+                    { "text": "レボルバー", "rationale": "レボルバー（対物レンズ回転盤）は、複数の対物レンズを取り付けており、回転させることで倍率を切り替えます。", "isCorrect": true },
+                    { "text": "反射鏡", "rationale": "反射鏡は、光源がない場合に光を集めるために使用されますが、倍率変更の機能はありません。", "isCorrect": false }
+                ],
+                "hint": "対物レンズが複数取り付けられている、回転可能な部分の名前を思い出しましょう。"
+            },
+            {
+                "questionNumber": 3,
+                "question": "プレパラートに当たる光の量を調節するのに最も適した顕微鏡の部品はどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "粗動ねじ", "rationale": "粗動ねじはピント合わせのための機構です。", "isCorrect": false },
+                    { "text": "接眼レンズ", "rationale": "接眼レンズは倍率を変更するレンズであり、光量調節の機能はありません。", "isCorrect": false },
+                    { "text": "絞り", "rationale": "絞り（虹彩絞りなど）は、対物レンズに入る光の量を調節し、視野の明るさやコントラストを調整します。", "isCorrect": true },
+                    { "text": "クリップ", "rationale": "クリップはプレパラートをステージに固定するための部品です。", "isCorrect": false }
+                ],
+                "hint": "光を集める集光器と対物レンズの間にある部品で、穴の大きさを変えることができます。"
+            },
+            {
+                "questionNumber": 4,
+                "question": "顕微鏡でピントを合わせるとき、対物レンズをプレパラートに近づける操作は、観察を始める前に必ず行います。その際、対物レンズを近づける方向に動かすのは、どのようなリスクを避けるためですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "視野の明るさが変化するのを避けるため", "rationale": "ピント合わせの操作は光量調節とは直接関係ありません。", "isCorrect": false },
+                    { "text": "像がぼやけてしまうのを避けるため", "rationale": "ピントが合わないのは当然ですが、操作手順の理由としてはより重要なリスクがあります。", "isCorrect": false },
+                    { "text": "プレパラートや対物レンズを破損するのを避けるため", "rationale": "観察しながら近づけるとレンズやプレパラートが接触し破損するリスクがあるため、先に一番近づけてから遠ざけながらピントを合わせるのが安全です。", "isCorrect": true },
+                    { "text": "観察する標的を見失うのを避けるため", "rationale": "これは視野の中心に標的を移動させることの目的であり、ピント合わせの手順の目的ではありません。", "isCorrect": false }
+                ],
+                "hint": "高倍率の対物レンズは先端が長く、プレパラートと接触する危険性があります。"
+            },
+            {
+                "questionNumber": 5,
+                "question": "顕微鏡の正しい使い方のうち、低倍率で観察した後、高倍率に切り替える際の手順として最も適切なものはどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "粗動ねじで一気にピントを合わせ直し、レボルバーを回して高倍率にする。", "rationale": "高倍率では粗動ねじを使うとピント合わせが難しく、またプレパラート破損の危険があります。", "isCorrect": false },
+                    { "text": "観察したい部分を視野の中心に入れ、レボルバーを回して高倍率にし、微動ねじでピントを合わせる。", "rationale": "高倍率にする前に観察対象を視野の中心に入れること、高倍率では微動ねじのみを使用することが正しい手順です。", "isCorrect": true },
+                    { "text": "一度プレパラートを外し、対物レンズを高倍率に変更してから再度セットする。", "rationale": "倍率の変更はレボルバーを回すだけで済み、プレパラートを外す必要はありません。", "isCorrect": false },
+                    { "text": "レボルバーを回して高倍率にし、粗動ねじでピントを合わせるが、ステージから目を離さないようにする。", "rationale": "高倍率では粗動ねじは使用しません。また、対物レンズを近づける際は目視するのが基本です。", "isCorrect": false }
+                ],
+                "hint": "高倍率にするときは、低倍率で何をしておくべきか、またどのネジを使うべきかを考えましょう。"
+            },
+            {
+                "questionNumber": 6,
+                "question": "高倍率で観察しているとき、低倍率で観察していたときに比べて変化する現象として誤っているものはどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "視野が暗くなる。", "rationale": "高倍率になると光を集める範囲が狭くなるため、視野は暗くなります。", "isCorrect": false },
+                    { "text": "視野が狭くなる。", "rationale": "倍率が上がると見える範囲（視野）は狭くなります。", "isCorrect": false },
+                    { "text": "ピントの合う範囲（深さ）が深くなる。", "rationale": "高倍率になるとピントの合う範囲（焦点深度）は浅くなり、ピント合わせが難しくなります。", "isCorrect": true },
+                    { "text": "観察対象が大きく見える。", "rationale": "高倍率の観察では、像は当然ながら大きく拡大されます。", "isCorrect": false }
+                ],
+                "hint": "ピント合わせの難しさや、光の入り方に着目して、高倍率での特徴を思い出しましょう。"
+            },
+            {
+                "questionNumber": 7,
+                "question": "顕微鏡下で観察している像が視野の左下にずれてしまいました。この像を視野の中心に戻すために、プレパラートを移動させる正しい方向はどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "そのまま左下に移動させる。", "rationale": "顕微鏡で観察される像は、プレパラートの実際の動きと逆向きに動くため、左下にある像を左下に動かしても中心には戻りません。", "isCorrect": false },
+                    { "text": "右上に移動させる。", "rationale": "像は上下左右が反転して見えるため、左下にずれた像を中心に戻すには、プレパラートを像と**同じ**方向に動かす必要があります。", "isCorrect": true },
+                    { "text": "そのまま右上に移動させる。", "rationale": "像が左下にずれた場合、プレパラートを左下に動かせば中心に戻ります。右上に移動させると像は左下にさらにずれます。", "isCorrect": false },
+                    { "text": "左上に移動させる。", "rationale": "この操作では像は右下に移動します。", "isCorrect": false }
+                ],
+                "hint": "顕微鏡で見える像は、プレパラート上での実際の物体とは上下左右が**反転**して見えます。像を動かしたい方向と**同じ方向**にプレパラートを動かす必要があります。"
+            },
+            {
+                "questionNumber": 8,
+                "question": "ミクロメーターを用いた測定において、接眼ミクロメーターの1目盛りの長さを決定するために用いられる器具はどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "ノギス", "rationale": "ノギスは、物体の外径・内径・深さを測定する器具であり、顕微鏡の測定には使用しません。", "isCorrect": false },
+                    { "text": "対物ミクロメーター", "rationale": "対物ミクロメーターは、1目盛りの長さが正確に分かっているため、接眼ミクロメーターの校正（1目盛りの長さの決定）に使用されます。", "isCorrect": true },
+                    { "text": "定規", "rationale": "接眼ミクロメーターの1目盛りは非常に小さいため、定規のようなマクロな測定器具は使用できません。", "isCorrect": false },
+                    { "text": "ピペット", "rationale": "ピペットは、液体の体積を正確に測り取る器具であり、長さの測定には使用しません。", "isCorrect": false }
+                ],
+                "hint": "この器具は、ステージに置いて接眼ミクロメーターの目盛りと比較するために使われます。"
+            },
+            {
+                "questionNumber": 9,
+                "question": "ある倍率で観察した結果、対物ミクロメーターの 20 目盛りの長さと、接眼ミクロメーターの 50 目盛りの長さが一致しました。対物ミクロメーターの 1 目盛りの長さが 10 <span class=\"math-symbol\">&mu;m</span> であるとき、この倍率における接眼ミクロメーターの 1 目盛りの長さとして正しい値を求めなさい。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "2.5 <span class=\"math-symbol\">&mu;m</span>", "rationale": "対物ミクロメーターの合計長さが 20 × 10 = 200 <span class=\"math-symbol\">&mu;m</span> であり、これを 50 目盛りで割ると 4 <span class=\"math-symbol\">&mu;m</span> になります。", "isCorrect": false },
+                    { "text": "4 <span class=\"math-symbol\">&mu;m</span>", "rationale": "対物ミクロメーターの 20 目盛りは 20 × 10 = 200 <span class=\"math-symbol\">&mu;m</span> です。これが接眼ミクロメーターの 50 目盛りに相当するため、接眼ミクロメーター 1 目盛りは 200 &divide; 50 = 4 <span class=\"math-symbol\">&mu;m</span> となります。", "isCorrect": true },
+                    { "text": "5 <span class=\"math-symbol\">&mu;m</span>", "rationale": "対物ミクロメーターの合計長さが 200 <span class=\"math-symbol\">&mu;m</span> であり、これを 40 目盛りで割ると 5 <span class=\"math-symbol\">&mu;m</span> になりますが、実際は 50 目盛りで割る必要があります。", "isCorrect": false },
+                    { "text": "10 <span class=\"math-symbol\">&mu;m</span>", "rationale": "接眼ミクロメーターの 1 目盛りは、通常、倍率が変わると対物ミクロメーターの 1 目盛りとは異なる長さになります。", "isCorrect": false }
+                ],
+                "hint": "まず、対物ミクロメーターの合計の長さを計算し、それを接眼ミクロメーターの目盛り数で割れば、 1 目盛りの長さが求められます。"
+            },
+            {
+                "questionNumber": 10,
+                "question": "前の問題（Q9）で求めた接眼ミクロメーターの 1 目盛りの長さが 4 <span class=\"math-symbol\">&mu;m</span> であったとします。もしこの顕微鏡で、**より高い倍率**の対物レンズに切り替えた場合、接眼ミクロメーターの 1 目盛りの実際の長さはどのように変化しますか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "4 <span class=\"math-symbol\">&mu;m</span> より長くなる。", "rationale": "倍率を高くすると、接眼ミクロメーターの 1 目盛りで観察できる実際の長さ（実寸）は短くなります。", "isCorrect": false },
+                    { "text": "4 <span class=\"math-symbol\">&mu;m</span> のまま変化しない。", "rationale": "対物レンズの倍率が変わると、接眼ミクロメーターの 1 目盛りの実寸も変化します。接眼レンズの目盛りは常に一定ですが、像の拡大率が変わるためです。", "isCorrect": false },
+                    { "text": "4 <span class=\"math-symbol\">&mu;m</span> より短くなる。", "rationale": "対物レンズの倍率が上がると、接眼ミクロメーターが刻む像の拡大率が上がり、 1 目盛りで測れる実際の長さ（実寸）は短くなります。", "isCorrect": true },
+                    { "text": "倍率の切り替え方によって変化する方向が異なる。", "rationale": "倍率を上げる操作であれば、必ず接眼ミクロメーターの 1 目盛りの実寸は短くなります。", "isCorrect": false }
+                ],
+                "hint": "接眼ミクロメーターの目盛りは変わらず、見える像がより拡大されることを考えましょう。"
+            },
+            {
+                "questionNumber": 11,
+                "question": "顕微鏡の対物レンズを運搬や保管のために最も適切な状態にするには、レボルバーを回してどの倍率の対物レンズを光軸上（真下）に置くのが正しいですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "最も倍率の高い対物レンズ", "rationale": "最も倍率の高い対物レンズは、先端が長くステージとの距離が非常に近いため、破損のリスクがあります。", "isCorrect": false },
+                    { "text": "最も倍率の低い対物レンズ", "rationale": "最も倍率の低い対物レンズは、ステージとの距離が離れており、運搬時や保管時に破損しにくいため、最も適切な状態です。", "isCorrect": true },
+                    { "text": "レボルバーを回転させて、対物レンズがない状態にする", "rationale": "対物レンズを光軸上から完全に外すと、移動や保管の際に埃が入りやすくなる可能性があります。", "isCorrect": false },
+                    { "text": "特に倍率は気にしなくて良い", "rationale": "保管時の安全性を考慮すると、ステージから最も離れた位置にある対物レンズを光軸上に置くのが最良です。", "isCorrect": false }
+                ],
+                "hint": "保管・運搬時に、ステージとレンズの先端が最も遠い状態になるように調整します。"
+            },
+            {
+                "questionNumber": 12,
+                "question": "顕微鏡の正しい使用法として、観察終了時に行うべき操作として**誤っている**ものはどれですか。",
+                "imageUrl": "",
+                "answerOptions": [
+                    { "text": "プレパラートをステージから取り外す。", "rationale": "ステージ上のプレパラートは観察終了後に取り外す必要があります。", "isCorrect": false },
+                    { "text": "対物レンズを最も高い倍率にしておく。", "rationale": "対物レンズは、最も低い倍率（ステージから最も離れる状態）にしておくのが正しく、最も高い倍率にしておくのは破損のリスクを伴うため誤りです。", "isCorrect": true },
+                    { "text": "反射鏡または光源の電源を切る。", "rationale": "光を消すことは正しい手順です。", "isCorrect": false },
+                    { "text": "粗動ねじを回してステージを一番下まで下げる。", "rationale": "ステージを一番下まで下げておくことは、次回使用時や保管時の安全のために必要な操作です。", "isCorrect": false }
+                ],
+                "hint": "運搬や保管の準備として、レンズがステージから最も離れた状態を作ることが重要です。"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answeredQuestions = [];
+        const quizContent = document.getElementById('quiz-content');
+        const resultScreen = document.getElementById('result-screen');
+        const finalScore = document.getElementById('final-score');
+        const scoreMessage = document.getElementById('score-message');
+        const restartButton = document.getElementById('restart-button');
+        const progressFill = document.getElementById('progress-fill');
+
+        function renderQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                showResult();
+                return;
+            }
+
+            const q = quizData[currentQuestionIndex];
+            const isAnswered = answeredQuestions[currentQuestionIndex] !== undefined;
+            const userChoice = answeredQuestions[currentQuestionIndex];
+
+            // プログレスバーの更新
+            const progress = (currentQuestionIndex / quizData.length) * 100;
+            progressFill.style.width = `${progress}%`;
+
+            let optionsHtml = q.answerOptions.map((option, index) => {
+                const isSelected = isAnswered && userChoice === index;
+                const isCorrect = option.isCorrect;
+                let bgColor = 'bg-white hover:bg-gray-50';
+                let borderColor = 'border-gray-300';
+                let feedbackText = '';
+                
+                if (isAnswered) {
+                    if (isCorrect) {
+                        bgColor = 'correct-answer';
+                        borderColor = 'border-green-500';
+                        if (isSelected) {
+                            feedbackText = '<span class="ml-3 text-green-700 font-bold">&#10003; 正解</span>';
+                        } else {
+                            feedbackText = '<span class="ml-3 text-green-700 font-bold">（正解）</span>';
+                        }
+                    } else if (isSelected) {
+                        bgColor = 'incorrect-answer';
+                        borderColor = 'border-red-500';
+                        feedbackText = '<span class="ml-3 text-red-700 font-bold">&#10007; あなたの回答</span>';
+                    }
+                }
+
+                return `
+                    <button 
+                        data-index="${index}" 
+                        class="option-button w-full text-left p-4 mb-3 border-2 rounded-lg transition duration-200 ${bgColor} ${borderColor} ${isAnswered ? 'cursor-default' : 'cursor-pointer'}"
+                        ${isAnswered ? 'disabled' : ''}
+                    >
+                        <span class="font-medium text-gray-800">${String.fromCharCode(65 + index)}. ${option.text}</span>
+                        ${feedbackText}
+                    </button>
+                `;
+            }).join('');
+
+            let feedbackHtml = '';
+            if (isAnswered) {
+                const selectedOption = q.answerOptions[userChoice];
+                const isCorrect = selectedOption.isCorrect;
+                const feedbackColor = isCorrect ? 'text-green-700 bg-green-50 border-green-300' : 'text-red-700 bg-red-50 border-red-300';
+                
+                feedbackHtml = `
+                    <div class="mt-6 p-4 border rounded-lg ${feedbackColor}">
+                        <p class="font-bold mb-2">${isCorrect ? '&#10003; 正解です！' : '&#10007; 不正解です...'}</p>
+                        <p class="text-sm">【解説】${selectedOption.rationale}</p>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="next-button" class="bg-accent hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                            ${currentQuestionIndex < quizData.length - 1 ? '次の問題へ' : '結果を見る'}
+                        </button>
+                    </div>
+                `;
+            }
+
+            const imageHtml = q.imageUrl ? `<img src="${q.imageUrl}" alt="問題に関する図" class="w-full max-h-64 object-contain rounded-lg mb-6 border border-gray-200" onerror="this.onerror=null; this.src='https://placehold.co/400x250/ccc/333?text=図の表示エラー';">` : '';
+
+            quizContent.innerHTML = `
+                <div class="mb-4 text-sm text-gray-500">問題 ${currentQuestionIndex + 1} / ${quizData.length}</div>
+                <h2 class="text-xl font-bold mb-6 text-gray-800">${q.question}</h2>
+                ${imageHtml}
+                <div id="options-container">
+                    ${optionsHtml}
+                </div>
+                ${feedbackHtml}
+            `;
+            
+            if (!isAnswered) {
+                document.querySelectorAll('.option-button').forEach(button => {
+                    button.addEventListener('click', handleAnswer);
+                });
+            } else {
+                document.getElementById('next-button').addEventListener('click', () => {
+                    currentQuestionIndex++;
+                    renderQuestion();
+                });
+            }
+        }
+
+        function handleAnswer(event) {
+            const selectedIndex = parseInt(event.currentTarget.dataset.index);
+            answeredQuestions[currentQuestionIndex] = selectedIndex;
+            const q = quizData[currentQuestionIndex];
+
+            if (q.answerOptions[selectedIndex].isCorrect) {
+                score++;
+            }
+            renderQuestion();
+        }
+
+        function showResult() {
+            quizContent.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            const totalQuestions = quizData.length;
+            finalScore.textContent = score;
+
+            let message = '';
+            if (score === totalQuestions) {
+                message = '満点、素晴らしいです！顕微鏡の仕組みと計測方法は完璧ですね。';
+                scoreMessage.className = 'text-lg font-bold text-green-600 mb-8';
+            } else if (score >= totalQuestions * 0.8) {
+                message = '高得点です！細かい操作や計算のポイントを復習して、さらに確実な知識にしましょう。';
+                scoreMessage.className = 'text-lg font-bold text-blue-600 mb-8';
+            } else if (score >= totalQuestions * 0.5) {
+                message = 'あと一歩です。間違えた問題の解説をよく読んで、顕微鏡の各部名称や計測手順を確認しましょう。';
+                scoreMessage.className = 'text-lg font-bold text-yellow-600 mb-8';
+            } else {
+                message = '基礎知識の再確認が必要です。このテストの問題文や解説を繰り返し見て、基本からしっかり学び直しましょう。';
+                scoreMessage.className = 'text-lg font-bold text-red-600 mb-8';
+            }
+            scoreMessage.textContent = message;
+
+            // プログレスバーを100%に
+            progressFill.style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            answeredQuestions = [];
+            quizContent.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            renderQuestion();
+        }
+
+        restartButton.addEventListener('click', restartQuiz);
+
+        // 初期ロード
+        document.addEventListener('DOMContentLoaded', renderQuestion);
+
+    </script>
+
+</body>
+</html>

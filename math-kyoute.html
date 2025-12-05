@@ -44,11 +44,17 @@
             margin-bottom: 15px;
             font-weight: 500;
         }
+        .options {
+            padding-left: 0;
+            list-style: none;
+        }
         .option {
             margin-bottom: 8px;
-            padding: 5px;
-            border-radius: 3px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
         .option:hover {
             background-color: #d0e8ff;
@@ -61,17 +67,17 @@
             border-radius: 5px;
             font-size: 0.9em;
             color: #856404;
-            display: none; /* 初期状態では非表示 */
+            display: none;
         }
         .rationale {
             margin-top: 15px;
-            padding: 10px;
+            padding: 15px;
             background-color: #e2f9e7;
             border: 1px solid #c3e6cb;
             border-radius: 5px;
-            font-size: 0.9em;
+            font-size: 1.0em;
             color: #155724;
-            display: none; /* 初期状態では非表示 */
+            display: none;
         }
         .show-answer-btn, .show-hint-btn {
             background-color: #007bff;
@@ -82,7 +88,7 @@
             text-decoration: none;
             display: inline-block;
             font-size: 14px;
-            margin: 4px 2px;
+            margin: 10px 2px 4px;
             cursor: pointer;
             border-radius: 5px;
         }
@@ -107,7 +113,7 @@
     <div class="container">
         <h1>共通テスト数学I・A 対策 練習問題 (全10問)</h1>
         
-        <p>正解と思う選択肢をクリックしてチェックできます。解答やヒントはボタンで表示・非表示を切り替えられます。</p>
+        <p>選択肢をクリックして解答し、**「解答・解説」**ボタンで正解を確認してください。</p>
 
         <div class="question-block" id="q1">
             <div class="question-number">問題 1</div>
@@ -286,7 +292,7 @@
                 
                 if (isCorrect) {
                     rationaleContent += `<p class="correct-option">正解: ${text}</p>`;
-                    rationaleContent += `<p>${explanation}</p>`;
+                    rationaleContent += `<p><strong>解説:</strong> ${explanation}</p>`;
                 }
             });
             rationale.innerHTML = rationaleContent;
@@ -299,18 +305,23 @@
             }
         }
         
-        // オプション選択時のフィードバック機能（必要に応じて利用）
+        // オプション選択時のフィードバック機能
         document.querySelectorAll('.option').forEach(option => {
             option.addEventListener('click', function() {
                 const block = this.closest('.question-block');
                 const options = block.querySelectorAll('.option');
+                
+                // 他の選択肢の色をリセット
                 options.forEach(opt => {
-                    opt.style.backgroundColor = '';
+                    opt.style.backgroundColor = '#ffffff';
                     opt.style.color = '#333';
+                    opt.style.border = '1px solid #ccc';
                 });
                 
-                this.style.backgroundColor = this.getAttribute('data-correct') === 'true' ? '#c3e6cb' : '#f8d7da';
+                // 選択したオプションにフィードバックの色を適用
+                this.style.backgroundColor = this.getAttribute('data-correct') === 'true' ? '#e2f9e7' : '#f8d7da';
                 this.style.color = this.getAttribute('data-correct') === 'true' ? '#155724' : '#721c24';
+                this.style.border = this.getAttribute('data-correct') === 'true' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
             });
         });
 

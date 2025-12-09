@@ -1,446 +1,393 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>細胞分画法講義スライド</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-            background-color: #2c3e50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
-        }
-        #slide-container {
-            width: 960px;
-            height: 720px; /* 4:3 aspect ratio */
-            background-color: white;
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
-        }
-        .slide {
-            display: none;
-            flex-direction: column;
-            padding: 40px;
-            height: 100%;
-            box-sizing: border-box;
-        }
-        .slide.active {
-            display: flex;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        h1 {
-            color: #27ae60;
-            border-bottom: 3px solid #27ae60;
-            padding-bottom: 10px;
-            font-size: 36px;
-            margin-bottom: 30px;
-        }
-        h2 {
-            font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        .content {
-            flex-grow: 1;
-            font-size: 24px;
-            line-height: 1.6;
-        }
-        .content ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .content li {
-            margin-bottom: 15px;
-            padding-left: 1.5em;
-            text-indent: -1.5em;
-        }
-        .content li::before {
-            content: "✔";
-            color: #27ae60;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        .highlight {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        .box {
-            background-color: #ecf0f1;
-            border-left: 5px solid #3498db;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        .box-title {
-            font-weight: bold;
-            color: #2980b9;
-            display: block;
-            margin-bottom: 10px;
-        }
-        .script-box {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            font-size: 16px;
-            border-top: 1px solid #ffeeba;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .script-label {
-            font-weight: bold;
-            font-size: 12px;
-            text-transform: uppercase;
-            color: #999;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .controls {
-            position: absolute;
-            bottom: 130px;
-            right: 20px;
-            z-index: 100;
-        }
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-        button:hover {
-            background-color: #2ecc71;
-        }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-        /* Visual elements */
-        .icon-large {
-            font-size: 60px;
-            text-align: center;
-            display: block;
-            margin: 10px 0;
-        }
-        .step-chart {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-        .step {
-            background: #e8f8f5;
-            border: 2px solid #27ae60;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-            width: 22%;
-        }
-        .arrow {
-            font-size: 30px;
-            color: #bdc3c7;
-        }
-        .answer {
-            display: none;
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        .show-answer-btn {
-            background-color: #3498db;
-            font-size: 16px;
-            padding: 5px 10px;
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, BookOpen, AlertTriangle, CheckCircle, Info } from 'lucide-react';
 
-<div id="slide-container">
-    <div class="controls">
-        <button id="prevBtn" onclick="changeSlide(-1)">◀ 前へ</button>
-        <button id="nextBtn" onclick="changeSlide(1)">次へ ▶</button>
+const SlideDeck = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showAnswer, setShowAnswer] = useState({ 1: false, 2: false, 3: false });
+
+  const totalSlides = 9;
+
+  const nextSlide = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide(curr => curr + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(curr => curr - 1);
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentSlide]);
+
+  const toggleAnswer = (num) => {
+    setShowAnswer(prev => ({ ...prev, [num]: !prev[num] }));
+  };
+
+  // Slide Content Components
+  const Slide1 = () => (
+    <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
+      <div className="bg-blue-100 text-blue-800 px-6 py-2 rounded-full font-bold text-sm tracking-widest">
+        高校生物 / 大学受験対策
+      </div>
+      <h1 className="text-5xl font-black text-slate-800 leading-tight">
+        細胞をバラバラにして<br />正体暴く！<br />
+        <span className="text-blue-600">「細胞分画法」</span>
+      </h1>
+      <p className="text-2xl text-slate-500 font-medium">
+        ～ もう迷わない！沈殿の順番と3つの必須条件 ～
+      </p>
+      <div className="mt-12 text-lg text-slate-400">
+        講師：日本一の生物講師ブラザーズ
+      </div>
     </div>
+  );
 
-    <!-- Slide 1 -->
-    <div class="slide active">
-        <div style="text-align: center; padding-top: 100px;">
-            <h1 style="border:none; font-size: 48px;">細胞をバラバラにして正体暴く！<br>「細胞分画法」</h1>
-            <h2 style="font-size: 32px; color: #7f8c8d;">～ もう迷わない！沈殿の順番と3つの必須条件 ～</h2>
-            <div style="margin-top: 50px; font-size: 24px;">
-                講師：日本一の生物講師ブラザーズ
-            </div>
+  const Slide2 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        導入：なぜ「分画」するの？
+      </h2>
+      <div className="flex justify-around items-center mb-8">
+        <div className="text-center p-6 bg-gray-100 rounded-xl w-1/3">
+          <div className="text-6xl mb-4">🍲</div>
+          <p className="font-bold text-lg">細胞の中は<br/>「闇鍋状態」</p>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            さあ、今日もやっていきましょう！今日は細胞の中身をバラバラにして取り出す「細胞分画法」。手順や条件の理由記述、沈殿順序など入試の鉄板です。苦手意識を持たず、イメージで攻略しましょう！
+        <div className="text-4xl text-slate-300">➡</div>
+        <div className="text-center p-6 bg-blue-50 border-2 border-blue-200 rounded-xl w-1/3">
+          <div className="text-6xl mb-4">🧪</div>
+          <p className="font-bold text-lg text-blue-800">特定の働きを知るには<br/>「それだけ」を取り出す！</p>
         </div>
+      </div>
+      <div className="bg-yellow-50 border-l-8 border-yellow-400 p-6 rounded shadow-sm">
+        <h3 className="font-bold text-xl text-yellow-800 mb-2">ここがポイント！</h3>
+        <p className="text-lg">
+          武器は<span className="font-bold text-red-500 text-2xl mx-2">「遠心力」</span>と<span className="font-bold text-red-500 text-2xl mx-2">「重さ（大きさ）」</span>だ！<br/>
+          重いものほど、弱い力で早く沈むぞ。
+        </p>
+      </div>
     </div>
+  );
 
-    <!-- Slide 2 -->
-    <div class="slide">
-        <h1>導入：なぜ「分画」するの？</h1>
-        <div class="content">
-            <div style="display:flex; justify-content: space-around; align-items: center;">
-                <div style="text-align:center;">
-                    <span class="icon-large">🍲</span>
-                    <p>細胞の中は<br><strong>「闇鍋状態」</strong></p>
-                </div>
-                <div class="arrow">➡</div>
-                <div style="text-align:center;">
-                    <span class="icon-large">🧪</span>
-                    <p>特定の働きを調べるには<br><strong>「それだけ」</strong>を取り出す！</p>
-                </div>
-            </div>
-            <div class="box">
-                <span class="box-title">ここがポイント！</span>
-                武器は<strong>「遠心力」</strong>と<strong>「重さ（大きさ）」</strong>だ！<br>
-                重いものほど、弱い力で早く沈むぞ。
-            </div>
+  const Slide3 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-4 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        【最重要】実験前の「3つの誓い」
+      </h2>
+      <p className="text-slate-500 mb-6 text-lg">細胞を壊すときの「保存液」の条件（記述問題の鉄板！）</p>
+      
+      <div className="space-y-6">
+        <div className="flex items-start bg-white p-4 rounded-lg shadow border border-slate-100">
+          <div className="text-4xl mr-4">🧊</div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-800">1. 低温（冷却）</h3>
+            <p className="text-slate-600 mt-1">理由：酵素の働きを抑え、細胞小器官が<span className="font-bold text-red-500">自己消化</span>されるのを防ぐため。</p>
+          </div>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            みんな、サラダの中から「トマトだけ」の味を調べたい時どうする？トマトだけ取り出すよね？細胞も同じ。中身をバラバラにして、欲しいパーツだけ取り出す技術、それが細胞分画法だ！
+        
+        <div className="flex items-start bg-white p-4 rounded-lg shadow border border-slate-100">
+          <div className="text-4xl mr-4">⚖️</div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-800">2. 等張（等張液）</h3>
+            <p className="text-slate-600 mt-1">理由：吸水による<span className="font-bold text-red-500">破裂</span>や、脱水による<span className="font-bold text-red-500">変形（収縮）</span>を防ぐため。</p>
+          </div>
         </div>
+
+        <div className="flex items-start bg-white p-4 rounded-lg shadow border border-slate-100">
+          <div className="text-4xl mr-4">🧪</div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-800">3. 中性（緩衝液）</h3>
+            <p className="text-slate-600 mt-1">理由：pHの変化による<span className="font-bold text-red-500">タンパク質の変性</span>を防ぐため。</p>
+          </div>
+        </div>
+      </div>
     </div>
+  );
 
-    <!-- Slide 3 -->
-    <div class="slide">
-        <h1>最重要！実験前の「3つの誓い」</h1>
-        <div class="content">
-            <p>細胞を壊すときの「保存液」の条件（記述問題の鉄板！）</p>
-            <div class="box">
-                <ul>
-                    <li><span style="font-size:1.2em;">🧊 <strong>低温（冷却）</strong></span><br>
-                        理由：酵素の働きを抑え、細胞小器官が<span class="highlight">自己消化</span>されるのを防ぐため。</li>
-                    <li><span style="font-size:1.2em;">⚖️ <strong>等張（等張液）</strong></span><br>
-                        理由：吸水による<span class="highlight">破裂</span>や、脱水による<span class="highlight">変形（収縮）</span>を防ぐため。</li>
-                    <li><span style="font-size:1.2em;">🧪 <strong>中性（緩衝液）</strong></span><br>
-                        理由：pHの変化による<span class="highlight">タンパク質の変性</span>を防ぐため。</li>
-                </ul>
-            </div>
+  const Slide4 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        手順①：ホモジェナイザーで破砕
+      </h2>
+      <div className="flex items-center gap-8">
+        <div className="w-1/3 flex justify-center">
+           <div className="text-9xl">🔨💥</div>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            ここは入試で死ぬほど書かされます。細胞を取り出す前に、細胞小器官が壊れたら意味がないよね？だから『冷やして・同じ濃さで・pHを変えない』。この3点セットは呪文のように覚えよう！
+        <div className="w-2/3 space-y-6">
+          <ul className="list-disc pl-6 space-y-4 text-xl text-slate-700">
+            <li>細胞壁（植物の場合）などの硬い構造を壊す。</li>
+            <li>細胞膜を破り、中身をドロドロのスープ状（<span className="font-bold text-blue-600">細胞破砕液</span>）にする。</li>
+            <li className="text-red-500 font-bold">※やりすぎると細胞小器官（ミトコンドリアや核など）まで壊れるので注意！</li>
+          </ul>
+          <div className="bg-gray-100 p-4 rounded-lg text-center font-bold text-slate-600">
+            細胞を「すりつぶす」工程 ＝ <span className="text-2xl text-blue-600">「ホモジェナイズ」</span>
+          </div>
         </div>
+      </div>
     </div>
+  );
 
-    <!-- Slide 4 -->
-    <div class="slide">
-        <h1>手順①：ホモジェナイザーで破砕</h1>
-        <div class="content">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span class="icon-large">🔨💥</span>
-            </div>
-            <ul>
-                <li>細胞壁（植物の場合）などの硬い構造を壊す。</li>
-                <li>細胞膜を破り、中身をドロドロのスープ状（<strong>細胞破砕液</strong>）にする。</li>
-                <li>※やりすぎると細胞小器官（ミトコンドリアや核など）まで壊れるので注意！</li>
-            </ul>
-            <div class="box" style="text-align: center;">
-                まずは細胞を「すりつぶす」工程！<br>
-                これを<strong>「ホモジェナイズ」</strong>と言うぞ。
-            </div>
+  const Slide5 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-2 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        手順②：遠心分離の法則
+      </h2>
+      <p className="text-center text-red-500 font-bold text-2xl mb-8">重いものから先に沈殿する！</p>
+      
+      <div className="flex justify-center gap-8">
+        <div className="w-1/2 bg-blue-50 p-6 rounded-xl border-2 border-blue-200 flex flex-col items-center">
+          <h3 className="text-xl font-bold text-blue-800 mb-4">低速・短時間</h3>
+          <div className="text-8xl mb-4">🐘</div>
+          <p className="text-center font-bold text-slate-700">
+            重くて大きいものが沈む<br/>
+            （例：核）
+          </p>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            まずは細胞をすり潰します。これをホモジェナイズと言います。イメージはミキサーだけど、優しくね。中のミトコンドリアまで壊しちゃったら元も子もないからね。
+        
+        <div className="w-1/2 bg-green-50 p-6 rounded-xl border-2 border-green-200 flex flex-col items-center">
+          <h3 className="text-xl font-bold text-green-800 mb-4">高速・長時間</h3>
+          <div className="text-8xl mb-4">🐇</div>
+          <p className="text-center font-bold text-slate-700">
+            軽くて小さいものが沈む<br/>
+            （例：リボソーム）
+          </p>
         </div>
+      </div>
+      
+      <p className="text-center mt-8 text-slate-500 font-bold">
+        【サイズ感のイメージ】 象 ＞ 馬 ＞ ウサギ
+      </p>
     </div>
+  );
 
-    <!-- Slide 5 -->
-    <div class="slide">
-        <h1>手順②：遠心分離の法則（ここが核！）</h1>
-        <div class="content">
-            <h2 style="text-align: center; color: #e74c3c;">重いものから先に落ちる！</h2>
-            <div style="display: flex; justify-content: space-around; margin-top: 30px;">
-                <div style="width: 45%; background: #fff; padding: 15px; border: 2px solid #333; border-radius: 8px;">
-                    <h3>低速・短時間</h3>
-                    <p style="font-size: 50px; text-align: center;">🐘</p>
-                    <p style="text-align: center;"><strong>重くて大きいもの</strong>が沈む<br>（例：核）</p>
-                </div>
-                <div style="width: 45%; background: #fff; padding: 15px; border: 2px solid #333; border-radius: 8px;">
-                    <h3>高速・長時間</h3>
-                    <p style="font-size: 50px; text-align: center;">🐇</p>
-                    <p style="text-align: center;"><strong>軽くて小さいもの</strong>が沈む<br>（例：リボソーム）</p>
-                </div>
-            </div>
+  const Slide6 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        沈殿の順番（完全攻略チャート）
+      </h2>
+      
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <div className="w-24 font-bold text-slate-500">Step 1</div>
+          <div className="flex-1 bg-slate-100 p-4 rounded-r-lg border-l-8 border-blue-500 flex justify-between items-center">
+            <span>低速 (1000g)</span>
+            <span className="font-bold text-2xl text-blue-700">核</span>
+          </div>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            バケツに水と石と砂を入れてグルグル回すと、重い石から先に外側に溜まるよね？あれと同じ。『デカくて重い奴から先に沈殿する』。これだけ分かれば勝ちだ！象＞馬＞ウサギのイメージで！
+        <div className="flex justify-center text-slate-300 text-2xl">⬇ 上澄みをさらに遠心</div>
+        
+        <div className="flex items-center">
+          <div className="w-24 font-bold text-slate-500">Step 2</div>
+          <div className="flex-1 bg-slate-100 p-4 rounded-r-lg border-l-8 border-green-500 flex justify-between items-center">
+            <span>中速 (3000g)</span>
+            <span className="font-bold text-2xl text-green-700">葉緑体・ミトコンドリア</span>
+          </div>
         </div>
+        <div className="flex justify-center text-slate-300 text-2xl">⬇ 上澄みをさらに遠心</div>
+
+        <div className="flex items-center">
+          <div className="w-24 font-bold text-slate-500">Step 3</div>
+          <div className="flex-1 bg-slate-100 p-4 rounded-r-lg border-l-8 border-yellow-500 flex justify-between items-center">
+            <span>高速 (100000g)</span>
+            <span className="font-bold text-2xl text-yellow-600">リボソーム・ミクロソーム</span>
+          </div>
+        </div>
+        
+        <div className="mt-4 text-center p-4 bg-gray-50 rounded-lg">
+          残った上澄み液 ＝ <span className="font-bold text-xl text-slate-800">細胞質基質</span>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-12 right-12 bg-white px-6 py-3 rounded-full shadow-lg border-2 border-red-400 transform -rotate-3">
+        <span className="text-red-500 font-black text-xl">覚え方：「カク・ヨウ・ミ・リ」</span>
+      </div>
     </div>
+  );
 
-    <!-- Slide 6 -->
-    <div class="slide">
-        <h1>沈殿の順番（完全攻略チャート）</h1>
-        <div class="content">
-            <div class="step-chart">
-                <div class="step">
-                    <strong>Step 1</strong><br>低速<br>▼<br><span class="highlight">核</span>
-                </div>
-                <div class="arrow">➡</div>
-                <div class="step">
-                    <strong>Step 2</strong><br>中速<br>▼<br><span class="highlight">葉緑体<br>ミトコンドリア</span>
-                </div>
-                <div class="arrow">➡</div>
-                <div class="step">
-                    <strong>Step 3</strong><br>高速<br>▼<br><span class="highlight">リボソーム<br>ミクロソーム</span>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-                最後の上澄み液 ＝ <strong>細胞質基質</strong>
-            </div>
-            <div class="box" style="margin-top: 30px;">
-                <span class="box-title">覚え方</span>
-                <strong>「核・葉・ミ・リ」</strong>（カク・ヨウ・ミ・リ）<br>
-                ※植物細胞の場合。動物なら「葉」を抜かすだけ！
-            </div>
-        </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            『核・葉・ミ・リ』（カク・ヨウ・ミ・リ）の順だ！核が一番デカい。次は葉緑体とミトコンドリア。最後はリボソーム。残った汁が細胞質基質。この順番は絶対だぞ！
-        </div>
-    </div>
-
-    <!-- Slide 7 -->
-    <div class="slide">
-        <h1>要注意！「ミクロソーム」って何？</h1>
-        <div class="content">
-            <p>教科書や模試で出てくる謎の存在「ミクロソーム」。</p>
-            <ul>
-                <li>細胞内には<strong>元々存在しない</strong>。</li>
-                <li>細胞を破砕した時に、<span class="highlight">小胞体</span>や<span class="highlight">ゴルジ体</span>などの膜構造がちぎれてできた<strong>小胞の集まり</strong>のこと。</li>
-                <li>※リボソームと一緒に（またはその直前に）沈殿することが多い。</li>
-            </ul>
-            <div class="box">
-                「ミクロソーム」 ＝ <strong>「壊れた小胞体たちの残骸」</strong><br>
-                と覚えておけばOK！
-            </div>
-        </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            教科書の図には載ってないのに、分画法の時だけ出てくる謎の『ミクロソーム』。これは『壊れた小胞体たちの残骸』だと思っておけばOK。これを知ってると偏差値が上がるよ。
-        </div>
-    </div>
-
-    <!-- Slide 8 -->
-    <div class="slide">
-        <h1>確認問題（アウトプット）</h1>
-        <div class="content">
-            <ol>
-                <li>
-                    ホモジェナイズする時、氷冷するのはなぜ？
-                    <button class="show-answer-btn" onclick="toggleAnswer('ans1')">答え</button>
-                    <div id="ans1" class="answer">A. 酵素による自己消化を防ぐため。</div>
-                </li>
-                <li>
-                    ミトコンドリアとリボソーム、先に沈殿するのはどっち？
-                    <button class="show-answer-btn" onclick="toggleAnswer('ans2')">答え</button>
-                    <div id="ans2" class="answer">A. ミトコンドリア（サイズが大きいから）。</div>
-                </li>
-                <li>
-                    最後の上澄み液で起こっている化学反応（代謝）は何？
-                    <button class="show-answer-btn" onclick="toggleAnswer('ans3')">答え</button>
-                    <div id="ans3" class="answer">A. 解糖系（細胞質基質だから）。</div>
-                </li>
-            </ol>
-        </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            さあ、理解できたかチェックするぞ。答えのボタンを押す前に、自分の頭で考えてみてくれ！（生徒に問いかける時間を作る）
-        </div>
-    </div>
-
-    <!-- Slide 9 -->
-    <div class="slide">
-        <h1>まとめ：今日のゴール</h1>
-        <div class="content">
-            <div class="box">
-                <span class="box-title">今日、持ち帰るべきこと</span>
-                <ul>
-                    <li><span class="highlight">条件3つ</span>（低温・等張・緩衝液）を理由とともに言える！</li>
-                    <li><span class="highlight">沈殿順</span>（核 ➡ 葉・ミト ➡ リボ・小胞 ➡ 細胞質基質）が言える！</li>
-                </ul>
-            </div>
-            <p style="text-align: center; font-size: 28px; margin-top: 40px;">
-                <strong>細胞分画法を制する者は、<br>細胞分野を制する！</strong>
+  const Slide7 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        <span className="text-red-500">要注意！</span> ミクロソームって何？
+      </h2>
+      
+      <div className="bg-white p-8 rounded-xl shadow-md border border-slate-200">
+        <div className="flex items-start gap-6">
+          <div className="text-5xl text-yellow-500">
+            <Info />
+          </div>
+          <div className="space-y-6">
+            <p className="text-xl text-slate-800">
+              教科書や模試でいきなり出てくる謎の存在「ミクロソーム」。<br/>
+              実はこれ、<span className="font-bold underline decoration-red-400 decoration-4">細胞内には元々存在しません！</span>
             </p>
+            
+            <ul className="list-disc pl-6 space-y-2 text-lg text-slate-600">
+              <li>細胞を破砕した時にできる「断片」。</li>
+              <li>主に<strong>小胞体</strong>や<strong>ゴルジ体</strong>などの膜構造がちぎれてできた小胞の集まり。</li>
+              <li>リボソームと一緒に（またはその直前に）沈殿することが多い。</li>
+            </ul>
+            
+            <div className="bg-blue-50 p-4 rounded text-center text-xl font-bold text-blue-800 mt-4">
+              結論：「壊れた小胞体たちの残骸」と覚えておけばOK！
+            </div>
+          </div>
         </div>
-        <div class="script-box">
-            <span class="script-label">講師用メモ</span>
-            細胞分画法は、細胞の構造と大きさを理解しているかのリトマス試験紙です。ここができれば細胞分野は怖いものなし！g（重力加速度）の数字は覚えなくていい、大事なのは「大小関係」と「順番」だ！お疲れ様でした！
-        </div>
+      </div>
     </div>
+  );
 
-</div>
+  const Slide8 = () => (
+    <div className="flex flex-col h-full justify-center px-12">
+      <h2 className="text-3xl font-bold text-blue-700 mb-8 border-b-4 border-blue-200 pb-2 inline-block w-full">
+        確認問題（アウトプット）
+      </h2>
+      
+      <div className="space-y-6">
+        {/* Q1 */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+          <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleAnswer(1)}>
+            <h3 className="text-lg font-bold text-slate-800">Q1. ホモジェナイズする時、氷冷するのはなぜ？</h3>
+            <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">答え</button>
+          </div>
+          {showAnswer[1] && (
+            <div className="mt-3 pt-3 border-t border-slate-100 text-green-700 font-bold animate-fade-in">
+              A. 酵素による自己消化を防ぐため。
+            </div>
+          )}
+        </div>
 
-<script>
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+        {/* Q2 */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+          <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleAnswer(2)}>
+            <h3 className="text-lg font-bold text-slate-800">Q2. ミトコンドリアとリボソーム、先に沈殿するのはどっち？</h3>
+            <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">答え</button>
+          </div>
+          {showAnswer[2] && (
+            <div className="mt-3 pt-3 border-t border-slate-100 text-green-700 font-bold animate-fade-in">
+              A. ミトコンドリア（サイズが大きいから）。
+            </div>
+          )}
+        </div>
 
-    function showSlide(n) {
-        slides.forEach(slide => slide.classList.remove('active'));
-        slides[n].classList.add('active');
+        {/* Q3 */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+          <div className="flex justify-between items-center cursor-pointer" onClick={() => toggleAnswer(3)}>
+            <h3 className="text-lg font-bold text-slate-800">Q3. 最後の上澄み液で起こっている化学反応（代謝）は何？</h3>
+            <button className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">答え</button>
+          </div>
+          {showAnswer[3] && (
+            <div className="mt-3 pt-3 border-t border-slate-100 text-green-700 font-bold animate-fade-in">
+              A. 解糖系（細胞質基質だから）。
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
-        // Button state
-        prevBtn.disabled = n === 0;
-        nextBtn.disabled = n === slides.length - 1;
-    }
+  const Slide9 = () => (
+    <div className="flex flex-col h-full justify-center items-center px-12 text-center">
+      <h2 className="text-4xl font-black text-slate-800 mb-12">
+        まとめ：今日のゴール
+      </h2>
+      
+      <div className="grid grid-cols-1 gap-6 w-full max-w-2xl mb-12">
+        <div className="bg-white p-6 rounded-xl shadow-md border-l-8 border-blue-500 flex items-center text-left">
+          <CheckCircle className="text-blue-500 w-8 h-8 mr-4 flex-shrink-0" />
+          <div className="text-xl font-bold text-slate-700">
+            <span className="text-blue-600">条件3つ</span>（低温・等張・緩衝液）を理由とともに言える！
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-xl shadow-md border-l-8 border-green-500 flex items-center text-left">
+          <CheckCircle className="text-green-500 w-8 h-8 mr-4 flex-shrink-0" />
+          <div className="text-xl font-bold text-slate-700">
+            <span className="text-green-600">沈殿順</span>（核 ➡ 葉・ミト ➡ リボ ➡ 細胞質基質）が言える！
+          </div>
+        </div>
+      </div>
 
-    function changeSlide(n) {
-        currentSlide += n;
-        if (currentSlide < 0) currentSlide = 0;
-        if (currentSlide >= slides.length) currentSlide = slides.length - 1;
-        showSlide(currentSlide);
-    }
+      <div className="bg-yellow-400 text-white font-black text-2xl py-4 px-12 rounded-full shadow-lg transform rotate-2">
+        細胞分画法を制する者は、細胞分野を制する！
+      </div>
+      <p className="mt-8 text-slate-400 font-bold">お疲れ様でした！</p>
+    </div>
+  );
 
-    function toggleAnswer(id) {
-        const element = document.getElementById(id);
-        if (element.style.display === "block") {
-            element.style.display = "none";
-        } else {
-            element.style.display = "block";
-        }
-    }
+  const slides = [Slide1, Slide2, Slide3, Slide4, Slide5, Slide6, Slide7, Slide8, Slide9];
+  const CurrentSlideComponent = slides[currentSlide];
 
-    // Initialize
-    showSlide(0);
+  // Lecturer Notes Content
+  const lecturerNotes = [
+    "さあ、今日もやっていきましょう！今日は細胞の中身をバラバラにして取り出す『細胞分画法』。手順や条件の理由記述、沈殿順序など入試の鉄板です。苦手意識を持たず、イメージで攻略しましょう！",
+    "みんな、サラダの中から『トマトだけ』の味を調べたい時どうする？トマトだけ取り出すよね？細胞も同じ。中身をバラバラにして、欲しいパーツだけ取り出す技術、それが細胞分画法だ！",
+    "ここは入試で死ぬほど書かされます。細胞を取り出す前に、細胞小器官が壊れたら意味がないよね？だから『冷やして・同じ濃さで・pHを変えない』。この3点セットは呪文のように覚えよう！",
+    "まずは細胞をすり潰します。これをホモジェナイズと言います。イメージはミキサーだけど、優しくね。中のミトコンドリアまで壊しちゃったら元も子もないからね。",
+    "バケツに水と石と砂を入れてグルグル回すと、重い石から先に外側に溜まるよね？あれと同じ。『デカくて重い奴から先に沈殿する』。これだけ分かれば勝ちだ！象＞馬＞ウサギのイメージで！",
+    "『核・葉・ミ・リ』（カク・ヨウ・ミ・リ）の順だ！核が一番デカい。次は葉緑体とミトコンドリア。最後はリボソーム。残った汁が細胞質基質。この順番は絶対だぞ！",
+    "教科書の図には載ってないのに、分画法の時だけ出てくる謎の『ミクロソーム』。これは『壊れた小胞体たちの残骸』だと思っておけばOK。これを知ってると偏差値が上がるよ。",
+    "さあ、理解できたかチェックするぞ。答えのボタンを押す前に、自分の頭で考えてみてくれ！特に3番は、細胞小器官の働きを理解していないと解けない良問だ。",
+    "細胞分画法は、細胞の構造と大きさを理解しているかのリトマス試験紙です。ここができれば細胞分野は怖いものなし！g（重力加速度）の数字は覚えなくていい、大事なのは『大小関係』と『順番』だ！お疲れ様でした！"
+  ];
 
-    // Keyboard navigation
-    document.addEventListener('keydown', function(event) {
-        if(event.key === "ArrowRight") {
-            changeSlide(1);
-        } else if(event.key === "ArrowLeft") {
-            changeSlide(-1);
-        }
-    });
-</script>
+  return (
+    <div className="bg-slate-200 min-h-screen p-8 flex flex-col items-center">
+      {/* Slide Screen */}
+      <div className="bg-white w-full max-w-[1024px] aspect-[4/3] rounded-xl shadow-2xl overflow-hidden relative flex flex-col">
+        {/* Main Content Area */}
+        <div className="flex-1 p-8 bg-slate-50">
+          <CurrentSlideComponent />
+        </div>
 
-</body>
-</html>
+        {/* Lecturer Notes Area (Fixed at bottom of slide) */}
+        <div className="bg-yellow-50 border-t border-yellow-200 p-4 h-24 overflow-y-auto">
+          <div className="flex items-center gap-2 mb-1">
+            <BookOpen size={16} className="text-yellow-700" />
+            <span className="text-xs font-bold text-yellow-700 uppercase">講師用メモ（カンペ）</span>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed">
+            {lecturerNotes[currentSlide]}
+          </p>
+        </div>
+      </div>
+
+      {/* Control Panel */}
+      <div className="mt-6 flex items-center gap-6 bg-white px-8 py-3 rounded-full shadow-lg">
+        <button 
+          onClick={prevSlide} 
+          disabled={currentSlide === 0}
+          className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        >
+          <ChevronLeft size={32} className="text-blue-600" />
+        </button>
+        
+        <div className="text-lg font-bold text-slate-700 w-32 text-center">
+          {currentSlide + 1} / {totalSlides}
+        </div>
+
+        <button 
+          onClick={nextSlide} 
+          disabled={currentSlide === totalSlides - 1}
+          className="p-2 rounded-full hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+        >
+          <ChevronRight size={32} className="text-blue-600" />
+        </button>
+      </div>
+      
+      <p className="mt-4 text-slate-500 text-sm">
+        ※キーボードの「←」「→」キーでも操作できます
+      </p>
+    </div>
+  );
+};
+
+export default SlideDeck;

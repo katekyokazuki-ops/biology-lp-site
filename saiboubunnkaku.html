@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【確認テスト】細胞分画法 - 脱・暗記の生物講義</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .question-block {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #e8eeff;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+            display: none;
+            font-size: 15px;
+            color: #555;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .explanation strong {
+            color: #4caf50;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 40px auto;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .result p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .score-emoji {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+        
+        .retry-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: white;
+            color: #764ba2;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+            
+            .option {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>【確認テスト】細胞分画法</h1>
+            <p>脱・暗記の生物講義</p>
+            <p>📊 全10問 | ⏱️ 所要時間: 約10分 | 💯 各10点</p>
+        </div>
+        
+        <div class="content">
+            <div id="questions-container"></div>
+            
+            <button class="submit-btn" id="submit-btn" onclick="submitTest()">採点する</button>
+            
+            <div class="result" id="result"></div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 脱・暗記の生物講義 | 原理から理解する生物学習</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "細胞分画法の定義として最も適切なものはどれか。",
+                options: [
+                    "細胞を観察しやすいように染色して、顕微鏡で観察する方法",
+                    "細胞を壊して、細胞小器官を大きさや密度の違いで分ける方法",
+                    "細胞を培養して増やし、細胞数を数える方法",
+                    "細胞のDNAを抽出して、遺伝子を調べる方法"
+                ],
+                correct: 1,
+                explanation: "細胞分画法は「細胞を壊して、細胞小器官を大きさや密度の違いで分ける方法」です。目的は小器官ごとの構造や機能を個別に調べることです。"
+            },
+            {
+                id: 2,
+                question: "動画で細胞分画法の原理を説明するために使われた日常の例はどれか。",
+                options: [
+                    "冷蔵庫で食品を冷やす仕組み",
+                    "洗濯機の脱水の仕組み",
+                    "掃除機でゴミを吸い取る仕組み",
+                    "電子レンジで食品を温める仕組み"
+                ],
+                correct: 1,
+                explanation: "動画では「洗濯機の脱水」を例に、重い衣類が外側に押し付けられ、軽い水が外へ飛んでいく仕組みで説明されていました。遠心分離も同じ原理です。"
+            },
+            {
+                id: 3,
+                question: "ホモジェナイザーを使った細胞破砕のねらいとして正しいものはどれか。",
+                options: [
+                    "細胞膜も細胞小器官の膜も全て完全に壊す",
+                    "細胞膜は壊すが、細胞小器官の膜は壊さない",
+                    "細胞膜は壊さず、細胞小器官の膜だけを壊す",
+                    "細胞膜も細胞小器官の膜も壊さずに観察する"
+                ],
+                correct: 1,
+                explanation: "細胞破砕の重要なポイントは「細胞膜は壊すが、細胞小器官の膜は壊さない」こと。小器官の形と機能を保ったまま取り出します。"
+            },
+            {
+                id: 4,
+                question: "細胞破砕の際に氷水で冷却する理由として、誤っているものはどれか。",
+                options: [
+                    "摩擦熱によるタンパク質の変性を防ぐため",
+                    "リソソームの加水分解酵素の働きを抑えるため",
+                    "細胞小器官を凍らせて壊れにくくするため",
+                    "温度上昇による小器官の機能低下を防ぐため"
+                ],
+                correct: 2,
+                explanation: "冷却する理由は、①摩擦熱によるタンパク質変性を防ぐ、②リソソームの酵素の働きを抑える、の2つです。凍らせるためではありません。"
+            },
+            {
+                id: 5,
+                question: "細胞破砕の際に等張スクロース溶液を使う最も重要な理由はどれか。",
+                options: [
+                    "細胞小器官に栄養を与えるため",
+                    "浸透圧差で細胞小器官が破裂・収縮しないようにするため",
+                    "細胞小器官を染色して見えやすくするため",
+                    "細胞小器官の重さを重くして沈みやすくするため"
+                ],
+                correct: 1,
+                explanation: "等張液を使う理由は、浸透圧の差で細胞小器官が破裂したり収縮したりしないようにするためです。「低温・等張・緩衝」は三種の神器!"
+            },
+            {
+                id: 6,
+                question: "細胞破砕の際に緩衝液を使う理由はどれか。",
+                options: [
+                    "細胞小器官を溶かして液体にするため",
+                    "細胞小器官の動きを速くするため",
+                    "pH変動でタンパク質が変性しないようにするため",
+                    "細胞小器官の色を変えて区別しやすくするため"
+                ],
+                correct: 2,
+                explanation: "緩衝液はpH変動でタンパク質が変性しないようにするためです。細胞を壊すと中からイオンが出てpHが変わる可能性があるため、pH安定化が必要です。"
+            },
+            {
+                id: 7,
+                question: "遠心分離において、最初(低速)の段階で沈殿するのはどのような性質の粒子か。",
+                options: [
+                    "小さくて軽い粒子",
+                    "大きくて重い粒子",
+                    "色が濃い粒子",
+                    "水に溶けやすい粒子"
+                ],
+                correct: 1,
+                explanation: "遠心力で「重い・大きい・密度が高い粒子ほど速く沈む」という物理法則を利用しています。低速では最も大きくて重いものが沈みます。"
+            },
+            {
+                id: 8,
+                question: "遠心分離の第1段階(低速:1,000×g)で沈殿するものとして正しいものはどれか。",
+                options: [
+                    "リボソーム、ウイルス",
+                    "ミトコンドリア、リソソーム",
+                    "核、細胞骨格、未破砕細胞",
+                    "小胞体(ミクロソーム)"
+                ],
+                correct: 2,
+                explanation: "第1段階(低速:1,000×g)では、最も大きくて重い「核、細胞骨格、未破砕細胞」が沈殿します。"
+            },
+            {
+                id: 9,
+                question: "細胞小器官の大きさの順序として正しいものはどれか。(大きい順)",
+                options: [
+                    "核 > 葉緑体 > ミトコンドリア > リボソーム",
+                    "リボソーム > ミトコンドリア > 葉緑体 > 核",
+                    "ミトコンドリア > 核 > 葉緑体 > リボソーム",
+                    "葉緑体 > リボソーム > 核 > ミトコンドリア"
+                ],
+                correct: 0,
+                explanation: "大きさの順序は「核(3-10μm) > 葉緑体(5μm) > ミトコンドリア(0.75-3.0μm) > リボソーム(0.02μm)」です。大きい順に低速で沈みます。"
+            },
+            {
+                id: 10,
+                question: "この動画の最も重要なメッセージはどれか。",
+                options: [
+                    "細胞小器官の名前を全て暗記することが大切",
+                    "遠心分離の回転速度の数値を正確に覚えることが大切",
+                    "原理を理解すれば、分離の順番は自分で導き出せる",
+                    "実験器具の使い方を完璧にマスターすることが大切"
+                ],
+                correct: 2,
+                explanation: "動画の最も重要なメッセージは「原理から理解すれば、順番を暗記しなくても自分で導き出せる」ということです。「脱・暗記」がテーマです!"
+            }
+        ];
+
+        let userAnswers = {};
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-block';
+                questionDiv.id = `question-${q.id}`;
+                
+                let optionsHTML = '';
+                q.options.forEach((option, optIndex) => {
+                    optionsHTML += `
+                        <div class="option" onclick="selectOption(${q.id}, ${optIndex})">
+                            <strong>${String.fromCharCode(65 + optIndex)}.</strong> ${option}
+                        </div>
+                    `;
+                });
+                
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${q.id}</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${q.id}">
+                        ${optionsHTML}
+                    </div>
+                    <div class="explanation" id="explanation-${q.id}">
+                        <strong>✓ 正解: ${String.fromCharCode(65 + q.correct)}</strong><br>
+                        ${q.explanation}
+                    </div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectOption(questionId, optionIndex) {
+            // すでに採点済みの場合は選択不可
+            if (document.getElementById('result').classList.contains('show')) {
+                return;
+            }
+            
+            userAnswers[questionId] = optionIndex;
+            
+            const optionsContainer = document.getElementById(`options-${questionId}`);
+            const options = optionsContainer.querySelectorAll('.option');
+            
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // 全問解答したかチェック
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            if (Object.keys(userAnswers).length === questions.length) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function submitTest() {
+            let score = 0;
+            
+            questions.forEach(q => {
+                const userAnswer = userAnswers[q.id];
+                const optionsContainer = document.getElementById(`options-${q.id}`);
+                const options = optionsContainer.querySelectorAll('.option');
+                const explanation = document.getElementById(`explanation-${q.id}`);
+                
+                // 正誤判定
+                if (userAnswer === q.correct) {
+                    score += 10;
+                    options[userAnswer].classList.add('correct');
+                } else {
+                    options[userAnswer].classList.add('incorrect');
+                    options[q.correct].classList.add('correct');
+                }
+                
+                // 全ての選択肢を無効化
+                options.forEach(option => {
+                    option.classList.add('disabled');
+                    option.style.cursor = 'not-allowed';
+                });
+                
+                // 解説を表示
+                explanation.classList.add('show');
+            });
+            
+            // 結果表示
+            showResult(score);
+            
+            // 採点ボタンを非表示
+            document.getElementById('submit-btn').style.display = 'none';
+            
+            // ページトップへスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showResult(score) {
+            const resultDiv = document.getElementById('result');
+            let emoji, message, comment;
+            
+            if (score >= 90) {
+                emoji = '🎉';
+                message = '完璧です!';
+                comment = '原理をしっかり理解できています!素晴らしい!';
+            } else if (score >= 70) {
+                emoji = '😊';
+                message = '良好です!';
+                comment = 'もう一度動画を見て理解を深めましょう!';
+            } else if (score >= 50) {
+                emoji = '💪';
+                message = 'もう少し!';
+                comment = '「なぜ?」を意識して復習しましょう!';
+            } else {
+                emoji = '📚';
+                message = '復習しましょう!';
+                comment = '動画を見直して、原理の理解から始めましょう!';
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="score-emoji">${emoji}</div>
+                <h2>${message}</h2>
+                <p style="font-size: 48px; font-weight: bold; margin: 20px 0;">${score}点</p>
+                <p>${comment}</p>
+                <button class="retry-btn" onclick="retryTest()">もう一度挑戦する</button>
+            `;
+            
+            resultDiv.classList.add('show');
+        }
+
+        function retryTest() {
+            location.reload();
+        }
+
+        // ページ読み込み時に問題を表示
+        window.onload = function() {
+            renderQuestions();
+            updateSubmitButton();
+        };
+    </script>
+</body>
+</html>

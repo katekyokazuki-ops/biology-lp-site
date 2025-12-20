@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>細胞壁 確認テスト | 生物受験オンライン KAZUKI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intro h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .intro ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .intro li {
+            padding: 5px 0;
+            color: #555;
+        }
+
+        .intro li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .question {
+            background: #fff;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .question.answered {
+            border-color: #667eea;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 16px;
+        }
+
+        .option.selected {
+            background: #e3f2fd;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .explanation h4 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .explanation p {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .result .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result .message {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .question-text {
+                font-size: 16px;
+            }
+
+            .option label {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 細胞壁 確認テスト</h1>
+            <p>生物受験オンライン KAZUKI | 動画#5</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>📚 テストについて</h2>
+                <ul>
+                    <li>全10問の選択式問題です</li>
+                    <li>動画の内容をしっかり理解できているか確認しましょう</li>
+                    <li>解答後に詳しい解説が表示されます</li>
+                    <li>満点を目指して頑張ってください!</li>
+                </ul>
+            </div>
+
+            <form id="quizForm">
+                <!-- 問題1 -->
+                <div class="question" data-question="1">
+                    <span class="question-number">問題 1</span>
+                    <div class="question-text">
+                        細胞壁の主な役割として、最も適切なものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q1" value="a" id="q1a">
+                            <label for="q1a">物質の選択的透過を行う</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="b" id="q1b">
+                            <label for="q1b">細胞の形を保ち、内側からの圧力に耐える</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="c" id="q1c">
+                            <label for="q1c">遺伝情報を保存する</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q1" value="d" id="q1d">
+                            <label for="q1d">エネルギーを産生する</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>細胞壁の主な役割は「細胞の形を保ち、内側からの圧力に耐える」ことです。植物は骨格がないため、細胞壁が体を支える構造として機能します。水風船(細胞膜のみ)と段ボール箱(細胞壁あり)の比喩を思い出しましょう。物質の選択的透過は細胞膜の役割です。</p>
+                    </div>
+                </div>
+
+                <!-- 問題2 -->
+                <div class="question" data-question="2">
+                    <span class="question-number">問題 2</span>
+                    <div class="question-text">
+                        細胞壁の主成分として正しい組み合わせはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q2" value="a" id="q2a">
+                            <label for="q2a">リン脂質とタンパク質</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="b" id="q2b">
+                            <label for="q2b">セルロースとペクチン</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="c" id="q2c">
+                            <label for="q2c">DNAとRNA</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q2" value="d" id="q2d">
+                            <label for="q2d">グリコーゲンとデンプン</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>細胞壁は「セルロース(骨格)」と「ペクチン(接着剤・クッション)」が主成分です。鉄筋コンクリートの建物に例えられましたね。セルロースが鉄骨、ペクチンがコンクリートの役割を果たします。リン脂質とタンパク質は細胞膜の成分です。</p>
+                    </div>
+                </div>
+
+                <!-- 問題3 -->
+                <div class="question" data-question="3">
+                    <span class="question-number">問題 3</span>
+                    <div class="question-text">
+                        セルロースの強度が高い理由として、最も適切なものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q3" value="a" id="q3a">
+                            <label for="q3a">α-1,4結合により折れ曲がりやすい構造を持つ</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="b" id="q3b">
+                            <label for="q3b">β-1,4結合により直線状になり、水素結合で束になる</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="c" id="q3c">
+                            <label for="q3c">タンパク質と共有結合している</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q3" value="d" id="q3d">
+                            <label for="q3d">脂質二重層を形成する</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>セルロースはグルコースが「β-1,4結合」で裏返し交互につながることで、折れ曲がらず直線状の分子になります。この直線状の鎖が平行に並び、水素結合でガッチリ結束して束になることで、強靱な繊維となります。綿(コットン)が丈夫なのもこの構造のおかげです。</p>
+                    </div>
+                </div>
+
+                <!-- 問題4 -->
+                <div class="question" data-question="4">
+                    <span class="question-number">問題 4</span>
+                    <div class="question-text">
+                        ペクチンの役割として、正しくないものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q4" value="a" id="q4a">
+                            <label for="q4a">細胞同士を接着する</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="b" id="q4b">
+                            <label for="q4b">衝撃を吸収するクッションとして働く</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="c" id="q4c">
+                            <label for="q4c">細胞壁の骨格を形成する</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q4" value="d" id="q4d">
+                            <label for="q4d">ゲル化してとろみを作る</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: C</strong><br>「細胞壁の骨格を形成する」のはセルロースの役割です。ペクチンは、①細胞同士を接着する(特に中層に多い)、②衝撃を吸収するクッション、③ゲル化してとろみを作る、という役割を持ちます。ジャムのプルプル感はペクチンの性質を利用したものでしたね。</p>
+                    </div>
+                </div>
+
+                <!-- 問題5 -->
+                <div class="question" data-question="5">
+                    <span class="question-number">問題 5</span>
+                    <div class="question-text">
+                        一次細胞壁の特徴として、最も適切なものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q5" value="a" id="q5a">
+                            <label for="q5a">リグニンが多く非常に硬い</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="b" id="q5b">
+                            <label for="q5b">伸長中で柔軟性が高い</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="c" id="q5c">
+                            <label for="q5c">スベリンで疎水化している</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q5" value="d" id="q5d">
+                            <label for="q5d">原核生物だけが持つ</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>一次細胞壁は若い細胞(成長中の細胞)が持ち、「薄くて柔軟性が高い」のが特徴です。ペクチンが多く含まれ、エクスパンシンというタンパク質が細胞壁の結合を緩めて細胞の伸長成長を助けます。リグニンが多く硬いのは二次細胞壁、スベリンはコルク化した細胞壁の特徴です。</p>
+                    </div>
+                </div>
+
+                <!-- 問題6 -->
+                <div class="question" data-question="6">
+                    <span class="question-number">問題 6</span>
+                    <div class="question-text">
+                        木化(もくか)について、正しい説明はどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q6" value="a" id="q6a">
+                            <label for="q6a">スベリンが沈着して防水性を高める</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="b" id="q6b">
+                            <label for="q6b">リグニンが沈着して機械的強度を高める</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="c" id="q6c">
+                            <label for="q6c">ペクチンが増加して柔軟性を高める</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q6" value="d" id="q6d">
+                            <label for="q6d">キチンが沈着して硬度を増す</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>木化(Lignification)は、「リグニン」がセルロース繊維の隙間を埋めるように沈着して、細胞壁の機械的な強度を飛躍的に高める現象です。木材が硬くて丈夫なのはこのリグニンのおかげです。スベリンが沈着するのは「コルク化」で、こちらは防水バリアを作ります。</p>
+                    </div>
+                </div>
+
+                <!-- 問題7 -->
+                <div class="question" data-question="7">
+                    <span class="question-number">問題 7</span>
+                    <div class="question-text">
+                        植物・菌類・細菌の細胞壁主成分の組み合わせとして、正しいものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q7" value="a" id="q7a">
+                            <label for="q7a">植物=キチン / 菌類=セルロース / 細菌=ペプチドグリカン</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="b" id="q7b">
+                            <label for="q7b">植物=セルロース / 菌類=キチン / 細菌=ペプチドグリカン</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="c" id="q7c">
+                            <label for="q7c">植物=ペプチドグリカン / 菌類=セルロース / 細菌=キチン</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q7" value="d" id="q7d">
+                            <label for="q7d">植物=セルロース / 菌類=ペプチドグリカン / 細菌=キチン</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>これは入試頻出の超重要ポイントです!<br>• 植物 = セルロース(β-グルコースの重合体)<br>• 菌類 = キチン(含窒素多糖類、カニやエビの殻と同じ成分!)<br>• 細菌 = ペプチドグリカン(糖鎖とペプチドの結合、原核生物特有)<br>この3つは必ず覚えましょう。</p>
+                    </div>
+                </div>
+
+                <!-- 問題8 -->
+                <div class="question" data-question="8">
+                    <span class="question-number">問題 8</span>
+                    <div class="question-text">
+                        抗生物質ペニシリンが細菌に効く理由として、正しいものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q8" value="a" id="q8a">
+                            <label for="q8a">細菌のDNA複製を阻害するから</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="b" id="q8b">
+                            <label for="q8b">細菌のペプチドグリカン合成を阻害するから</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="c" id="q8c">
+                            <label for="q8c">細菌のセルロース合成を阻害するから</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q8" value="d" id="q8d">
+                            <label for="q8d">細菌のリボソームを破壊するから</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>ペニシリンは「ペプチドグリカンの合成を阻害」します。細菌の細胞壁を作れなくすることで細菌を倒すのです。重要なのは、人間や植物の細胞にはペプチドグリカンがないため、ペニシリンは人間や植物には無害で細菌だけを倒せるという点です。だから薬として使えるんですね。</p>
+                    </div>
+                </div>
+
+                <!-- 問題9 -->
+                <div class="question" data-question="9">
+                    <span class="question-number">問題 9</span>
+                    <div class="question-text">
+                        マイコプラズマについて正しい説明はどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q9" value="a" id="q9a">
+                            <label for="q9a">植物の一種で、細胞壁を持つ</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="b" id="q9b">
+                            <label for="q9b">細菌の仲間だが、例外的に細胞壁を持たない</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="c" id="q9c">
+                            <label for="q9c">菌類で、キチンの細胞壁を持つ</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q9" value="d" id="q9d">
+                            <label for="q9d">ウイルスの一種である</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: B</strong><br>マイコプラズマは細菌の仲間ですが、例外的に細胞壁を持ちません。そのため、細胞壁の合成を阻害するペニシリンが効きません。これは入試でよく出る「例外」なので、しっかり覚えておきましょう。細菌=ペプチドグリカンの細胞壁、という原則の例外です。</p>
+                    </div>
+                </div>
+
+                <!-- 問題10 -->
+                <div class="question" data-question="10">
+                    <span class="question-number">問題 10</span>
+                    <div class="question-text">
+                        私たちの生活の中で細胞壁が利用されている例として、正しくないものはどれですか?
+                    </div>
+                    <div class="options">
+                        <div class="option">
+                            <input type="radio" name="q10" value="a" id="q10a">
+                            <label for="q10a">食物繊維(野菜のセルロース)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="b" id="q10b">
+                            <label for="q10b">ジャムのとろみ(ペクチン)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="c" id="q10c">
+                            <label for="q10c">ワインのコルク栓(スベリン)</label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" name="q10" value="d" id="q10d">
+                            <label for="q10d">プラスチック容器(合成樹脂)</label>
+                        </div>
+                    </div>
+                    <div class="explanation">
+                        <h4>💡 解説</h4>
+                        <p><strong>正解: D</strong><br>プラスチック容器は合成樹脂(石油由来)で作られており、細胞壁とは関係ありません。一方、食物繊維(セルロース)、ジャムのとろみ(ペクチン)、紙(セルロース繊維)、木材(セルロース+リグニン)、コルク栓(スベリン)など、私たちは毎日細胞壁のお世話になっているんですね。細胞壁は資源の宝庫です!</p>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" id="submitBtn" onclick="submitQuiz()">解答を確認する</button>
+            </form>
+
+            <div class="result" id="result">
+                <h2>🎉 テスト結果</h2>
+                <div class="score" id="scoreDisplay"></div>
+                <div class="message" id="message"></div>
+                <button class="retry-btn" onclick="retryQuiz()">もう一度挑戦する</button>
+                <button class="retry-btn" onclick="window.location.href='https://youtube.com'">動画を見直す</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📺 生物受験オンライン KAZUKI | <a href="#">YouTubeチャンネルはこちら</a></p>
+            <p>📧 質問・相談はいつでも受け付けています!</p>
+        </div>
+    </div>
+
+    <script>
+        // 正解の定義
+        const answers = {
+            q1: 'b',
+            q2: 'b',
+            q3: 'b',
+            q4: 'c',
+            q5: 'b',
+            q6: 'b',
+            q7: 'b',
+            q8: 'b',
+            q9: 'b',
+            q10: 'd'
+        };
+
+        // 選択時のハイライト
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                const question = this.closest('.question');
+                
+                // 同じ問題の他の選択肢の選択を解除
+                question.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // この選択肢を選択状態にする
+                radio.checked = true;
+                this.classList.add('selected');
+                question.classList.add('answered');
+            });
+        });
+
+        function submitQuiz() {
+            let score = 0;
+            let totalQuestions = Object.keys(answers).length;
+            let allAnswered = true;
+
+            // 各問題をチェック
+            for (let [question, correctAnswer] of Object.entries(answers)) {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                const questionDiv = document.querySelector(`input[name="${question}"]`).closest('.question');
+                const options = questionDiv.querySelectorAll('.option');
+                const explanation = questionDiv.querySelector('.explanation');
+
+                if (!selectedOption) {
+                    allAnswered = false;
+                    continue;
+                }
+
+                const userAnswer = selectedOption.value;
+
+                // 正解・不正解の表示
+                options.forEach(option => {
+                    const input = option.querySelector('input[type="radio"]');
+                    if (input.value === correctAnswer) {
+                        option.classList.add('correct');
+                    } else if (input.value === userAnswer && userAnswer !== correctAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                    // ラジオボタンを無効化
+                    input.disabled = true;
+                    option.style.cursor = 'default';
+                });
+
+                // 解説を表示
+                explanation.classList.add('show');
+
+                if (userAnswer === correctAnswer) {
+                    score++;
+                }
+            }
+
+            if (!allAnswered) {
+                alert('すべての問題に解答してください!');
+                return;
+            }
+
+            // スコア表示
+            const percentage = Math.round((score / totalQuestions) * 100);
+            document.getElementById('scoreDisplay').textContent = `${score} / ${totalQuestions} 問正解 (${percentage}点)`;
+
+            // メッセージ表示
+            let message = '';
+            if (percentage === 100) {
+                message = '🌟 完璧です!素晴らしい理解度ですね!次の動画も楽しみにしていてください!';
+            } else if (percentage >= 80) {
+                message = '🎊 よくできました!ほとんど理解できていますね!間違えた問題を復習しましょう!';
+            } else if (percentage >= 60) {
+                message = '👍 まずまずです!もう一度動画を見て復習すると、さらに理解が深まりますよ!';
+            } else {
+                message = '📚 もう一度動画を見て、じっくり学習しましょう!「なぜ?」を考えることが大切です!';
+            }
+            document.getElementById('message').textContent = message;
+
+            // 結果表示
+            document.getElementById('result').classList.add('show');
+            document.getElementById('submitBtn').style.display = 'none';
+
+            // 結果までスクロール
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function retryQuiz() {
+            // ページをリロード
+            location.reload();
+        }
+
+        // Enterキーでの送信を防止
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>

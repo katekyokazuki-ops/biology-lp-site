@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【確認テスト】細胞膜の構造と働き - 脱・暗記の生物講義</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .question-block {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #e8eeff;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        .option.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+            display: none;
+            font-size: 15px;
+            color: #555;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .explanation strong {
+            color: #4caf50;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 40px auto;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+        
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .result h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        
+        .result p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .score-emoji {
+            font-size: 60px;
+            margin: 20px 0;
+        }
+        
+        .retry-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: white;
+            color: #764ba2;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+            
+            .option {
+                font-size: 14px;
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>【確認テスト】細胞膜の構造と働き</h1>
+            <p>脱・暗記の生物講義</p>
+            <p>📊 全10問 | ⏱️ 所要時間: 約10分 | 💯 各10点</p>
+        </div>
+        
+        <div class="content">
+            <div id="questions-container"></div>
+            
+            <button class="submit-btn" id="submit-btn" onclick="submitTest()">採点する</button>
+            
+            <div class="result" id="result"></div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 脱・暗記の生物講義 | 原理から理解する生物学習</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "動画で細胞膜を説明するために使われた例えとして適切でないものはどれか。",
+                options: [
+                    "空港の保安検査(選択的透過性)",
+                    "家のドア(境界とコミュニケーション)",
+                    "電車の改札(自動判定システム)",
+                    "賢いゲート(選別機能)"
+                ],
+                correct: 2,
+                explanation: "動画で使われた例えは「空港の保安検査」「家のドア」「賢いゲート」の3つです。細胞膜は単なる境界ではなく、必要な物質を選別して通す「賢いゲート」として説明されました。"
+            },
+            {
+                id: 2,
+                question: "リン脂質が水環境で自然に二重層構造を作る理由として最も適切なものはどれか。",
+                options: [
+                    "親水性頭部が水と結合するため",
+                    "疎水性尾部が水から隠れようとするため",
+                    "エネルギーを使って強制的に配置されるため",
+                    "膜タンパク質が脂質を押し固めるため"
+                ],
+                correct: 1,
+                explanation: "リン脂質は親水性の頭部と疎水性の尾部を持ちます。水環境の中で、疎水性(水が嫌い)の尾部が水から隠れるために、自然とサンドイッチ構造(二重層)になります。これを「自己集合」と呼び、エネルギー不要で形成されます。"
+            },
+            {
+                id: 3,
+                question: "流動モザイクモデルを提唱したのは誰か。また、その年代はいつか。",
+                options: [
+                    "ワトソンとクリック / 1953年",
+                    "シンガーとニコルソン / 1972年",
+                    "メンデル / 1865年",
+                    "ダーウィン / 1859年"
+                ],
+                correct: 1,
+                explanation: "流動モザイクモデルは1972年にシンガーとニコルソンによって提唱されました。このモデルでは、細胞膜は固定された壁ではなく、脂質の「海」にタンパク質の「氷山」が浮かぶ流動的な構造として説明されます。"
+            },
+            {
+                id: 4,
+                question: "不飽和脂肪酸が膜の流動性を高める理由はどれか。",
+                options: [
+                    "まっすぐな構造で密に詰まるから",
+                    "折れ曲がり構造で隙間ができるから",
+                    "水と強く結合するから",
+                    "コレステロールを排除するから"
+                ],
+                correct: 1,
+                explanation: "不飽和脂肪酸は折れ曲がった構造を持っているため、脂質分子の間に隙間ができます。この隙間により分子が動きやすくなり、膜の流動性が高まります。一方、飽和脂肪酸はまっすぐで密に詰まるため、膜が固くなりやすいです。"
+            },
+            {
+                id: 5,
+                question: "コレステロールの役割として最も適切なものはどれか。",
+                options: [
+                    "膜を完全に固定して動かないようにする",
+                    "温度変化による膜の崩壊や凝固を防ぐ緩衝材",
+                    "膜タンパク質を作る材料になる",
+                    "イオンを通すチャネルとして働く"
+                ],
+                correct: 1,
+                explanation: "コレステロールはリン脂質の隙間に入り込む「緩衝材」として働きます。温度が高いときは流動性が高すぎるのを抑え、温度が低いときは固まりすぎるのを防ぎ、膜の流動性を「ちょうど良く」調整します。"
+            },
+            {
+                id: 6,
+                question: "膜タンパク質の種類と機能の組み合わせとして誤っているものはどれか。",
+                options: [
+                    "輸送タンパク質 - イオンや極性分子を通す",
+                    "受容体タンパク質 - ホルモンなどのシグナルを受け取る",
+                    "酵素タンパク質 - 膜上で化学反応を促進する",
+                    "接着・認識タンパク質 - ATP を産生する"
+                ],
+                correct: 3,
+                explanation: "接着・認識タンパク質の機能は、隣の細胞と結合したり、糖鎖を持って細胞認識の名札になることです。ATPを産生するのはミトコンドリアの電子伝達系などであり、接着・認識タンパク質の機能ではありません。"
+            },
+            {
+                id: 7,
+                question: "脂質二重層を単純拡散で通過できる物質として適切なものを全て選んだ組み合わせはどれか。",
+                options: [
+                    "酸素(O₂)、グルコース、ナトリウムイオン(Na⁺)",
+                    "二酸化炭素(CO₂)、ステロイドホルモン、酸素(O₂)",
+                    "グルコース、アミノ酸、水",
+                    "カリウムイオン(K⁺)、塩化物イオン(Cl⁻)、酸素(O₂)"
+                ],
+                correct: 1,
+                explanation: "脂質二重層を単純拡散で通過できるのは「小さくて油に溶ける」物質です。酸素(O₂)、二酸化炭素(CO₂)、ステロイドホルモンは小さい非極性分子または脂溶性分子なので通過できます。グルコースは大きすぎ、イオン類は電荷があるため通過できません。"
+            },
+            {
+                id: 8,
+                question: "受動輸送の説明として正しいものはどれか。",
+                options: [
+                    "ATPを消費して濃度勾配に逆らって輸送する",
+                    "ATPを消費せず濃度勾配に従って輸送する",
+                    "必ず膜タンパク質を使用する",
+                    "大きな分子を膜ごと取り込む"
+                ],
+                correct: 1,
+                explanation: "受動輸送はATP不要で、濃度勾配(高いところ → 低いところ)に従って移動します。坂道を転がり落ちるボールのように、エネルギーなしで自然に動きます。単純拡散、浸透、促進拡散の3つのタイプがあります。"
+            },
+            {
+                id: 9,
+                question: "Na⁺/K⁺ポンプの働きとして正しいものはどれか。",
+                options: [
+                    "3つのNa⁺を細胞内へ、2つのK⁺を細胞外へ輸送",
+                    "3つのNa⁺を細胞外へ、2つのK⁺を細胞内へ輸送",
+                    "濃度勾配に従ってイオンを輸送",
+                    "ATPを産生しながらイオンを輸送"
+                ],
+                correct: 1,
+                explanation: "Na⁺/K⁺ポンプは、ATPのエネルギーを使って、3つのNa⁺を細胞外へ排出し、2つのK⁺を細胞内へ取り込みます。これにより細胞内外のイオン濃度差を維持し、神経の興奮や筋肉の収縮に必要な環境を作ります。"
+            },
+            {
+                id: 10,
+                question: "赤血球を高張食塩水(細胞外の溶質濃度が高い溶液)に入れたとき、細胞はどうなるか。",
+                options: [
+                    "膨張して破裂する",
+                    "収縮(しぼむ)する",
+                    "変化しない",
+                    "細胞膜が溶ける"
+                ],
+                correct: 1,
+                explanation: "高張液(外の濃度が高い)に入れると、浸透圧により濃度を薄めようとして水が細胞内から外へ流出します。結果、細胞は水を失い収縮(しぼむ)します。細胞膜は半透膜なので、溶質(塩)は通れませんが水は通れるためです。"
+            }
+        ];
+
+        let userAnswers = {};
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-block';
+                questionDiv.id = `question-${q.id}`;
+                
+                let optionsHTML = '';
+                q.options.forEach((option, optIndex) => {
+                    optionsHTML += `
+                        <div class="option" onclick="selectOption(${q.id}, ${optIndex})">
+                            <strong>${String.fromCharCode(65 + optIndex)}.</strong> ${option}
+                        </div>
+                    `;
+                });
+                
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${q.id}</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${q.id}">
+                        ${optionsHTML}
+                    </div>
+                    <div class="explanation" id="explanation-${q.id}">
+                        <strong>✓ 正解: ${String.fromCharCode(65 + q.correct)}</strong><br>
+                        ${q.explanation}
+                    </div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectOption(questionId, optionIndex) {
+            if (document.getElementById('result').classList.contains('show')) {
+                return;
+            }
+            
+            userAnswers[questionId] = optionIndex;
+            
+            const optionsContainer = document.getElementById(`options-${questionId}`);
+            const options = optionsContainer.querySelectorAll('.option');
+            
+            options.forEach((option, index) => {
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            if (Object.keys(userAnswers).length === questions.length) {
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.disabled = true;
+            }
+        }
+
+        function submitTest() {
+            let score = 0;
+            
+            questions.forEach(q => {
+                const userAnswer = userAnswers[q.id];
+                const optionsContainer = document.getElementById(`options-${q.id}`);
+                const options = optionsContainer.querySelectorAll('.option');
+                const explanation = document.getElementById(`explanation-${q.id}`);
+                
+                if (userAnswer === q.correct) {
+                    score += 10;
+                    options[userAnswer].classList.add('correct');
+                } else {
+                    options[userAnswer].classList.add('incorrect');
+                    options[q.correct].classList.add('correct');
+                }
+                
+                options.forEach(option => {
+                    option.classList.add('disabled');
+                    option.style.cursor = 'not-allowed';
+                });
+                
+                explanation.classList.add('show');
+            });
+            
+            showResult(score);
+            document.getElementById('submit-btn').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showResult(score) {
+            const resultDiv = document.getElementById('result');
+            let emoji, message, comment;
+            
+            if (score >= 90) {
+                emoji = '🎉';
+                message = '完璧です!';
+                comment = '原理をしっかり理解できています!素晴らしい!';
+            } else if (score >= 70) {
+                emoji = '😊';
+                message = '良好です!';
+                comment = 'もう一度動画を見て理解を深めましょう!';
+            } else if (score >= 50) {
+                emoji = '💪';
+                message = 'もう少し!';
+                comment = '「水と油」の関係を意識して復習しましょう!';
+            } else {
+                emoji = '📚';
+                message = '復習しましょう!';
+                comment = '動画を見直して、構造から機能を理解しましょう!';
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="score-emoji">${emoji}</div>
+                <h2>${message}</h2>
+                <p style="font-size: 48px; font-weight: bold; margin: 20px 0;">${score}点</p>
+                <p>${comment}</p>
+                <button class="retry-btn" onclick="retryTest()">もう一度挑戦する</button>
+            `;
+            
+            resultDiv.classList.add('show');
+        }
+
+        function retryTest() {
+            location.reload();
+        }
+
+        window.onload = function() {
+            renderQuestions();
+            updateSubmitButton();
+        };
+    </script>
+</body>
+</html>

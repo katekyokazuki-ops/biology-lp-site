@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浸透圧・膨圧・原形質流動 確認テスト | 生物受験オンライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .difficulty.basic { background: #d4edda; color: #155724; }
+        .difficulty.intermediate { background: #fff3cd; color: #856404; }
+        .difficulty.advanced { background: #f8d7da; color: #721c24; }
+
+        .question-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .formula {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            text-align: center;
+            margin: 10px 0;
+            color: #1565c0;
+            font-weight: bold;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #e8eeff;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .explanation {
+            display: none;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .explanation-title:before {
+            content: "💡";
+            margin-right: 8px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+        }
+
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">生物受験オンライン #7</div>
+            <h1>🌱 浸透圧・膨圧・原形質流動<br>確認テスト</h1>
+            <p class="subtitle">S=π-P を完全マスター!</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <form id="quizForm">
+            <!-- 問題1 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題1
+                    <span class="difficulty basic">基礎 ★☆☆</span>
+                </div>
+                <div class="question-text">
+                    浸透(osmosis)において、水が移動する方向として正しいものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q1" value="a">
+                        高濃度(溶質が多い)側 → 低濃度(溶質が少ない)側
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="b">
+                        低濃度(溶質が少ない)側 → 高濃度(溶質が多い)側
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="c">
+                        水は移動しない
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="d">
+                        濃度差があっても移動方向は決まらない
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    浸透では、水は<strong>「低濃度(水が多い)→高濃度(水が少ない)」</strong>へ移動します。溶質の拡散とは逆向きになることに注意!濃い方を薄めようとして、水が吸い寄せられるイメージです。
+                </div>
+            </div>
+
+            <!-- 問題2 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題2
+                    <span class="difficulty basic">基礎 ★☆☆</span>
+                </div>
+                <div class="question-text">
+                    半透膜の性質として正しいものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q2" value="a">
+                        水のみを通す
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="b">
+                        溶質のみを通す
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="c">
+                        小さな分子(水など)は通すが、大きな溶質(糖など)は通さない
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="d">
+                        すべての物質を通す
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: C</strong><br>
+                    半透膜は<strong>「穴より小さい分子なら通す」</strong>性質を持ちます。水分子は小さいので通りますが、スクロースなどの大きな溶質は通れません。「水だけ」ではなく、サイズで決まることがポイント!
+                </div>
+            </div>
+
+            <!-- 問題3 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題3
+                    <span class="difficulty basic">基礎 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    浸透圧(π)の説明として最も適切なものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q3" value="a">
+                        細胞壁を内側から押す力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="b">
+                        半透膜を通して水を引き寄せようとする力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="c">
+                        実際に水を吸収する力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="d">
+                        細胞が膨らむことを妨げる力
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    浸透圧(π)は<strong>「水を吸い込む力」</strong>です。溶液の濃度が高いほど、水を引き寄せる力は大きくなります。これを青い矢印でイメージしましょう。選択肢Aは膨圧(P)、選択肢Cは吸水力(S)の説明です。
+                </div>
+            </div>
+
+            <!-- 問題4 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題4
+                    <span class="difficulty basic">基礎 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    膨圧(P)の説明として最も適切なものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q4" value="a">
+                        水を引き寄せる力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="b">
+                        細胞内の水が細胞壁を内側から押し返す力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="c">
+                        外液の濃度で決まる力
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="d">
+                        細胞液の濃度で決まる一定の力
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    膨圧(P)は<strong>「細胞壁を内側から押す力」</strong>です。液胞に水がたくさん入るとパンパンに膨らみ、細胞壁を押します。これを赤い矢印でイメージ!植物が「シャキッ」とするのは膨圧があるからです。膨圧は細胞の状態で0~最大値まで変化します。
+                </div>
+            </div>
+
+            <!-- 問題5 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題5
+                    <span class="difficulty intermediate">応用 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    吸水力(S)、浸透圧(π)、膨圧(P)の関係を表す式として正しいものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q5" value="a">
+                        S = π + P
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="b">
+                        S = π - P
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="c">
+                        S = P - π
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="d">
+                        S = π × P
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    <strong>核心公式: S = π - P</strong><br>
+                    吸水力(S)は、浸透圧(π・水を吸う力)から膨圧(P・押し返す力)を引いた値です。すでに水が入って膨らんでいると、その分だけ吸水力は減ります。この「引き算」の意味を理解することが最重要!
+                </div>
+            </div>
+
+            <!-- 問題6 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題6
+                    <span class="difficulty intermediate">応用 ★★★</span>
+                </div>
+                <div class="question-text">
+                    ある植物細胞の浸透圧が0.8 MPa、膨圧が0.3 MPaである。この細胞の吸水力は何MPaか。
+                </div>
+                <div class="formula">S = π - P</div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q6" value="a">
+                        0.5 MPa
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="b">
+                        1.1 MPa
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="c">
+                        0.3 MPa
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="d">
+                        0.8 MPa
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: A (0.5 MPa)</strong><br>
+                    S = π - P = 0.8 - 0.3 = <strong>0.5 MPa</strong><br>
+                    本来0.8 MPaの力で水を吸おうとしますが、すでに水が入って0.3 MPaで押し返しているので、実際に水を吸う力は0.5 MPaになります。引き算の意味を理解しましょう!
+                </div>
+            </div>
+
+            <!-- 問題7 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題7
+                    <span class="difficulty intermediate">応用 ★★★</span>
+                </div>
+                <div class="question-text">
+                    原形質分離について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q7" value="a">
+                        低張液に入れたときに起こる現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="b">
+                        細胞壁が細胞膜から離れる現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="c">
+                        細胞膜が細胞壁から離れる現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="d">
+                        一度起こると二度と戻らない不可逆的な現象
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: C</strong><br>
+                    原形質分離は<strong>「細胞膜が細胞壁から離れる」</strong>現象です。高張液に入れると水が流出し、細胞膜だけが収縮します。細胞壁は硬い枠なので形は変わりません!また、低張液に戻せば復帰する可逆的な現象です。
+                </div>
+            </div>
+
+            <!-- 問題8 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題8
+                    <span class="difficulty advanced">発展 ★★★</span>
+                </div>
+                <div class="question-text">
+                    限界原形質分離の状態について、正しいものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q8" value="a">
+                        膨圧P > 0、吸水力S < 浸透圧π
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="b">
+                        膨圧P = 0、吸水力S = 浸透圧π
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="c">
+                        膨圧P < 0、吸水力S > 浸透圧π
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="d">
+                        膨圧P = 浸透圧π、吸水力S = 0
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    限界原形質分離は「細胞膜が細胞壁から離れ始める瞬間」です。このとき<strong>膨圧P = 0</strong>になり、S = π - 0 = π より<strong>吸水力S = 浸透圧π</strong>となります。この状態では外液濃度≒細胞液濃度となり、濃度推定に使えます!超重要ポイント!
+                </div>
+            </div>
+
+            <!-- 問題9 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題9
+                    <span class="difficulty intermediate">応用 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    原形質流動について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q9" value="a">
+                        高張液で細胞膜が離れる現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="b">
+                        水が半透膜を通って移動する現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="c">
+                        細胞質が循環・流動して物質を輸送する現象
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="d">
+                        細胞壁が変形する現象
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: C</strong><br>
+                    原形質流動は<strong>「細胞質の循環・流動」</strong>による物質輸送システムです。アクチンフィラメントとミオシンがATPを使って細胞質を動かします。原形質分離(選択肢A)とは全く別の現象なので混同注意!緑色の矢印でイメージしましょう。
+                </div>
+            </div>
+
+            <!-- 問題10 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題10
+                    <span class="difficulty advanced">発展 ★★★</span>
+                </div>
+                <div class="question-text">
+                    植物細胞をより高濃度の溶液に移して水が抜けるとき、細胞の吸水力はどうなるか。理由も含めて正しいものを選べ。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q10" value="a">
+                        上がる(細胞液が濃くなりπ上昇、張りがなくなりP低下のため)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="b">
+                        下がる(細胞液が薄くなりπ低下するため)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="c">
+                        変わらない(πとPが同時に変化するため)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="d">
+                        上がる(膨圧Pが上昇するため)
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: A</strong><br>
+                    水が抜けると:<br>
+                    ① 細胞液が濃くなる → π(浸透圧)↑<br>
+                    ② 細胞の張りがなくなる → P(膨圧)↓<br>
+                    <strong>S = π(↑) - P(↓)</strong> より、吸水力Sは大きく上昇!水が抜けた細胞ほど、水を求める力が強くなるのは理にかなっていますね。
+                </div>
+            </div>
+
+            <button type="button" class="submit-btn" id="submitBtn" onclick="gradeQuiz()">採点する</button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <h2>📊 テスト結果</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="retry-btn" onclick="retryQuiz()">もう一度挑戦</button>
+            <button class="retry-btn" onclick="window.location.href='YOUR_YOUTUBE_CHANNEL_URL'">動画を復習する</button>
+        </div>
+
+        <div class="footer">
+            <p>🎓 <strong>生物受験オンライン</strong> - 脱・暗記で医学部・難関大合格へ</p>
+            <p><a href="YOUR_YOUTUBE_CHANNEL_URL" target="_blank">YouTubeチャンネルはこちら</a></p>
+            <p style="margin-top: 10px; font-size: 14px; color: #999;">© 2026 生物受験オンライン All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // 正解データ
+        const answers = {
+            q1: 'b',
+            q2: 'c',
+            q3: 'b',
+            q4: 'b',
+            q5: 'b',
+            q6: 'a',
+            q7: 'c',
+            q8: 'b',
+            q9: 'c',
+            q10: 'a'
+        };
+
+        // 選択肢がクリックされたときの処理
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // 同じグループの他の選択肢からselectedクラスを削除
+                const name = radio.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.parentElement.classList.remove('selected');
+                });
+                
+                // クリックされた選択肢にselectedクラスを追加
+                this.classList.add('selected');
+                
+                // プログレスバーを更新
+                updateProgress();
+            });
+        });
+
+        // プログレスバー更新
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) answered++;
+            }
+            const progress = (answered / 10) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // 採点処理
+        function gradeQuiz() {
+            let allAnswered = true;
+            let score = 0;
+
+            // 全問回答チェック
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+
+            if (!allAnswered) {
+                alert('すべての問題に回答してください!');
+                return;
+            }
+
+            // 採点
+            for (let i = 1; i <= 10; i++) {
+                const questionNum = 'q' + i;
+                const selected = document.querySelector(`input[name="${questionNum}"]:checked`);
+                const selectedValue = selected ? selected.value : '';
+                const correctAnswer = answers[questionNum];
+                
+                // すべての選択肢から正解・不正解クラスを削除
+                document.querySelectorAll(`input[name="${questionNum}"]`).forEach(input => {
+                    input.parentElement.classList.remove('correct', 'incorrect');
+                });
+
+                // 正解判定と色付け
+                if (selectedValue === correctAnswer) {
+                    score++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    // 正解の選択肢も表示
+                    const correctOption = document.querySelector(`input[name="${questionNum}"][value="${correctAnswer}"]`);
+                    if (correctOption) {
+                        correctOption.parentElement.classList.add('correct');
+                    }
+                }
+
+                // 解説を表示
+                const questionCard = selected.closest('.question-card');
+                const explanation = questionCard.querySelector('.explanation');
+                explanation.classList.add('show');
+            }
+
+            // 結果表示
+            const percentage = (score / 10) * 100;
+            document.getElementById('scoreDisplay').textContent = `${score} / 10 問正解 (${percentage}%)`;
+            
+            let message = '';
+            if (score === 10) {
+                message = '🎉 完璧です!浸透圧・膨圧を完全マスターしました!';
+            } else if (score >= 8) {
+                message = '✨ 素晴らしい!あともう少しで完璧です!';
+            } else if (score >= 6) {
+                message = '👍 良くできました!間違えた問題を復習しましょう。';
+            } else if (score >= 4) {
+                message = '📚 もう一度動画を見て復習しましょう!';
+            } else {
+                message = '💪 諦めないで!基礎から丁寧に復習しましょう。';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultContainer').classList.add('show');
+            
+            // 採点ボタンを無効化
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '採点済み';
+
+            // 結果までスクロール
+            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // リトライ
+        function retryQuiz() {
+            // フォームをリセット
+            document.getElementById('quizForm').reset();
+            
+            // すべてのクラスをリセット
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 解説を非表示
+            document.querySelectorAll('.explanation').forEach(exp => {
+                exp.classList.remove('show');
+            });
+            
+            // 結果を非表示
+            document.getElementById('resultContainer').classList.remove('show');
+            
+            // 採点ボタンを有効化
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '採点する';
+            
+            // プログレスバーをリセット
+            document.getElementById('progressBar').style.width = '0%';
+            
+            // ページトップにスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

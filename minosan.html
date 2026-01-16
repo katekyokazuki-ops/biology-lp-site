@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アミノ酸・タンパク質の立体構造 確認テスト | 生物受験オンライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #4e54c8;
+        }
+
+        .header h1 {
+            color: #4e54c8;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4e54c8;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .question-number {
+            color: #4e54c8;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .difficulty {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .difficulty.basic { background: #d4edda; color: #155724; }
+        .difficulty.intermediate { background: #fff3cd; color: #856404; }
+        .difficulty.advanced { background: #f8d7da; color: #721c24; }
+
+        .question-text {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin: 12px 0;
+            font-weight: bold;
+            text-align: center;
+            color: #2d3436;
+            font-size: 17px;
+        }
+
+        .structure-diagram {
+            background: #fff;
+            border: 2px solid #4e54c8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            color: #2d3436;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: #4e54c8;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #4e54c8;
+            background: #e8eeff;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .explanation {
+            display: none;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .explanation-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .explanation-title:before {
+            content: "💡";
+            margin-right: 8px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 84, 200, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 84, 200, 0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result-container {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #4e54c8;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4e54c8 0%, #8f94fb 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+        }
+
+        .footer a {
+            color: #4e54c8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">生物受験オンライン #8</div>
+            <h1>🧬 アミノ酸・タンパク質の立体構造<br>確認テスト</h1>
+            <p class="subtitle">構造→性質→機能を完全マスター!</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <form id="quizForm">
+            <!-- 問題1 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題1
+                    <span class="difficulty basic">基礎 ★☆☆</span>
+                </div>
+                <div class="question-text">
+                    アミノ酸の基本構造において、α炭素に結合している4つのパーツとして<strong>誤っている</strong>ものはどれか。
+                </div>
+                <div class="structure-diagram">
+                    α炭素(C)に結合:<br>
+                    ① アミノ基(-NH₂)<br>
+                    ② カルボキシ基(-COOH)<br>
+                    ③ 水素原子(H)<br>
+                    ④ 側鎖(R)
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q1" value="a">
+                        ヒドロキシ基(-OH)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="b">
+                        側鎖(R)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="c">
+                        カルボキシ基(-COOH)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q1" value="d">
+                        アミノ基(-NH₂)
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: A (ヒドロキシ基)</strong><br>
+                    α炭素に結合している4つは:<strong>①アミノ基(-NH₂)、②カルボキシ基(-COOH)、③水素原子(H)、④側鎖(R)</strong>です。ヒドロキシ基(-OH)は、一部のアミノ酸の側鎖Rに含まれることはありますが、α炭素に直接結合する基本パーツではありません。
+                </div>
+            </div>
+
+            <!-- 問題2 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題2
+                    <span class="difficulty basic">基礎 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    なぜアミノ酸が20種類も必要なのか。その理由として最も適切なものはどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q2" value="a">
+                        DNAの塩基配列が20種類だから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="b">
+                        化学的な選手層が厚いほど、作れる形と反応のレパートリーが広がるから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="c">
+                        ペプチド結合を20回作る必要があるから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q2" value="d">
+                        細胞内に20種類のタンパク質が必要だから
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    アミノ酸が20種類あることで、<strong>疎水性・親水性・電荷・化学反応性など多様な性質を持つパーツ</strong>が揃います。これにより複雑な立体構造を作ったり、特定の化学反応を起こしたりできます。レゴブロックと同じで、いろんな形・性質のパーツがあるからこそ、複雑な「形の機械」が作れるのです!
+                </div>
+            </div>
+
+            <!-- 問題3 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題3
+                    <span class="difficulty basic">基礎 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    アミノ酸の分類について、タンパク質の内部(コア)に集まりやすいのはどのグループか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q3" value="a">
+                        非極性(疎水性)アミノ酸
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="b">
+                        極性(親水性)アミノ酸
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="c">
+                        酸性アミノ酸
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q3" value="d">
+                        塩基性アミノ酸
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: A (非極性・疎水性アミノ酸)</strong><br>
+                    <strong>「疎水は内側、親水は外側」</strong>が折りたたみの基本ルール!水を嫌う疎水性アミノ酸(Val, Leu, Pheなど)は、水の中で内側に隠れようとして<strong>疎水性コア</strong>を形成します。これがタンパク質の立体構造を安定化させる最大の原動力です!
+                </div>
+            </div>
+
+            <!-- 問題4 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題4
+                    <span class="difficulty basic">基礎 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    ペプチド結合の形成について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q4" value="a">
+                        加水分解によって形成される
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="b">
+                        脱水縮合によって形成される共有結合
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="c">
+                        水素結合によって形成される弱い結合
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q4" value="d">
+                        イオン結合によって形成される
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    ペプチド結合は、隣り合うアミノ酸のカルボキシ基(-COOH)とアミノ基(-NH₂)から水(H₂O)が外れる<strong>脱水縮合</strong>によって形成されます。この結合は<strong>共有結合</strong>なので非常に強固で、熱やpHでは簡単に切れません。これが一次構造を支える骨格です!
+                </div>
+            </div>
+
+            <!-- 問題5 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題5
+                    <span class="difficulty intermediate">応用 ★★☆</span>
+                </div>
+                <div class="question-text">
+                    ペプチド鎖の方向性について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q5" value="a">
+                        C末端からN末端へ伸びる
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="b">
+                        N末端からC末端へ伸びる
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="c">
+                        方向性はなく、どちらから読んでもよい
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q5" value="d">
+                        側鎖Rの位置で決まる
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B (N末端→C末端)</strong><br>
+                    ペプチド鎖には必ず<strong>方向性</strong>があり、<strong>N末端(アミノ基側)からC末端(カルボキシ基側)</strong>へと読みます。この方向性があるからこそ、DNAの遺伝情報の順序が正しく保存され、タンパク質合成も必ずN末端から C末端に向かって行われます。超重要ポイント!
+                </div>
+            </div>
+
+            <!-- 問題6 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題6
+                    <span class="difficulty intermediate">応用 ★★★</span>
+                </div>
+                <div class="question-text">
+                    鎌状赤血球貧血症は、ヘモグロビンのβ鎖6番目のアミノ酸が、グルタミン酸(親水性)からバリン(疎水性)に置換したことで起こる。この1箇所の変異がなぜ重大な影響を与えるのか。最も適切な説明はどれか。
+                </div>
+                <div class="concept-box">
+                    配列 → 立体構造 → 機能
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q6" value="a">
+                        ペプチド結合が切れてしまうから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="b">
+                        親水性部分が疎水性に変わることで折りたたみ方が変わり、形と機能が失われるから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="c">
+                        アミノ酸の総数が減ってしまうから
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q6" value="d">
+                        二次構造が形成されなくなるから
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    たった1つのアミノ酸が変わっても、<strong>性質が変わる→折りたたみ方が変わる→形が変わる→機能が変わる(失われる)</strong>という連鎖が起こります。「水に溶けたい」部分が「水を弾く」部分に変わると、疎水性部分を隠そうとして本来とは違う形にねじれたり、別の分子とくっついたりします。これが<strong>「配列が設計図」</strong>である証拠です!
+                </div>
+            </div>
+
+            <!-- 問題7 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題7
+                    <span class="difficulty intermediate">応用 ★★★</span>
+                </div>
+                <div class="question-text">
+                    タンパク質の二次構造(αヘリックス・βシート)を安定化している結合はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q7" value="a">
+                        主鎖間の水素結合
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="b">
+                        側鎖間の疎水性相互作用
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="c">
+                        ペプチド結合
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q7" value="d">
+                        ジスルフィド結合(S-S結合)
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: A (主鎖間の水素結合)</strong><br>
+                    二次構造を支えるのは、<strong>主鎖(骨格)のC=O基とN-H基の間にできる規則的な水素結合</strong>です。側鎖Rは関係ありません!αヘリックスは4つ先のアミノ酸と、βシートは隣り合う鎖の間で水素結合を形成します。側鎖の相互作用(疎水性・S-Sなど)は三次構造で重要になります。
+                </div>
+            </div>
+
+            <!-- 問題8 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題8
+                    <span class="difficulty advanced">発展 ★★★</span>
+                </div>
+                <div class="question-text">
+                    三次構造を安定化させる4つの結合のうち、最も強力で熱安定性を高める「留め金」として働く結合はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q8" value="a">
+                        水素結合
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="b">
+                        イオン結合(塩橋)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="c">
+                        疎水性相互作用
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q8" value="d">
+                        ジスルフィド結合(S-S結合)
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: D (ジスルフィド結合)</strong><br>
+                    システイン同士が作る<strong>ジスルフィド結合(S-S結合)</strong>は<strong>共有結合</strong>なので、他の結合(水素結合・イオン結合・疎水性相互作用)よりも圧倒的に強力です。非常に強力な「留め金」として働き、熱安定性を高めます。髪の毛のパーマは、このS-S結合を切ったり作ったりして形を変えているんですよ!
+                </div>
+            </div>
+
+            <!-- 問題9 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題9
+                    <span class="difficulty intermediate">応用 ★★★</span>
+                </div>
+                <div class="question-text">
+                    四次構造について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q9" value="a">
+                        1本のポリペプチド鎖が折りたたまれた立体構造
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="b">
+                        複数のサブユニット(ポリペプチド鎖)が集合した構造
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="c">
+                        αヘリックスとβシートの組み合わせ
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q9" value="d">
+                        アミノ酸の配列順序
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    四次構造は、<strong>複数のサブユニット(ポリペプチド鎖)が集まって「チーム」を作った状態</strong>です。例:ヘモグロビンは4つのサブユニット(2α鎖+2β鎖)が集合。集まることで、①協同性(アロステリック効果)、②構造の安定化、③機能の調節という3つのメリットが生まれます。単なる足し算以上の機能が発現するのです!
+                </div>
+            </div>
+
+            <!-- 問題10 -->
+            <div class="question-card">
+                <div class="question-number">
+                    問題10
+                    <span class="difficulty advanced">発展 ★★★</span>
+                </div>
+                <div class="question-text">
+                    タンパク質の変性について、正しい説明はどれか。
+                </div>
+                <div class="options">
+                    <label class="option">
+                        <input type="radio" name="q10" value="a">
+                        熱やpHの変化でペプチド結合が切れて一次構造が崩れる
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="b">
+                        弱い結合(水素結合など)が切れて立体構造が崩れ、機能が失われる
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="c">
+                        変性したタンパク質は必ず元の状態に戻る(可逆的)
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="q10" value="d">
+                        変性してもタンパク質の機能は維持される
+                    </label>
+                </div>
+                <div class="explanation">
+                    <div class="explanation-title">解説</div>
+                    <strong>正解: B</strong><br>
+                    変性では、熱やpHの変化により<strong>弱い結合(水素結合・イオン結合など)が切れて立体構造が崩れます</strong>。重要なのは、<strong>ペプチド結合(一次構造)は切れない</strong>こと!立体構造が崩れると活性部位が変形し、基質と結合できなくなって機能を失います。ゆで卵のように、多くの変性は不可逆的(元に戻らない)です。
+                </div>
+            </div>
+
+            <button type="button" class="submit-btn" id="submitBtn" onclick="gradeQuiz()">採点する</button>
+        </form>
+
+        <div class="result-container" id="resultContainer">
+            <h2>📊 テスト結果</h2>
+            <div class="score" id="scoreDisplay"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="retry-btn" onclick="retryQuiz()">もう一度挑戦</button>
+            <button class="retry-btn" onclick="window.location.href='YOUR_YOUTUBE_CHANNEL_URL'">動画を復習する</button>
+        </div>
+
+        <div class="footer">
+            <p>🎓 <strong>難関大・医学部合格 偏差値爆上げ学習塾</strong></p>
+            <p>塾長 KAZUKI - 生物受験オンライン</p>
+            <p><a href="YOUR_YOUTUBE_CHANNEL_URL" target="_blank">YouTubeチャンネルはこちら</a></p>
+            <p style="margin-top: 10px; font-size: 14px; color: #999;">© 2026 生物受験オンライン All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // 正解データ
+        const answers = {
+            q1: 'a',
+            q2: 'b',
+            q3: 'a',
+            q4: 'b',
+            q5: 'b',
+            q6: 'b',
+            q7: 'a',
+            q8: 'd',
+            q9: 'b',
+            q10: 'b'
+        };
+
+        // 選択肢がクリックされたときの処理
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                
+                // 同じグループの他の選択肢からselectedクラスを削除
+                const name = radio.name;
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.parentElement.classList.remove('selected');
+                });
+                
+                // クリックされた選択肢にselectedクラスを追加
+                this.classList.add('selected');
+                
+                // プログレスバーを更新
+                updateProgress();
+            });
+        });
+
+        // プログレスバー更新
+        function updateProgress() {
+            let answered = 0;
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) answered++;
+            }
+            const progress = (answered / 10) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // 採点処理
+        function gradeQuiz() {
+            let allAnswered = true;
+            let score = 0;
+
+            // 全問回答チェック
+            for (let i = 1; i <= 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    break;
+                }
+            }
+
+            if (!allAnswered) {
+                alert('すべての問題に回答してください!');
+                return;
+            }
+
+            // 採点
+            for (let i = 1; i <= 10; i++) {
+                const questionNum = 'q' + i;
+                const selected = document.querySelector(`input[name="${questionNum}"]:checked`);
+                const selectedValue = selected ? selected.value : '';
+                const correctAnswer = answers[questionNum];
+                
+                // すべての選択肢から正解・不正解クラスを削除
+                document.querySelectorAll(`input[name="${questionNum}"]`).forEach(input => {
+                    input.parentElement.classList.remove('correct', 'incorrect');
+                });
+
+                // 正解判定と色付け
+                if (selectedValue === correctAnswer) {
+                    score++;
+                    selected.parentElement.classList.add('correct');
+                } else {
+                    selected.parentElement.classList.add('incorrect');
+                    // 正解の選択肢も表示
+                    const correctOption = document.querySelector(`input[name="${questionNum}"][value="${correctAnswer}"]`);
+                    if (correctOption) {
+                        correctOption.parentElement.classList.add('correct');
+                    }
+                }
+
+                // 解説を表示
+                const questionCard = selected.closest('.question-card');
+                const explanation = questionCard.querySelector('.explanation');
+                explanation.classList.add('show');
+            }
+
+            // 結果表示
+            const percentage = (score / 10) * 100;
+            document.getElementById('scoreDisplay').textContent = `${score} / 10 問正解 (${percentage}%)`;
+            
+            let message = '';
+            if (score === 10) {
+                message = '🎉 完璧です!アミノ酸・タンパク質を完全マスターしました!';
+            } else if (score >= 8) {
+                message = '✨ 素晴らしい!構造→性質→機能の流れが理解できています!';
+            } else if (score >= 6) {
+                message = '👍 良くできました!間違えた問題を復習しましょう。';
+            } else if (score >= 4) {
+                message = '📚 もう一度動画を見て復習しましょう!';
+            } else {
+                message = '💪 諦めないで!基礎から丁寧に復習しましょう。';
+            }
+            
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('resultContainer').classList.add('show');
+            
+            // 採点ボタンを無効化
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '採点済み';
+
+            // 結果までスクロール
+            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // リトライ
+        function retryQuiz() {
+            // フォームをリセット
+            document.getElementById('quizForm').reset();
+            
+            // すべてのクラスをリセット
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // 解説を非表示
+            document.querySelectorAll('.explanation').forEach(exp => {
+                exp.classList.remove('show');
+            });
+            
+            // 結果を非表示
+            document.getElementById('resultContainer').classList.remove('show');
+            
+            // 採点ボタンを有効化
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '採点する';
+            
+            // プログレスバーをリセット
+            document.getElementById('progressBar').style.width = '0%';
+            
+            // ページトップにスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

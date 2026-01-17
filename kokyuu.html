@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#11 確認テスト｜呼吸・電子伝達系＆実験（脱・暗記）</title>
+  <style>
+    :root{
+      --bg1:#667eea; --bg2:#764ba2;
+      --text:#111827; --muted:#6b7280;
+      --good:#16a34a; --bad:#dc2626; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding: 20px 12px 40px;
+    }
+    .wrap{max-width:980px; margin:0 auto;}
+    .hero{
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 18px 16px;
+      backdrop-filter: blur(8px);
+    }
+    .row{display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .badge{
+      display:inline-flex; align-items:center;
+      background: rgba(220,38,38,0.95);
+      color:#fff; font-weight:900;
+      padding: 6px 10px; border-radius: 999px;
+      letter-spacing: .04em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+    .chip{
+      display:inline-flex; align-items:center;
+      background: rgba(17,24,39,0.92);
+      color:#fff; font-weight:800;
+      padding: 6px 10px; border-radius: 999px;
+    }
+    .chip.warn{background: rgba(245,158,11,0.95); color:#111827;}
+    h1{margin:8px 0 6px; font-size: clamp(20px, 3.2vw, 34px); color:#fff;}
+    .sub{color: rgba(255,255,255,0.9); margin:0; line-height:1.6}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px;}
+    .card{
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .topbar{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .progressWrap{flex:1 1 320px;}
+    .progressLabel{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-bottom:6px;}
+    .progress{width:100%; height:10px; border-radius:999px; background:#e5e7eb; overflow:hidden;}
+    .progress>div{height:100%; width:0%; background: linear-gradient(90deg, #22c55e, #f59e0b);}
+
+    .qhead{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .qno{font-weight:900; background:#111827; color:#fff; padding:6px 10px; border-radius:999px; font-size:12px;}
+    .difficulty{font-weight:900; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid rgba(17,24,39,0.10); background:#f3f4f6;}
+    .difficulty.b{background:#ecfeff;}
+    .difficulty.a{background:#fff7ed;}
+    .difficulty.s{background:#fdf2f8;}
+
+    .qtext{margin:10px 0 12px; font-size:16px; line-height:1.6;}
+    .options{display:grid; gap:10px;}
+    .opt{
+      width:100%; text-align:left;
+      border-radius:14px; border:1px solid rgba(17,24,39,0.12);
+      background:#fff; padding:12px 12px; font-weight:800;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .opt:hover{transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,0.08);}
+    .opt.selected{border-color:#2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.18)}
+    .opt.correct{border-color: var(--good); background: rgba(22,163,74,0.08)}
+    .opt.wrong{border-color: var(--bad); background: rgba(220,38,38,0.08)}
+
+    .explain{
+      margin-top:12px; border-radius:14px; padding:12px;
+      background:#f8fafc; border:1px solid rgba(17,24,39,0.10);
+      display:none;
+    }
+    .explain.good{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.06)}
+    .explain.bad{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.06)}
+    .explain h3{margin:0 0 6px; font-size:14px;}
+    .explain p{margin:0; line-height:1.6;}
+    .explain .mini{margin-top:8px; color:var(--muted); font-size:12px;}
+
+    .actions{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+    .btn{border:0; cursor:pointer; font-weight:900; padding:12px 14px; border-radius:12px; background:#111827; color:#fff;}
+    .btn.secondary{background:#e5e7eb; color:#111827;}
+    .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+    .result{display:none;}
+    .score{font-size:34px; font-weight:1000; margin:2px 0 8px;}
+    .judge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font-weight:900;}
+    .judge.pass{background: rgba(22,163,74,0.12); color:#166534; border:1px solid rgba(22,163,74,0.35)}
+    .judge.fail{background: rgba(220,38,38,0.12); color:#991b1b; border:1px solid rgba(220,38,38,0.35)}
+
+    .footer{margin-top:14px; color: rgba(255,255,255,0.9); font-size:12px; text-align:center;}
+    @media(min-width: 900px){.grid{grid-template-columns: 1.15fr 0.85fr; align-items:start;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="row">
+        <span class="badge">脱・暗記！</span>
+        <span class="chip">LECTURE NO.11｜呼吸・電子伝達系＋実験</span>
+        <span class="chip warn">合格ライン：8/10</span>
+      </div>
+      <h1>#11 確認テスト｜呼吸・電子伝達系＆実験（10問・解説付き）</h1>
+      <p class="sub">電子伝達系（複合体I–IV）と化学浸透説でATPができる理由／NADH(2.5) vs FADH₂(1.5)／RQ／阻害剤・脱共役剤／グラフ読解…を一気に固めます。</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="topbar">
+          <div class="progressWrap">
+            <div class="progressLabel"><span id="progressText">進捗：0/10</span><span id="scoreText">スコア：0</span></div>
+            <div class="progress"><div id="progressBar"></div></div>
+          </div>
+          <div class="row">
+            <span class="chip" style="background:#0ea5e9;">#電子伝達系</span>
+            <span class="chip" style="background:#0ea5e9;">#呼吸商RQ</span>
+            <span class="chip" style="background:#16a34a;">8/10合格</span>
+          </div>
+        </div>
+
+        <div id="questionArea" style="margin-top:14px;"></div>
+
+        <div class="actions">
+          <button class="btn secondary" id="prevBtn">← 前へ</button>
+          <button class="btn" id="nextBtn">次へ →</button>
+          <button class="btn" id="finishBtn" style="display:none;">採点して結果を見る</button>
+          <button class="btn secondary" id="retryBtn" style="display:none;">もう一度やる（リトライ）</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 10px; font-size:16px;">使い方</h2>
+        <ul style="margin:0; padding-left:18px; line-height:1.75;">
+          <li>各問4択。選ぶとその場で解説が出ます。</li>
+          <li>最後に採点し、8/10以上で合格。</li>
+          <li>阻害剤は「どこが止まる？→H+勾配は？→ATPは？」で整理。</li>
+        </ul>
+
+        <div style="margin-top:12px; padding:12px; border-radius:14px; background:#fff7ed; border:1px solid rgba(245,158,11,0.35);">
+          <div style="font-weight:1000; margin-bottom:6px;">頻出ひっかけ（この回の核）</div>
+          <div style="line-height:1.65; font-weight:800; color:#7c2d12;">
+            ・NADHは複合体Iから→約2.5ATP／FADH₂は複合体IIから→約1.5ATP【スライド】<br/>
+            ・化学浸透説：H+勾配がATPの原動力【台本】<br/>
+            ・RQ=CO₂/O₂（糖1.0・脂肪0.7・タンパク0.8）【台本】
+          </div>
+        </div>
+
+        <div id="resultArea" class="result" style="margin-top:14px;">
+          <h2 style="margin:0 0 6px; font-size:16px;">結果</h2>
+          <div class="score" id="finalScore">0/10</div>
+          <div id="judge" class="judge fail">判定：未採点</div>
+          <p id="advice" style="margin:10px 0 0; color:var(--muted); line-height:1.65;"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">© KAZUKI 生物｜#11 呼吸・実験 確認テスト（HTML単体・個人情報なし）</div>
+  </div>
+
+<script>
+const PASS_LINE = 8;
+
+const questions = [
+  {
+    id: 1,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "講義の比喩：電子伝達系が『ATMマシン』と呼ばれる理由として最も近いのは？",
+    options: [
+      "ATPを分解してNADHを作るから",
+      "NADH/FADH₂という“使いにくい形”のエネルギーをATPという“使える形”に交換するから",
+      "CO₂を吸収してO₂を放出するから",
+      "グルコースを合成するから"
+    ],
+    answer: 1,
+    explain: "台本の比喩どおり、電子伝達系はNADH/FADH₂を『ATPに交換するATM』として理解すると流れが掴めます。"
+  },
+  {
+    id: 2,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "NADHとFADH₂の違いとして正しいのはどれ？",
+    options: [
+      "FADH₂は複合体Iから入り、NADHは複合体IIから入る",
+      "NADHは複合体Iから入り約2.5ATP、FADH₂は複合体IIから入り約1.5ATP",
+      "どちらも必ず同じATP数を生む",
+      "どちらも酸素を直接分解してATPを作る"
+    ],
+    answer: 1,
+    explain: "スライドの核：NADH→複合体I（P/O≈2.5）、FADH₂→複合体II（P/O≈1.5）。入口の違い＝H+汲み出し差です。"
+  },
+  {
+    id: 3,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "複合体I〜IVのうち、H+ポンプとして働くものの組み合わせとして正しいのは？",
+    options: [
+      "I・II・III・IV",
+      "I・III・IV",
+      "II・IIIのみ",
+      "II・IVのみ"
+    ],
+    answer: 1,
+    explain: "講義の整理：H+を汲み出すのはI・III・IV。IIは基本的にポンプしません。"
+  },
+  {
+    id: 4,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "化学浸透説（chemiosmotic theory）の核心として正しいのは？",
+    options: [
+      "ATPはO₂が直接分解されてできる",
+      "H+濃度勾配（＋膜電位）＝プロトン駆動力がATP合成の原動力",
+      "NADHはATPの材料そのもの",
+      "ATPはミトコンドリア外膜で作られる"
+    ],
+    answer: 1,
+    explain: "台本の核心：電子の落差→H+勾配を作る→その勾配を使ってATP合成酵素がATPを作る。"
+  },
+  {
+    id: 5,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "ATP合成酵素（ATP synthase）の説明として最も適切なのは？",
+    options: [
+      "H+が通ることで回転し、構造変化でATPを合成する“回転モーター”",
+      "NADHを直接ATPに変える酵素",
+      "CO₂を固定する酵素",
+      "細胞質で解糖系を進める酵素"
+    ],
+    answer: 0,
+    explain: "講義の表現：ATP合成酵素は『世界最小の回転モーター』。H+の流れが回転力になりATPが作られます。"
+  },
+  {
+    id: 6,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "シャトル系の違い：リンゴ酸-アスパラギン酸シャトルが示すATP収支（目安）として講義で扱うのは？",
+    options: [
+      "32 ATP",
+      "30 ATP",
+      "4 ATP",
+      "2 ATP"
+    ],
+    answer: 0,
+    explain: "講義の整理：リンゴ酸-アスパラギン酸シャトル（効率重視）→32ATP、グリセロリン酸シャトル→30ATP。"
+  },
+  {
+    id: 7,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "呼吸商（RQ）の定義として正しいのはどれ？",
+    options: [
+      "RQ = O₂/CO₂",
+      "RQ = CO₂/O₂",
+      "RQ = ATP/O₂",
+      "RQ = NADH/FADH₂"
+    ],
+    answer: 1,
+    explain: "台本の定義：RQ = 放出CO₂量 / 消費O₂量。"
+  },
+  {
+    id: 8,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "呼吸商RQの典型値の組み合わせとして正しいのは？",
+    options: [
+      "糖1.0・脂肪0.7・タンパク0.8",
+      "糖0.7・脂肪1.0・タンパク0.8",
+      "糖1.0・脂肪1.0・タンパク0.7",
+      "糖0.8・脂肪0.7・タンパク1.0"
+    ],
+    answer: 0,
+    explain: "講義の頻出セット：糖1.0、脂肪0.7、タンパク質0.8。"
+  },
+  {
+    id: 9,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "ワールブルグ検圧計でKOHを入れる主な目的は？",
+    options: [
+      "O₂を吸収して量を測るため",
+      "CO₂を吸収して、気体体積の変化からO₂消費を読み取るため",
+      "ATPを分解するため",
+      "温度を一定にするため"
+    ],
+    answer: 1,
+    explain: "台本の要点：KOHはCO₂を吸収。CO₂が除かれると、残る体積変化＝主にO₂消費の指標になります。"
+  },
+  {
+    id: 10,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "阻害剤・脱共役剤の整理：DNPの作用として正しいのは？",
+    options: [
+      "複合体IVを止めて酸素消費もATP合成も止める",
+      "ATP合成酵素を直接止める",
+      "H+勾配を壊してATP合成を低下させ、エネルギーは熱として散逸する",
+      "解糖系だけを止める"
+    ],
+    answer: 2,
+    explain: "講義の整理：DNPは脱共役剤。H+勾配をショートさせ、ATPは作りにくくなり、熱としてエネルギーが散逸します。"
+  }
+];
+
+let state = { index: 0, answers: Array(questions.length).fill(null), checked: Array(questions.length).fill(false) };
+
+const elQ = document.getElementById('questionArea');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+const retryBtn = document.getElementById('retryBtn');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const progressBar = document.getElementById('progressBar');
+const resultArea = document.getElementById('resultArea');
+const finalScore = document.getElementById('finalScore');
+const judge = document.getElementById('judge');
+const advice = document.getElementById('advice');
+
+function calcScore(){
+  let s=0;
+  for(let i=0;i<questions.length;i++) if(state.answers[i]===questions[i].answer) s++;
+  return s;
+}
+
+function updateTop(){
+  const done = state.answers.filter(v=>v!==null).length;
+  progressText.textContent = `進捗：${state.index+1}/${questions.length}（回答済み ${done}/${questions.length}）`;
+  const s = calcScore();
+  scoreText.textContent = `スコア：${s}`;
+  progressBar.style.width = `${((state.index)/ (questions.length-1))*100}%`;
+}
+
+function render(){
+  const q = questions[state.index];
+  updateTop();
+
+  const picked = state.answers[state.index];
+  const checked = state.checked[state.index];
+
+  elQ.innerHTML = `
+    <div class="qhead">
+      <div class="qno">Q${q.id}</div>
+      <div class="difficulty ${q.level}">${q.difficulty}</div>
+    </div>
+    <div class="qtext">${q.q}</div>
+    <div class="options">
+      ${q.options.map((t,idx)=>{
+        let cls = 'opt';
+        if(picked===idx) cls += ' selected';
+        if(checked){
+          if(idx===q.answer) cls += ' correct';
+          else if(picked===idx && picked!==q.answer) cls += ' wrong';
+        }
+        return `<button class="${cls}" data-idx="${idx}">${['A','B','C','D'][idx]}. ${t}</button>`;
+      }).join('')}
+    </div>
+    <div class="explain" id="explainBox"></div>
+  `;
+
+  const explainBox = document.getElementById('explainBox');
+  if(checked){
+    const ok = picked===q.answer;
+    explainBox.className = 'explain ' + (ok ? 'good':'bad');
+    explainBox.style.display = 'block';
+    explainBox.innerHTML = `
+      <h3>${ok ? '✅ 正解！' : '❌ 不正解…'}</h3>
+      <p>${q.explain}</p>
+      <div class="mini">ポイント：『どこが止まる→H+勾配→ATP→O₂/CO₂』の順に因果で追う。</div>
+    `;
+  } else {
+    explainBox.style.display = 'none';
+  }
+
+  prevBtn.disabled = state.index===0;
+  const isLast = state.index===questions.length-1;
+  nextBtn.style.display = isLast ? 'none' : 'inline-block';
+  finishBtn.style.display = isLast ? 'inline-block' : 'none';
+
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = Number(btn.getAttribute('data-idx'));
+      state.answers[state.index]=idx;
+      state.checked[state.index]=true;
+      render();
+    });
+  });
+}
+
+prevBtn.addEventListener('click', ()=>{ state.index--; render(); });
+nextBtn.addEventListener('click', ()=>{ state.index++; render(); });
+
+finishBtn.addEventListener('click', ()=>{
+  const score = calcScore();
+  resultArea.style.display = 'block';
+  finalScore.textContent = `${score}/10`;
+  const passed = score>=PASS_LINE;
+  judge.className = 'judge ' + (passed ? 'pass':'fail');
+  judge.textContent = passed ? `🎉 合格（${PASS_LINE}/10以上）` : `あと${PASS_LINE-score}問で合格（合格ライン ${PASS_LINE}/10）`;
+
+  const unanswered = state.answers.filter(v=>v===null).length;
+  let msg='';
+  if(unanswered>0) msg += `未回答が${unanswered}問あります。まず全問回答→リトライ推奨。 `;
+  if(passed){
+    msg += '次は「複合体I–IV→H+→ATP合成酵素」を図で描けるか挑戦！';
+  } else {
+    msg += 'まずはQ2/Q4/Q9（入口差・化学浸透・装置原理）を言語化→図解して再挑戦！';
+  }
+  advice.textContent = msg;
+
+  retryBtn.style.display='inline-block';
+  finishBtn.disabled = true;
+});
+
+retryBtn.addEventListener('click', ()=>{
+  state = { index:0, answers:Array(questions.length).fill(null), checked:Array(questions.length).fill(false)};
+  resultArea.style.display='none';
+  finishBtn.disabled=false;
+  retryBtn.style.display='none';
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

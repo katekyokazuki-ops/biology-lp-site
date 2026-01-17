@@ -1,0 +1,514 @@
+python3 - << 'PY'
+import os, textwrap, json, re
+
+# Build HTML test similar to previous ones
+html = r'''<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#9 確認テスト｜酵素・ATP（脱・暗記）</title>
+  <style>
+    :root{
+      --bg1:#667eea; --bg2:#764ba2;
+      --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+      --good:#16a34a; --bad:#dc2626; --accent:#f59e0b;
+      --chip:#111827; --chip2:#0f172a;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,0.15), transparent 60%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding: 20px 12px 40px;
+    }
+    .wrap{max-width:980px; margin:0 auto;}
+    .hero{
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 18px 16px;
+      backdrop-filter: blur(8px);
+    }
+    .titleRow{display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      background: rgba(220,38,38,0.95);
+      color:#fff; font-weight:800;
+      padding: 6px 10px; border-radius: 999px;
+      letter-spacing: .04em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+    .kicker{
+      display:inline-flex; align-items:center; gap:8px;
+      background: rgba(17,24,39,0.92);
+      color:#fff; font-weight:700;
+      padding: 6px 10px; border-radius: 999px;
+    }
+    h1{margin:8px 0 6px; font-size: clamp(20px, 3.2vw, 34px); color:#fff;}
+    .sub{color: rgba(255,255,255,0.88); margin:0; line-height:1.6}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px;}
+    .card{
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .topbar{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .progressWrap{flex: 1 1 320px;}
+    .progressLabel{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-bottom:6px;}
+    .progress{
+      width:100%; height:10px; border-radius:999px;
+      background: #e5e7eb;
+      overflow:hidden;
+    }
+    .progress > div{height:100%; width:0%; background: linear-gradient(90deg, #22c55e, #f59e0b);}
+
+    .pillRow{display:flex; gap:8px; flex-wrap:wrap;}
+    .pill{
+      font-size:12px; color:#fff; font-weight:700;
+      background: #111827;
+      padding: 6px 10px; border-radius:999px;
+    }
+    .pill.accent{background: #0ea5e9;}
+    .pill.pass{background: #16a34a;}
+
+    .qhead{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .qno{
+      font-weight:900;
+      background: #111827;
+      color:#fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing:.03em;
+    }
+    .difficulty{
+      font-weight:800; font-size:12px;
+      padding:6px 10px; border-radius:999px;
+      background:#f3f4f6; color:#111827;
+      border:1px solid rgba(17,24,39,0.10);
+    }
+    .difficulty.b{background:#ecfeff;}
+    .difficulty.a{background:#fff7ed;}
+    .difficulty.s{background:#fdf2f8;}
+
+    .qtext{margin:10px 0 12px; font-size: 16px; line-height:1.6;}
+
+    .options{display:grid; gap:10px;}
+    .opt{
+      width:100%; text-align:left;
+      border-radius: 14px;
+      border: 1px solid rgba(17,24,39,0.12);
+      background: #fff;
+      padding: 12px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .06s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .opt:hover{transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,0.08);}
+    .opt.selected{border-color:#2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.18)}
+    .opt.correct{border-color: var(--good); background: rgba(22,163,74,0.08)}
+    .opt.wrong{border-color: var(--bad); background: rgba(220,38,38,0.08)}
+
+    .actions{display:flex; gap:10px; margin-top: 12px; flex-wrap:wrap;}
+    .btn{
+      border:0; cursor:pointer; font-weight:900;
+      padding: 12px 14px; border-radius: 12px;
+      background:#111827; color:#fff;
+    }
+    .btn.secondary{background:#e5e7eb; color:#111827;}
+    .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+    .explain{
+      margin-top: 12px;
+      border-radius: 14px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid rgba(17,24,39,0.10);
+      display:none;
+    }
+    .explain.good{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.06)}
+    .explain.bad{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.06)}
+    .explain h3{margin:0 0 6px; font-size:14px;}
+    .explain p{margin:0; color:var(--text); line-height:1.6;}
+    .explain .mini{margin-top:8px; color:var(--muted); font-size: 12px;}
+
+    .result{display:none;}
+    .score{
+      font-size: 34px; font-weight: 1000;
+      margin: 2px 0 8px;
+    }
+    .judge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px; border-radius:999px;
+      font-weight: 900;
+    }
+    .judge.pass{background: rgba(22,163,74,0.12); color: #166534; border: 1px solid rgba(22,163,74,0.35)}
+    .judge.fail{background: rgba(220,38,38,0.12); color: #991b1b; border: 1px solid rgba(220,38,38,0.35)}
+
+    .footer{
+      margin-top: 14px;
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      text-align:center;
+    }
+
+    @media(min-width: 900px){
+      .grid{grid-template-columns: 1.15fr 0.85fr; align-items:start;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="titleRow">
+        <span class="badge">脱・暗記！</span>
+        <span class="kicker">LECTURE NO.09｜酵素・ATP</span>
+        <span class="kicker" style="background: rgba(245,158,11,0.95); color:#111827;">合格ライン：8/10</span>
+      </div>
+      <h1>#9 確認テスト｜酵素・ATP（10問・解説付き）</h1>
+      <p class="sub">「なぜ？」で繋げる：酵素（阻害＝Vmaxで判定）→ ATP（エネルギー通貨）→ 脱共役（空回り）。スマホでも解きやすい設計です。</p>
+    </div>
+
+    <div class="grid">
+      <div class="card" id="quizCard">
+        <div class="topbar">
+          <div class="progressWrap">
+            <div class="progressLabel"><span id="progressText">進捗：0/10</span><span id="scoreText">スコア：0</span></div>
+            <div class="progress"><div id="progressBar"></div></div>
+          </div>
+          <div class="pillRow">
+            <span class="pill accent">#酵素</span>
+            <span class="pill accent">#ATP</span>
+            <span class="pill pass">8/10合格</span>
+          </div>
+        </div>
+
+        <div id="questionArea" style="margin-top:14px;"></div>
+
+        <div class="actions">
+          <button class="btn secondary" id="prevBtn">← 前へ</button>
+          <button class="btn" id="nextBtn">次へ →</button>
+          <button class="btn" id="finishBtn" style="display:none;">採点して結果を見る</button>
+          <button class="btn secondary" id="retryBtn" style="display:none;">もう一度やる（リトライ）</button>
+        </div>
+      </div>
+
+      <div class="card" id="sideCard">
+        <h2 style="margin:0 0 10px; font-size:16px;">使い方</h2>
+        <ul style="margin:0; padding-left:18px; color:var(--text); line-height:1.75;">
+          <li>各問4択。選ぶと自動で記録されます。</li>
+          <li>「次へ」で進み、最後に採点します。</li>
+          <li>解説を読んだら「リトライ」で満点を狙いましょう。</li>
+        </ul>
+        <div style="margin-top:12px; padding:12px; border-radius:14px; background:#fff7ed; border:1px solid rgba(245,158,11,0.35);">
+          <div style="font-weight:900; margin-bottom:6px;">頻出ひっかけ</div>
+          <div style="color:#7c2d12; line-height:1.65; font-weight:700;">
+            ・酵素はΔGを変えない（変えるのは活性化エネルギー）<br/>
+            ・阻害の判定は「位置」ではなく「Vmaxまで行くか」
+          </div>
+        </div>
+
+        <div id="resultArea" class="result" style="margin-top:14px;">
+          <h2 style="margin:0 0 6px; font-size:16px;">結果</h2>
+          <div class="score" id="finalScore">0/10</div>
+          <div id="judge" class="judge fail">判定：未採点</div>
+          <p id="advice" style="margin:10px 0 0; color:var(--muted); line-height:1.65;"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">© KAZUKI 生物｜#9 酵素・ATP 確認テスト（HTML単体・個人情報なし）</div>
+  </div>
+
+<script>
+const PASS_LINE = 8;
+
+const questions = [
+  {
+    id: 1,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "酵素（enzyme）の説明として最も正しいものはどれ？",
+    options: [
+      "反応のΔG（反応熱）を変えて反応を進みやすくする物質",
+      "生体内で化学反応を促進するタンパク質性の触媒で、自身は反応前後で基本的に変化しない",
+      "反応後に必ず分解されるため、毎回新しく合成が必要な物質",
+      "基質と無関係に、どんな反応でも同じ速度で進める物質"
+    ],
+    answer: 1,
+    explain: "酵素はタンパク質でできた生体触媒。反応を速めますが、自身は基本的に消費されず繰り返し使えます（触媒）。"
+  },
+  {
+    id: 2,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "酵素の『基質特異性』が生まれる主な理由として最も適切なのは？",
+    options: [
+      "酵素はすべて同じ形なので、どの基質にも結合できる",
+      "活性部位の立体構造や電荷・親水/疎水性が、特定の基質と相補的に合う",
+      "基質特異性は温度だけで決まる",
+      "酵素は核酸でできているため塩基配列で基質が決まる"
+    ],
+    answer: 1,
+    explain: "活性部位（Active site）の形・電荷・親水/疎水性などの相性が、特定の基質だけを選びます。"
+  },
+  {
+    id: 3,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "『誘導適合（induced fit）モデル』のイメージに最も近い比喩はどれ？",
+    options: [
+      "鍵と鍵穴：最初から形が完全に固定されている",
+      "握手：相手（基質）に合わせて酵素側も形を調整する",
+      "石と紙：強い方が一方的に勝つ",
+      "交通信号：一定周期で変わる"
+    ],
+    answer: 1,
+    explain: "台本の比喩どおり、誘導適合は“握手”。基質に合わせて酵素側が形を変え、反応を進めやすくします。"
+  },
+  {
+    id: 4,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "酵素が変えるのはどれ？（ひっかけ頻出）",
+    options: [
+      "反応のスタートとゴールのエネルギー差（ΔG）",
+      "活性化エネルギー（反応の途中の壁の高さ）",
+      "生成物の種類",
+      "反応の化学式そのもの"
+    ],
+    answer: 1,
+    explain: "酵素はΔG（出発点と到達点の差）は変えません。変えるのは途中の“壁”＝活性化エネルギーです。"
+  },
+  {
+    id: 5,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "ヒトの酵素の最適温度として講義で強調されていた目安は？",
+    options: ["0℃", "約37℃", "約60℃", "約100℃"],
+    answer: 1,
+    explain: "ヒトの酵素は体温付近（約37℃）が目安。高温では変性して失活しやすいです。"
+  },
+  {
+    id: 6,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "最適pHの組み合わせとして正しいものはどれ？",
+    options: [
+      "ペプシン：7／アミラーゼ：2／トリプシン：8",
+      "ペプシン：2／アミラーゼ：7／トリプシン：8",
+      "ペプシン：8／アミラーゼ：7／トリプシン：2",
+      "ペプシン：7／アミラーゼ：8／トリプシン：2"
+    ],
+    answer: 1,
+    explain: "講義の代表例：ペプシンpH2、アミラーゼpH7、トリプシンpH8。"
+  },
+  {
+    id: 7,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "競争阻害（competitive inhibition）と非競争阻害（non-competitive inhibition）の見分け方として正しいのは？",
+    options: [
+      "グラフが上にある方が必ず競争阻害",
+      "最終的にVmaxが元の高さまで戻るなら競争阻害、Vmax自体が低下するなら非競争阻害",
+      "基質濃度を上げても必ずVmaxは同じになる",
+      "どちらもVmaxは必ず低下する"
+    ],
+    answer: 1,
+    explain: "重要ルール：位置ではなく“Vmaxまで行くか”。Vmax不変→競争阻害、Vmax低下→非競争阻害。"
+  },
+  {
+    id: 8,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "ATPの基本構造として正しいものはどれ？",
+    options: [
+      "アデニン＋リボース＋リン酸が1つ",
+      "アデニン＋リボース＋リン酸が3つ",
+      "グルコース＋リン酸が3つ",
+      "脂肪酸＋グリセロール＋リン酸が3つ"
+    ],
+    answer: 1,
+    explain: "ATPはアデニン（塩基）＋リボース（糖）＋リン酸3つ。これが“通貨”として使いやすい形の基本です。"
+  },
+  {
+    id: 9,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "ATPが体内に少量（例：50g程度）しか存在しないのに生命活動を支えられる理由として最も適切なのは？",
+    options: [
+      "ATPは一度使うと二度と再利用できないが、常に大量に蓄えているから",
+      "ATP-ADPサイクルで高速にリサイクルされ、1日に何千回も回転するから",
+      "ATPは反応を触媒するから",
+      "ATPは細胞壁に貯蔵されるから"
+    ],
+    answer: 1,
+    explain: "ATPは“バッテリー”のように充電（合成）と放電（分解）を高速に繰り返す＝ATP-ADPサイクルが本質です。"
+  },
+  {
+    id: 10,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "『阻害剤』と『脱共役剤』の違いとして正しいものはどれ？",
+    options: [
+      "脱共役剤は酸素消費もATP合成も止める",
+      "阻害剤は酸素消費は続くがATP合成だけ止める",
+      "脱共役剤は酸素消費は続く（空回り）一方でATP合成が止まり、エネルギーは熱として放出される",
+      "どちらも酸素消費は必ず増える"
+    ],
+    answer: 2,
+    explain: "脱共役剤はH+濃度勾配を壊すので酸素消費は続くがATP合成が止まる（空回り）。阻害剤は電子伝達系を止めるため酸素消費も止まりやすい、が講義の核です。"
+  }
+];
+
+let state = {
+  index: 0,
+  answers: Array(questions.length).fill(null),
+  checked: Array(questions.length).fill(false)
+};
+
+const elQ = document.getElementById('questionArea');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+const retryBtn = document.getElementById('retryBtn');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const progressBar = document.getElementById('progressBar');
+const resultArea = document.getElementById('resultArea');
+const finalScore = document.getElementById('finalScore');
+const judge = document.getElementById('judge');
+const advice = document.getElementById('advice');
+
+function calcScore(){
+  let s=0;
+  for(let i=0;i<questions.length;i++){
+    if(state.answers[i]===questions[i].answer) s++;
+  }
+  return s;
+}
+
+function updateTop(){
+  const done = state.answers.filter(v=>v!==null).length;
+  progressText.textContent = `進捗：${state.index+1}/${questions.length}（回答済み ${done}/${questions.length}）`;
+  const s = calcScore();
+  scoreText.textContent = `スコア：${s}`;
+  progressBar.style.width = `${((state.index)/ (questions.length-1))*100}%`;
+}
+
+function render(){
+  const q = questions[state.index];
+  updateTop();
+
+  const picked = state.answers[state.index];
+  const checked = state.checked[state.index];
+
+  const diffClass = q.level;
+  elQ.innerHTML = `
+    <div class="qhead">
+      <div class="qno">Q${q.id}</div>
+      <div class="difficulty ${diffClass}">${q.difficulty}</div>
+    </div>
+    <div class="qtext">${q.q}</div>
+    <div class="options">
+      ${q.options.map((t,idx)=>{
+        let cls = 'opt';
+        if(picked===idx) cls += ' selected';
+        if(checked){
+          if(idx===q.answer) cls += ' correct';
+          else if(picked===idx && picked!==q.answer) cls += ' wrong';
+        }
+        return `<button class="${cls}" data-idx="${idx}">${['A','B','C','D'][idx]}. ${t}</button>`;
+      }).join('')}
+    </div>
+    <div class="explain" id="explainBox"></div>
+  `;
+
+  const explainBox = document.getElementById('explainBox');
+  if(checked){
+    const ok = picked===q.answer;
+    explainBox.className = 'explain ' + (ok ? 'good':'bad');
+    explainBox.style.display = 'block';
+    explainBox.innerHTML = `
+      <h3>${ok ? '✅ 正解！' : '❌ 不正解…'}</h3>
+      <p>${q.explain}</p>
+      <div class="mini">ポイント：暗記ではなく「なぜそうなるか」を言語化→図で描けるかで確認。</div>
+    `;
+  } else {
+    explainBox.style.display = 'none';
+  }
+
+  // Buttons
+  prevBtn.disabled = state.index===0;
+  const isLast = state.index===questions.length-1;
+  nextBtn.style.display = isLast ? 'none' : 'inline-block';
+  finishBtn.style.display = isLast ? 'inline-block' : 'none';
+
+  // option click
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = Number(btn.getAttribute('data-idx'));
+      state.answers[state.index]=idx;
+      // show explanation immediately
+      state.checked[state.index]=true;
+      render();
+    });
+  });
+}
+
+prevBtn.addEventListener('click', ()=>{ state.index--; render(); });
+nextBtn.addEventListener('click', ()=>{ state.index++; render(); });
+
+finishBtn.addEventListener('click', ()=>{
+  // check all unanswered? allow but warn in advice
+  const score = calcScore();
+  resultArea.style.display = 'block';
+  finalScore.textContent = `${score}/10`;
+  const passed = score>=PASS_LINE;
+  judge.className = 'judge ' + (passed ? 'pass':'fail');
+  judge.textContent = passed ? `🎉 合格（${PASS_LINE}/10以上）` : `あと${PASS_LINE-score}問で合格（合格ライン ${PASS_LINE}/10）`;
+
+  const unanswered = state.answers.filter(v=>v===null).length;
+  let msg = '';
+  if(unanswered>0){
+    msg += `未回答が${unanswered}問あります。まずは全問回答→リトライがおすすめ。 `;
+  }
+  if(passed){
+    msg += '次は「阻害剤 vs 脱共役剤」の説明を“自分の言葉”で1分で言えるか挑戦しましょう。';
+  } else {
+    msg += 'まずはQ4（ΔGと活性化エネルギー）とQ7（Vmax判定）を言語化→図で描いてから再挑戦！';
+  }
+  advice.textContent = msg;
+
+  retryBtn.style.display = 'inline-block';
+  finishBtn.disabled = true;
+});
+
+retryBtn.addEventListener('click', ()=>{
+  state = { index: 0, answers: Array(questions.length).fill(null), checked: Array(questions.length).fill(false)};
+  resultArea.style.display = 'none';
+  finishBtn.disabled = false;
+  retryBtn.style.display = 'none';
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
+'''
+
+out_path = '/home/user/enzyme_atp_test.html'
+with open(out_path,'w',encoding='utf-8') as f:
+    f.write(html)
+
+print(out_path, os.path.getsize(out_path))
+PY

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#10 確認テスト｜代謝・異化（脱・暗記）</title>
+  <style>
+    :root{
+      --bg1:#667eea; --bg2:#764ba2;
+      --text:#111827; --muted:#6b7280;
+      --good:#16a34a; --bad:#dc2626; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+      color:var(--text);
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+      padding: 20px 12px 40px;
+    }
+    .wrap{max-width:980px; margin:0 auto;}
+    .hero{
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 18px;
+      padding: 18px 16px;
+      backdrop-filter: blur(8px);
+    }
+    .row{display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .badge{
+      display:inline-flex; align-items:center;
+      background: rgba(220,38,38,0.95);
+      color:#fff; font-weight:900;
+      padding: 6px 10px; border-radius: 999px;
+      letter-spacing: .04em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+    .chip{
+      display:inline-flex; align-items:center;
+      background: rgba(17,24,39,0.92);
+      color:#fff; font-weight:800;
+      padding: 6px 10px; border-radius: 999px;
+    }
+    .chip.warn{background: rgba(245,158,11,0.95); color:#111827;}
+    h1{margin:8px 0 6px; font-size: clamp(20px, 3.2vw, 34px); color:#fff;}
+    .sub{color: rgba(255,255,255,0.9); margin:0; line-height:1.6}
+
+    .grid{display:grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px;}
+    .card{
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }
+
+    .topbar{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .progressWrap{flex:1 1 320px;}
+    .progressLabel{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-bottom:6px;}
+    .progress{width:100%; height:10px; border-radius:999px; background:#e5e7eb; overflow:hidden;}
+    .progress>div{height:100%; width:0%; background: linear-gradient(90deg, #22c55e, #f59e0b);}
+
+    .qhead{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+    .qno{font-weight:900; background:#111827; color:#fff; padding:6px 10px; border-radius:999px; font-size:12px;}
+    .difficulty{font-weight:900; font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid rgba(17,24,39,0.10); background:#f3f4f6;}
+    .difficulty.b{background:#ecfeff;}
+    .difficulty.a{background:#fff7ed;}
+    .difficulty.s{background:#fdf2f8;}
+
+    .qtext{margin:10px 0 12px; font-size:16px; line-height:1.6;}
+    .options{display:grid; gap:10px;}
+    .opt{
+      width:100%; text-align:left;
+      border-radius:14px; border:1px solid rgba(17,24,39,0.12);
+      background:#fff; padding:12px 12px; font-weight:800;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .opt:hover{transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,0.08);}
+    .opt.selected{border-color:#2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.18)}
+    .opt.correct{border-color: var(--good); background: rgba(22,163,74,0.08)}
+    .opt.wrong{border-color: var(--bad); background: rgba(220,38,38,0.08)}
+
+    .explain{
+      margin-top:12px; border-radius:14px; padding:12px;
+      background:#f8fafc; border:1px solid rgba(17,24,39,0.10);
+      display:none;
+    }
+    .explain.good{border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.06)}
+    .explain.bad{border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.06)}
+    .explain h3{margin:0 0 6px; font-size:14px;}
+    .explain p{margin:0; line-height:1.6;}
+    .explain .mini{margin-top:8px; color:var(--muted); font-size:12px;}
+
+    .actions{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+    .btn{border:0; cursor:pointer; font-weight:900; padding:12px 14px; border-radius:12px; background:#111827; color:#fff;}
+    .btn.secondary{background:#e5e7eb; color:#111827;}
+    .btn:disabled{opacity:.45; cursor:not-allowed;}
+
+    .result{display:none;}
+    .score{font-size:34px; font-weight:1000; margin:2px 0 8px;}
+    .judge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font-weight:900;}
+    .judge.pass{background: rgba(22,163,74,0.12); color:#166534; border:1px solid rgba(22,163,74,0.35)}
+    .judge.fail{background: rgba(220,38,38,0.12); color:#991b1b; border:1px solid rgba(220,38,38,0.35)}
+
+    .footer{margin-top:14px; color: rgba(255,255,255,0.9); font-size:12px; text-align:center;}
+    @media(min-width: 900px){.grid{grid-template-columns: 1.15fr 0.85fr; align-items:start;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="row">
+        <span class="badge">脱・暗記！</span>
+        <span class="chip">LECTURE NO.10｜代謝・異化</span>
+        <span class="chip warn">合格ライン：8/10</span>
+      </div>
+      <h1>#10 確認テスト｜代謝・異化（10問・解説付き）</h1>
+      <p class="sub">代謝＝「同化と異化のネットワーク」。異化は“電子を取り出す”プロセス。発酵は“ATPのため”ではなく“NAD+再生”が目的──このロジックをテストで固めます。</p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="topbar">
+          <div class="progressWrap">
+            <div class="progressLabel"><span id="progressText">進捗：0/10</span><span id="scoreText">スコア：0</span></div>
+            <div class="progress"><div id="progressBar"></div></div>
+          </div>
+          <div class="row">
+            <span class="chip" style="background:#0ea5e9;">#代謝</span>
+            <span class="chip" style="background:#0ea5e9;">#異化</span>
+            <span class="chip" style="background:#16a34a;">8/10合格</span>
+          </div>
+        </div>
+
+        <div id="questionArea" style="margin-top:14px;"></div>
+
+        <div class="actions">
+          <button class="btn secondary" id="prevBtn">← 前へ</button>
+          <button class="btn" id="nextBtn">次へ →</button>
+          <button class="btn" id="finishBtn" style="display:none;">採点して結果を見る</button>
+          <button class="btn secondary" id="retryBtn" style="display:none;">もう一度やる（リトライ）</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 10px; font-size:16px;">使い方</h2>
+        <ul style="margin:0; padding-left:18px; line-height:1.75;">
+          <li>各問4択。選ぶとその場で解説が出ます。</li>
+          <li>最後に採点し、8/10以上で合格。</li>
+          <li>間違いは「なぜ？」を言語化→図にするのが最短。</li>
+        </ul>
+
+        <div style="margin-top:12px; padding:12px; border-radius:14px; background:#fff7ed; border:1px solid rgba(245,158,11,0.35);">
+          <div style="font-weight:1000; margin-bottom:6px;">頻出ひっかけ（この動画の核）</div>
+          <div style="line-height:1.65; font-weight:800; color:#7c2d12;">
+            ・代謝は一本道じゃなく“ネットワーク”】【台本】<br/>
+            ・発酵の目的＝ATP追加ではなく“NAD+再生”】【台本】<br/>
+            ・異化の目的＝グルコース分解ではなく“電子の取り出し”】【台本】
+          </div>
+        </div>
+
+        <div id="resultArea" class="result" style="margin-top:14px;">
+          <h2 style="margin:0 0 6px; font-size:16px;">結果</h2>
+          <div class="score" id="finalScore">0/10</div>
+          <div id="judge" class="judge fail">判定：未採点</div>
+          <p id="advice" style="margin:10px 0 0; color:var(--muted); line-height:1.65;"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">© KAZUKI 生物｜#10 代謝・異化 確認テスト（HTML単体・個人情報なし）</div>
+  </div>
+
+<script>
+const PASS_LINE = 8;
+
+const questions = [
+  {
+    id: 1,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "『代謝（metabolism）』の説明として最も適切なのはどれ？",
+    options: [
+      "呼吸だけのこと",
+      "生命がエネルギーを手に入れ、利用する仕組み全体（同化＋異化を含む）",
+      "糖を分解する反応だけのこと",
+      "ATPを使わずに進む反応の総称"
+    ],
+    answer: 1,
+    explain: "代謝は『エネルギーを獲得し、使う仕組み全体』。同化・異化をまとめた“全体概念”です。"
+  },
+  {
+    id: 2,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "同化（anabolism）と異化（catabolism）の組み合わせとして正しいのはどれ？",
+    options: [
+      "同化：分解してエネルギー放出／異化：合成してエネルギー吸収",
+      "同化：合成してエネルギー吸収／異化：分解してエネルギー放出",
+      "同化：酸素を使う／異化：酸素を使わない",
+      "同化：ATPを作らない／異化：ATPを使わない"
+    ],
+    answer: 1,
+    explain: "同化は『作る（合成）』でATPなどのエネルギーを必要とし、異化は『壊す（分解）』でエネルギーを取り出します。"
+  },
+  {
+    id: 3,
+    difficulty: "基礎 ★☆☆",
+    level: "b",
+    q: "講義で強調：代謝は『A→B→C…』の一本道ではなく何として捉える？",
+    options: [
+      "一本道",
+      "ネットワーク（網の目）",
+      "ランダムな反応の集まり",
+      "ATPの合成反応のみ"
+    ],
+    answer: 1,
+    explain: "代謝は網の目のように繋がったネットワーク。分岐・合流があるので『経路丸暗記』が破綻しやすい、という文脈です。"
+  },
+  {
+    id: 4,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "講義の核：異化の『真の目的』として最も近いのはどれ？",
+    options: [
+      "グルコースを小さくすること",
+      "電子を取り出してNADH/FADH2（電子運搬体）に乗せること",
+      "CO2を作ること",
+      "乳酸を作ること"
+    ],
+    answer: 1,
+    explain: "異化は『酸化＝電子を抜く』が本質。電子をNADH/FADH2に載せて次の段階に渡すのが重要です。"
+  },
+  {
+    id: 5,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "解糖系（glycolysis）の“純利益”として正しい組み合わせはどれ？（グルコース1分子）",
+    options: [
+      "ATP +2、NADH +2",
+      "ATP +4、NADH +0",
+      "ATP +0、NADH +2",
+      "ATP +2、NADH +0"
+    ],
+    answer: 0,
+    explain: "講義で扱う典型整理：解糖系の純利益はATP+2、NADH+2。最初にATPを“投資”して回収で上回ります。"
+  },
+  {
+    id: 6,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "発酵の“目的”として最も正しいものはどれ？",
+    options: [
+      "追加で大量のATPを作るため",
+      "NADHをNAD+に戻して（NAD+再生）、解糖系を続けるため",
+      "酸素を作るため",
+      "TCA回路を回すため"
+    ],
+    answer: 1,
+    explain: "頻出ひっかけ：発酵の目的はATP追加ではなくNAD+再生。酸素がないと電子の行き先がなくなるので『再生』が必要。"
+  },
+  {
+    id: 7,
+    difficulty: "応用 ★★☆",
+    level: "a",
+    q: "乳酸発酵で『ピルビン酸』が果たす役割として最も近いのはどれ？",
+    options: [
+      "ATPを直接大量に作る",
+      "NADHから電子を受け取ってNAD+を再生する（電子の受け皿になる）",
+      "酸素の代わりに電子伝達系へ電子を渡す",
+      "DNA合成に使われる"
+    ],
+    answer: 1,
+    explain: "乳酸発酵ではピルビン酸が電子の受け皿になり、NADH→NAD+を戻して解糖系を継続させます。"
+  },
+  {
+    id: 8,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "TCA回路（クエン酸回路）1回転あたりの収支として講義で扱うものは？",
+    options: [
+      "NADH 3、FADH2 1、ATP 1",
+      "NADH 1、FADH2 3、ATP 1",
+      "NADH 2、FADH2 2、ATP 0",
+      "NADH 3、FADH2 0、ATP 3"
+    ],
+    answer: 0,
+    explain: "講義の標準整理：TCA1回転でNADH×3、FADH2×1、ATP×1（GTP）程度を回収します。"
+  },
+  {
+    id: 9,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "PFK-1（ホスホフルクトキナーゼ-1）の説明として正しいのはどれ？",
+    options: [
+      "解糖系の調節点（律速酵素）として働き、ATPが多いと抑制されやすい",
+      "TCA回路の最初の反応を進める酵素",
+      "発酵の最終産物を作る酵素",
+      "電子伝達系で酸素を還元する酵素"
+    ],
+    answer: 0,
+    explain: "PFK-1は解糖系の重要な調節点。ATPが多い＝エネルギー十分なら解糖を抑える方向に働きます。"
+  },
+  {
+    id: 10,
+    difficulty: "発展 ★★★",
+    level: "s",
+    q: "講義で出た数値：ATP加水分解で放出されるエネルギー（目安）は？",
+    options: [
+      "約3.05 kJ/mol",
+      "約30.5 kJ/mol",
+      "約305 kJ/mol",
+      "約3050 kJ/mol"
+    ],
+    answer: 1,
+    explain: "ATP + H2O → ADP + Pi の放出エネルギーは約30.5 kJ/mol（目安）。"
+  }
+];
+
+let state = {
+  index: 0,
+  answers: Array(questions.length).fill(null),
+  checked: Array(questions.length).fill(false)
+};
+
+const elQ = document.getElementById('questionArea');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+const retryBtn = document.getElementById('retryBtn');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const progressBar = document.getElementById('progressBar');
+const resultArea = document.getElementById('resultArea');
+const finalScore = document.getElementById('finalScore');
+const judge = document.getElementById('judge');
+const advice = document.getElementById('advice');
+
+function calcScore(){
+  let s=0;
+  for(let i=0;i<questions.length;i++) if(state.answers[i]===questions[i].answer) s++;
+  return s;
+}
+
+function updateTop(){
+  const done = state.answers.filter(v=>v!==null).length;
+  progressText.textContent = `進捗：${state.index+1}/${questions.length}（回答済み ${done}/${questions.length}）`;
+  const s = calcScore();
+  scoreText.textContent = `スコア：${s}`;
+  progressBar.style.width = `${((state.index)/ (questions.length-1))*100}%`;
+}
+
+function render(){
+  const q = questions[state.index];
+  updateTop();
+
+  const picked = state.answers[state.index];
+  const checked = state.checked[state.index];
+
+  elQ.innerHTML = `
+    <div class="qhead">
+      <div class="qno">Q${q.id}</div>
+      <div class="difficulty ${q.level}">${q.difficulty}</div>
+    </div>
+    <div class="qtext">${q.q}</div>
+    <div class="options">
+      ${q.options.map((t,idx)=>{
+        let cls = 'opt';
+        if(picked===idx) cls += ' selected';
+        if(checked){
+          if(idx===q.answer) cls += ' correct';
+          else if(picked===idx && picked!==q.answer) cls += ' wrong';
+        }
+        return `<button class="${cls}" data-idx="${idx}">${['A','B','C','D'][idx]}. ${t}</button>`;
+      }).join('')}
+    </div>
+    <div class="explain" id="explainBox"></div>
+  `;
+
+  const explainBox = document.getElementById('explainBox');
+  if(checked){
+    const ok = picked===q.answer;
+    explainBox.className = 'explain ' + (ok ? 'good':'bad');
+    explainBox.style.display = 'block';
+    explainBox.innerHTML = `
+      <h3>${ok ? '✅ 正解！' : '❌ 不正解…'}</h3>
+      <p>${q.explain}</p>
+      <div class="mini">ポイント：反応名暗記ではなく『電子の流れ』で説明できるかを確認。</div>
+    `;
+  } else {
+    explainBox.style.display = 'none';
+  }
+
+  prevBtn.disabled = state.index===0;
+  const isLast = state.index===questions.length-1;
+  nextBtn.style.display = isLast ? 'none' : 'inline-block';
+  finishBtn.style.display = isLast ? 'inline-block' : 'none';
+
+  document.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = Number(btn.getAttribute('data-idx'));
+      state.answers[state.index]=idx;
+      state.checked[state.index]=true;
+      render();
+    });
+  });
+}
+
+prevBtn.addEventListener('click', ()=>{ state.index--; render(); });
+nextBtn.addEventListener('click', ()=>{ state.index++; render(); });
+
+finishBtn.addEventListener('click', ()=>{
+  const score = calcScore();
+  resultArea.style.display = 'block';
+  finalScore.textContent = `${score}/10`;
+  const passed = score>=PASS_LINE;
+  judge.className = 'judge ' + (passed ? 'pass':'fail');
+  judge.textContent = passed ? `🎉 合格（${PASS_LINE}/10以上）` : `あと${PASS_LINE-score}問で合格（合格ライン ${PASS_LINE}/10）`;
+
+  const unanswered = state.answers.filter(v=>v===null).length;
+  let msg='';
+  if(unanswered>0) msg += `未回答が${unanswered}問あります。まず全問回答→リトライ推奨。 `;
+  if(passed){
+    msg += '次は「発酵＝NAD+再生」「異化＝電子を抜く」を図で描けるか挑戦！';
+  } else {
+    msg += 'Q4/Q6（異化の目的・発酵の目的）を言語化→図解してから再挑戦！';
+  }
+  advice.textContent = msg;
+
+  retryBtn.style.display='inline-block';
+  finishBtn.disabled = true;
+});
+
+retryBtn.addEventListener('click', ()=>{
+  state = { index:0, answers:Array(questions.length).fill(null), checked:Array(questions.length).fill(false)};
+  resultArea.style.display='none';
+  finishBtn.disabled=false;
+  retryBtn.style.display='none';
+  render();
+});
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【確認テスト】高校生物 #14 光合成に関する実験</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #004d40 100%);
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1a237e;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 4px solid #00c853;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .question-block {
+            background: #f5f5f5;
+            border-left: 6px solid #1a237e;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #1a237e;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-number::before {
+            content: '📝';
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .question-text {
+            font-size: 17px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .options {
+            margin-left: 20px;
+        }
+        
+        .option {
+            margin: 12px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            transform: scale(1.3);
+        }
+        
+        .option label {
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+        }
+        
+        .answer-block {
+            background: #e8f5e9;
+            border-left: 6px solid #00c853;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .answer-title {
+            font-weight: bold;
+            color: #00c853;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .answer-title::before {
+            content: '✅ ';
+            font-size: 20px;
+        }
+        
+        .explanation {
+            color: #2e7d32;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        
+        .show-answer-btn {
+            background: #00c853;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,200,83,0.3);
+        }
+        
+        .show-answer-btn:hover {
+            background: #00e676;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,200,83,0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer a {
+            color: #1a237e;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 確認テスト：光合成に関する実験</h1>
+        <p class="subtitle">ゼロからわかる高校生物 #14｜ヒルの実験・エンゲルマンの実験・ブラックマンの法則</p>
+
+        <!-- 問題1 -->
+        <div class="question-block">
+            <div class="question-number">問題 1</div>
+            <div class="question-text">
+                ヒルの実験に関する記述のうち、正しいものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q1" id="q1a">
+                    <label for="q1a">DCPIPは光合成で生成された酸素と反応して無色になる。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1b">
+                    <label for="q1b">この実験により、明反応で水が分解されて酸素が発生することが証明された。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1c">
+                    <label for="q1c">葉緑体抽出液と二酸化炭素を混合して光を当てると、DCPIPが還元される。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1d">
+                    <label for="q1d">暗反応（カルビン回路）でATPが生成されることを証明した。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer1')">解答と解説を表示</button>
+            <div class="answer-block" id="answer1">
+                <div class="answer-title">正解：b</div>
+                <div class="explanation">
+                    ヒルの実験では、葉緑体抽出液にDCPIP（電子受容体）を加えて光を当てると、DCPIPが還元されて青色から無色になります。これは、明反応で水が分解されて電子が放出され、その電子がDCPIPに受け渡されることを示しています。<br><br>
+                    <strong>誤りの選択肢</strong><br>
+                    a: DCPIPは酸素と反応するのではなく、電子を受け取って還元される。<br>
+                    c: 二酸化炭素は不要。明反応のみで進行する。<br>
+                    d: ヒルの実験は明反応の証明であり、暗反応やATP生成の証明ではない。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題2 -->
+        <div class="question-block">
+            <div class="question-number">問題 2</div>
+            <div class="question-text">
+                エンゲルマンの実験に関する記述のうち、正しいものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q2" id="q2a">
+                    <label for="q2a">緑色光の照射部分に好気性細菌が最も多く集まった。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2b">
+                    <label for="q2b">赤色光と青色光の照射部分に好気性細菌が多く集まった。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2c">
+                    <label for="q2c">この実験により、光合成色素の吸収スペクトルが直接測定された。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2d">
+                    <label for="q2d">嫌気性細菌を用いて、酸素発生量を測定した。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer2')">解答と解説を表示</button>
+            <div class="answer-block" id="answer2">
+                <div class="answer-title">正解：b</div>
+                <div class="explanation">
+                    エンゲルマンの実験では、アオミドロ（緑藻）にプリズムで分光した光を当て、好気性細菌の分布を観察しました。好気性細菌は酸素が多い場所に集まるため、光合成が活発な部分（赤色光・青色光の照射部分）に集中しました。<br><br>
+                    <strong>重要ポイント</strong><br>
+                    - クロロフィルは赤色光と青色光を吸収し、緑色光は吸収しない（反射する）。<br>
+                    - この実験により、作用スペクトル（光合成が活発な波長）と吸収スペクトルがほぼ一致することが示された。<br><br>
+                    <strong>誤りの選択肢</strong><br>
+                    a: 緑色光では光合成が活発でないため、細菌は少ない。<br>
+                    c: 吸収スペクトルは分光光度計で測定するもので、この実験では作用スペクトルを示した。<br>
+                    d: 好気性細菌を用いた（嫌気性細菌ではない）。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題3 -->
+        <div class="question-block">
+            <div class="question-number">問題 3</div>
+            <div class="question-text">
+                ブラックマンの限定要因説（律速因子の法則）に関する記述のうち、誤っているものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q3" id="q3a">
+                    <label for="q3a">光合成速度は、光・CO₂・温度のうち最も不足している要因によって決まる。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3b">
+                    <label for="q3b">弱光下では光強度が律速因子となり、光を強くすると光合成速度が上昇する。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3c">
+                    <label for="q3c">強光下でCO₂濃度が低い場合、光強度をさらに上げても光合成速度は変化しない。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3d">
+                    <label for="q3d">温度を上げれば、常に光合成速度は上昇する。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer3')">解答と解説を表示</button>
+            <div class="answer-block" id="answer3">
+                <div class="answer-title">正解：d</div>
+                <div class="explanation">
+                    温度を上げても、常に光合成速度が上昇するわけではありません。温度が律速因子でない場合（例：光強度やCO₂濃度が不足している場合）、温度を上げても光合成速度は変化しません。また、温度が高すぎると酵素が失活し、光合成速度が低下します。<br><br>
+                    <strong>限定要因説のポイント</strong><br>
+                    - 光合成速度は「最も不足している要因（律速因子）」で決まる。<br>
+                    - 弱光下→光強度が律速因子<br>
+                    - 強光・低CO₂→CO₂濃度が律速因子<br>
+                    - 強光・高CO₂・低温→温度が律速因子<br><br>
+                    <strong>入試頻出</strong><br>
+                    グラフ問題で「どの条件が律速因子か」を判断する問題がよく出ます。グラフが平坦になったら、その要因は律速因子ではなくなったことを意味します。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題4 -->
+        <div class="question-block">
+            <div class="question-number">問題 4</div>
+            <div class="question-text">
+                光合成の実験に関する以下の記述を読み、正誤の組み合わせとして正しいものを選べ。<br><br>
+                A. ヒルの実験では、暗条件下でもDCPIPが還元されて無色になる。<br>
+                B. エンゲルマンの実験で用いた好気性細菌は、酸素が多い場所に集まる性質を持つ。<br>
+                C. ブラックマンの実験により、光合成速度は全ての要因の平均値で決まることが示された。<br>
+                D. エンゲルマンの実験により、作用スペクトルと吸収スペクトルがほぼ一致することが示された。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q4" id="q4a">
+                    <label for="q4a">A:正 B:正 C:誤 D:正</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4b">
+                    <label for="q4b">A:誤 B:正 C:誤 D:正</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4c">
+                    <label for="q4c">A:誤 B:誤 C:正 D:誤</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4d">
+                    <label for="q4d">A:正 B:正 C:正 D:誤</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer4')">解答と解説を表示</button>
+            <div class="answer-block" id="answer4">
+                <div class="answer-title">正解：b（A:誤 B:正 C:誤 D:正）</div>
+                <div class="explanation">
+                    <strong>各記述の解説</strong><br><br>
+                    <strong>A：誤</strong><br>
+                    ヒルの実験では「光」が必要です。暗条件下では明反応が進行せず、DCPIPは還元されません（青色のまま）。光を当てることで初めて、水が分解されて電子が放出され、DCPIPが還元されて無色になります。<br><br>
+                    <strong>B：正</strong><br>
+                    好気性細菌は酸素を必要とする細菌であり、酸素濃度が高い場所に集まります。エンゲルマンの実験では、この性質を利用して光合成が活発な部分（酸素発生量が多い部分）を可視化しました。<br><br>
+                    <strong>C：誤</strong><br>
+                    ブラックマンの限定要因説では、光合成速度は「最も不足している要因（律速因子）」で決まります。全ての要因の平均値ではありません。例えば、光が十分でもCO₂が不足していれば、CO₂濃度が律速因子となり、光合成速度は低いままです。<br><br>
+                    <strong>D：正</strong><br>
+                    エンゲルマンの実験により、光合成が活発な波長（作用スペクトル）と、クロロフィルが吸収する波長（吸収スペクトル）がほぼ一致することが示されました。これは、クロロフィルが吸収した光エネルギーが光合成に利用されていることの証拠です。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題5 -->
+        <div class="question-block">
+            <div class="question-number">問題 5（応用）</div>
+            <div class="question-text">
+                以下のグラフは、光強度と光合成速度の関係を示している。CO₂濃度を一定にして温度を20℃と30℃で測定した。このグラフから読み取れる記述として最も適切なものはどれか。<br><br>
+                <em>（グラフの説明：横軸=光強度、縦軸=光合成速度。20℃の曲線は早めに頭打ち、30℃の曲線はより高い光強度まで上昇し続け、最終的により高い光合成速度に達する。）</em>
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q5" id="q5a">
+                    <label for="q5a">弱光下では、温度が律速因子となっている。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5b">
+                    <label for="q5b">強光下では、20℃条件で温度が律速因子となっている。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5c">
+                    <label for="q5c">30℃条件では、光強度が常に律速因子である。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5d">
+                    <label for="q5d">弱光下では、CO₂濃度が律速因子となっている。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer5')">解答と解説を表示</button>
+            <div class="answer-block" id="answer5">
+                <div class="answer-title">正解：b</div>
+                <div class="explanation">
+                    <strong>グラフの読み取りポイント</strong><br><br>
+                    <strong>弱光下（グラフの左側）</strong><br>
+                    両方の温度で光合成速度が同じように上昇している→光強度が律速因子。温度の影響はほとんど見られない。<br><br>
+                    <strong>強光下（グラフの右側・曲線が平坦になる部分）</strong><br>
+                    - 20℃の曲線が早めに頭打ち→光は十分だが、温度が低いため暗反応（カルビン回路）の酵素反応が遅い→温度が律速因子。<br>
+                    - 30℃の曲線はより高い値まで上昇→温度が高いため暗反応が速く進む。<br><br>
+                    <strong>入試頻出ポイント</strong><br>
+                    - 弱光下→光強度が律速因子（温度の影響なし）<br>
+                    - 強光下→温度やCO₂濃度が律速因子（光の影響なし）<br><br>
+                    <strong>誤りの選択肢</strong><br>
+                    a: 弱光下では光強度が律速因子。<br>
+                    c: 30℃条件でも、弱光下では光強度が律速因子。強光下では温度やCO₂が律速因子になる。<br>
+                    d: CO₂濃度は一定と記載されているため、CO₂濃度が律速因子とは言えない（実際には強光・高温条件でCO₂が律速因子になる可能性はある）。
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📺 この確認テストは「<strong>ゼロからわかる高校生物 #14</strong>」の学習内容に基づいています。</p>
+            <p>📖 もっと学びたい方は <a href="https://note.com/legit_rail216" target="_blank">note</a> もチェック！</p>
+            <p style="margin-top: 20px; font-size: 13px; color: #999;">
+                ©2026 ゼロからわかる高校生物｜カズキ
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(answerId) {
+            const answerBlock = document.getElementById(answerId);
+            if (answerBlock.style.display === 'none' || answerBlock.style.display === '') {
+                answerBlock.style.display = 'block';
+            } else {
+                answerBlock.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

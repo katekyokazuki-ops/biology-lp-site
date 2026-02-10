@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【確認テスト】高校生物 #15 C4・CAM植物と光合成計算</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #1b5e20 100%);
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #1b5e20;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 4px solid #76ff03;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        
+        .question-block {
+            background: #f5f5f5;
+            border-left: 6px solid #1b5e20;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #1b5e20;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-number::before {
+            content: '🌱';
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        
+        .question-text {
+            font-size: 17px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .options {
+            margin-left: 20px;
+        }
+        
+        .option {
+            margin: 12px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .option input[type="radio"] {
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            transform: scale(1.3);
+        }
+        
+        .option label {
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+        }
+        
+        .answer-block {
+            background: #e8f5e9;
+            border-left: 6px solid #76ff03;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .answer-title {
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .answer-title::before {
+            content: '✅ ';
+            font-size: 20px;
+        }
+        
+        .explanation {
+            color: #2e7d32;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        
+        .show-answer-btn {
+            background: #76ff03;
+            color: #1b5e20;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(118,255,3,0.3);
+        }
+        
+        .show-answer-btn:hover {
+            background: #a2ff5a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(118,255,3,0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .footer a {
+            color: #1b5e20;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .question-text {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 確認テスト：C4・CAM植物と光合成計算</h1>
+        <p class="subtitle">ゼロからわかる高校生物 #15｜真の速度・見かけの速度・クランツ構造・時間的分離</p>
+
+        <!-- 問題1 -->
+        <div class="question-block">
+            <div class="question-number">問題 1</div>
+            <div class="question-text">
+                光合成速度の計算に関する記述のうち、正しいものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q1" id="q1a">
+                    <label for="q1a">真の光合成速度は、見かけの光合成速度よりも常に小さい。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1b">
+                    <label for="q1b">呼吸速度は光の強さによって変化する。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1c">
+                    <label for="q1c">光補償点では、真の光合成速度と呼吸速度が等しい。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q1" id="q1d">
+                    <label for="q1d">見かけの光合成速度は、呼吸速度を含まない純粋な光合成量である。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer1')">解答と解説を表示</button>
+            <div class="answer-block" id="answer1">
+                <div class="answer-title">正解：c</div>
+                <div class="explanation">
+                    光補償点とは、見かけの光合成速度が0になる点です。このとき、光合成によるCO₂吸収と呼吸によるCO₂放出が釣り合っているため、真の光合成速度＝呼吸速度となります。<br><br>
+                    <strong>重要公式</strong><br>
+                    真の光合成速度 = 見かけの光合成速度 + 呼吸速度<br><br>
+                    <strong>誤りの選択肢</strong><br>
+                    a: 真の速度は見かけの速度より常に大きい（呼吸分を足すため）。<br>
+                    b: 呼吸速度は光の有無に関わらず一定。<br>
+                    d: 見かけの速度は「光合成 − 呼吸」で、呼吸分が引かれている。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題2 -->
+        <div class="question-block">
+            <div class="question-number">問題 2</div>
+            <div class="question-text">
+                C4植物に関する記述のうち、誤っているものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q2" id="q2a">
+                    <label for="q2a">初期産物はオキサロ酢酸（4炭素化合物）である。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2b">
+                    <label for="q2b">葉肉細胞でPEPカルボキシラーゼによりCO₂を固定する。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2c">
+                    <label for="q2c">維管束鞘細胞でリンゴ酸が分解されてCO₂が放出される。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q2" id="q2d">
+                    <label for="q2d">低温・弱光環境に最も適応している。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer2')">解答と解説を表示</button>
+            <div class="answer-block" id="answer2">
+                <div class="answer-title">正解：d</div>
+                <div class="explanation">
+                    C4植物は高温・強光環境に適応しています。低温・弱光環境に適応しているのはC3植物です。<br><br>
+                    <strong>C4植物のメカニズム（空間的分離）</strong><br>
+                    ① 葉肉細胞：PEPカルボキシラーゼでCO₂固定 → オキサロ酢酸 → リンゴ酸<br>
+                    ② リンゴ酸が維管束鞘細胞に移動<br>
+                    ③ 維管束鞘細胞：リンゴ酸分解 → CO₂放出 → 高濃度CO₂環境でカルビン回路<br>
+                    ④ 結果：光呼吸を回避、高温・強光下でも効率的<br><br>
+                    <strong>クランツ構造</strong><br>
+                    維管束の周りを維管束鞘細胞が取り囲む特殊な葉の構造。この二層構造がCO₂濃縮機構の基盤。<br><br>
+                    <strong>代表例</strong><br>
+                    トウモロコシ、サトウキビ、ススキ、ヒエ
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題3 -->
+        <div class="question-block">
+            <div class="question-number">問題 3</div>
+            <div class="question-text">
+                CAM植物に関する記述のうち、正しいものはどれか。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q3" id="q3a">
+                    <label for="q3a">昼間に気孔を開いてCO₂を吸収し、夜間にカルビン回路を回す。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3b">
+                    <label for="q3b">夜間にCO₂を固定してリンゴ酸として液胞に蓄積する。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3c">
+                    <label for="q3c">C4植物と同じクランツ構造を持つ。</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q3" id="q3d">
+                    <label for="q3d">温帯の湿潤な環境に最も適応している。</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer3')">解答と解説を表示</button>
+            <div class="answer-block" id="answer3">
+                <div class="answer-title">正解：b</div>
+                <div class="explanation">
+                    CAM植物は時間的分離により、夜間にCO₂を固定してリンゴ酸として液胞に蓄積します。昼間は気孔を閉じて水分損失を防ぎながら、蓄積したリンゴ酸を分解してカルビン回路を回します。<br><br>
+                    <strong>CAM植物のメカニズム（時間的分離）</strong><br>
+                    <strong>夜間（18:00〜6:00）</strong><br>
+                    - 気孔：開放状態<br>
+                    - CO₂吸収 → PEPカルボキシラーゼで固定 → オキサロ酢酸 → リンゴ酸 → 液胞に蓄積<br>
+                    - 目的：涼しい夜にCO₂を集める（水分損失を最小化）<br><br>
+                    <strong>昼間（6:00〜18:00）</strong><br>
+                    - 気孔：閉鎖状態<br>
+                    - 液胞からリンゴ酸放出 → 分解してCO₂放出 → 高濃度CO₂環境でカルビン回路<br>
+                    - 目的：気孔を閉じて水分を守りながら光合成<br><br>
+                    <strong>乾燥適応のメカニズム</strong><br>
+                    - 昼間の気孔閉鎖により蒸散を90%以上抑制<br>
+                    - 夜間に蓄積したCO₂を昼間に集中利用<br>
+                    - 究極の水節約戦略！<br><br>
+                    <strong>代表例</strong><br>
+                    サボテン、パイナップル、ベンケイソウ、アロエ<br><br>
+                    <strong>誤りの選択肢</strong><br>
+                    a: 昼夜が逆。夜間にCO₂固定、昼間にカルビン回路。<br>
+                    c: CAM植物はクランツ構造を持たない（時間的分離）。<br>
+                    d: 乾燥地帯に適応（温帯の湿潤環境ではない）。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題4 -->
+        <div class="question-block">
+            <div class="question-number">問題 4</div>
+            <div class="question-text">
+                光呼吸とRuBisCOに関する記述を読み、正誤の組み合わせとして正しいものを選べ。<br><br>
+                A. RuBisCOはCO₂だけでなくO₂とも反応する二面性を持つ。<br>
+                B. 光呼吸は光合成効率を25〜50%低下させる。<br>
+                C. C4植物は維管束鞘細胞でCO₂濃度を高めることで光呼吸を回避する。<br>
+                D. CAM植物は昼間に気孔を開けることで光呼吸を抑制する。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q4" id="q4a">
+                    <label for="q4a">A:正 B:正 C:正 D:誤</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4b">
+                    <label for="q4b">A:正 B:誤 C:正 D:正</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4c">
+                    <label for="q4c">A:誤 B:正 C:誤 D:正</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q4" id="q4d">
+                    <label for="q4d">A:正 B:正 C:誤 D:誤</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer4')">解答と解説を表示</button>
+            <div class="answer-block" id="answer4">
+                <div class="answer-title">正解：a（A:正 B:正 C:正 D:誤）</div>
+                <div class="explanation">
+                    <strong>各記述の解説</strong><br><br>
+                    <strong>A：正</strong><br>
+                    RuBisCO（リブロース-1,5-ビスリン酸カルボキシラーゼ/オキシゲナーゼ）は二つの活性を持ちます。<br>
+                    ① カルボキシラーゼ活性：CO₂と結合（正常な光合成）<br>
+                    ② オキシゲナーゼ活性：O₂と結合（光呼吸を引き起こす）<br>
+                    高温・強光・低CO₂条件でO₂との反応が増加します。<br><br>
+                    <strong>B：正</strong><br>
+                    光呼吸のコスト：<br>
+                    - ATP消費：2-ホスホグリコール酸の代謝に必要<br>
+                    - CO₂損失：炭素の約25%が失われる<br>
+                    - 光合成速度低下：特に高温・乾燥条件下で顕著<br>
+                    結果として、光合成効率が25〜50%低下します。<br><br>
+                    <strong>C：正</strong><br>
+                    C4植物の回避機構：<br>
+                    - 葉肉細胞：PEPカルボキシラーゼでCO₂固定（O₂の影響を受けない）<br>
+                    - 維管束鞘細胞：高CO₂濃度環境でカルビン回路<br>
+                    - 結果：RuBisCOがほぼ完全にカルボキシラーゼとして機能<br>
+                    - 高温・強光下でC3植物より30〜50%高い光合成効率<br><br>
+                    <strong>D：誤</strong><br>
+                    CAM植物は昼間に気孔を「閉じる」ことで水分損失を防ぎます。光呼吸の抑制は、昼間に蓄積したリンゴ酸から放出される高濃度CO₂によって実現されます。
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題5 -->
+        <div class="question-block">
+            <div class="question-number">問題 5（計算問題）</div>
+            <div class="question-text">
+                ある植物の葉を用いて光合成速度を測定した。以下のデータから、光強度5 klxでの真の光合成速度を求めよ。<br><br>
+                <strong>測定データ：</strong><br>
+                - 暗所（光強度0 klx）：CO₂放出量 2.0 mg/dm²·h<br>
+                - 光強度5 klx：CO₂吸収量 6.0 mg/dm²·h
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q5" id="q5a">
+                    <label for="q5a">4.0 mg/dm²·h</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5b">
+                    <label for="q5b">6.0 mg/dm²·h</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5c">
+                    <label for="q5c">8.0 mg/dm²·h</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q5" id="q5d">
+                    <label for="q5d">10.0 mg/dm²·h</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer5')">解答と解説を表示</button>
+            <div class="answer-block" id="answer5">
+                <div class="answer-title">正解：c（8.0 mg/dm²·h）</div>
+                <div class="explanation">
+                    <strong>計算手順</strong><br><br>
+                    <strong>Step 1：呼吸速度の確認</strong><br>
+                    暗所（光強度0 klx）では光合成が起こらず、呼吸のみが進行します。<br>
+                    呼吸速度 = 2.0 mg/dm²·h<br><br>
+                    <strong>Step 2：見かけの光合成速度の確認</strong><br>
+                    光強度5 klxでのCO₂吸収量が見かけの光合成速度です。<br>
+                    見かけの光合成速度 = 6.0 mg/dm²·h<br><br>
+                    <strong>Step 3：真の光合成速度の計算</strong><br>
+                    基本公式：<br>
+                    真の光合成速度 = 見かけの光合成速度 + 呼吸速度<br>
+                    真の光合成速度 = 6.0 + 2.0 = 8.0 mg/dm²·h<br><br>
+                    <strong>なぜこうなる？</strong><br>
+                    見かけの速度は「光合成 − 呼吸」で測定されるため、本当の光合成量を知るには呼吸分を足し戻す必要があります。<br><br>
+                    <strong>入試頻出ポイント</strong><br>
+                    - 呼吸速度は常に一定（光の有無に関わらず）<br>
+                    - 暗所のCO₂放出量 = 呼吸速度<br>
+                    - 光補償点では、真の光合成速度 = 呼吸速度<br>
+                    - 真の速度 > 見かけの速度（必ず！）
+                </div>
+            </div>
+        </div>
+
+        <!-- 問題6 -->
+        <div class="question-block">
+            <div class="question-number">問題 6（応用）</div>
+            <div class="question-text">
+                C3植物、C4植物、CAM植物を、それぞれ最も適した環境と組み合わせたものとして正しいものを選べ。
+            </div>
+            <div class="options">
+                <div class="option">
+                    <input type="radio" name="q6" id="q6a">
+                    <label for="q6a">C3:高温・強光 / C4:乾燥地 / CAM:温帯</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q6" id="q6b">
+                    <label for="q6b">C3:温帯 / C4:高温・強光 / CAM:乾燥地</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q6" id="q6c">
+                    <label for="q6c">C3:乾燥地 / C4:温帯 / CAM:高温・強光</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="q6" id="q6d">
+                    <label for="q6d">C3:高温・強光 / C4:温帯 / CAM:乾燥地</label>
+                </div>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('answer6')">解答と解説を表示</button>
+            <div class="answer-block" id="answer6">
+                <div class="answer-title">正解：b</div>
+                <div class="explanation">
+                    <strong>各植物の環境適応まとめ</strong><br><br>
+                    <strong>C3植物：温帯</strong><br>
+                    - 基本的な光合成様式<br>
+                    - 光呼吸が起こる（高温・強光・低CO₂で不利）<br>
+                    - 温帯の中程度の光強度で効率的<br>
+                    - 代表例：イネ、コムギ、ダイズ、ホウレンソウ<br><br>
+                    <strong>C4植物：高温・強光</strong><br>
+                    - CO₂濃縮機構（クランツ構造）で光呼吸を回避<br>
+                    - 高温・強光下でも効率的に光合成<br>
+                    - 気孔を閉じてもCO₂を効率的に利用<br>
+                    - 代表例：トウモロコシ、サトウキビ、ススキ、ヒエ<br><br>
+                    <strong>CAM植物：乾燥地</strong><br>
+                    - 時間的分離（夜間CO₂固定）で水分損失を最小化<br>
+                    - 昼間は気孔を閉じて蒸散を90%以上抑制<br>
+                    - 乾燥地帯のスペシャリスト<br>
+                    - 代表例：サボテン、パイナップル、ベンケイソウ、アロエ<br><br>
+                    <strong>進化の視点</strong><br>
+                    C3植物が基本形で、C4とCAMは環境に合わせて進化した特殊化形態です。<br>
+                    - C4：暑さへの適応（空間的分離）<br>
+                    - CAM：乾燥への適応（時間的分離）
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>📺 この確認テストは「<strong>ゼロからわかる高校生物 #15</strong>」の学習内容に基づいています。</p>
+            <p>📖 もっと学びたい方は <a href="https://note.com/legit_rail216" target="_blank">note</a> もチェック！</p>
+            <p style="margin-top: 20px; font-size: 13px; color: #999;">
+                ©2026 ゼロからわかる高校生物｜カズキ
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(answerId) {
+            const answerBlock = document.getElementById(answerId);
+            if (answerBlock.style.display === 'none' || answerBlock.style.display === '') {
+                answerBlock.style.display = 'block';
+            } else {
+                answerBlock.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

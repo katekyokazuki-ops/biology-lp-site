@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #16 窒素同化・硫黄同化</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #1a472a);
+    min-height: 100vh;
+    padding: 20px;
+    color: #f0f0f0;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    padding: 30px 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  header .series { font-size: 13px; color: #7ecf9b; letter-spacing: 2px; margin-bottom: 8px; }
+  header h1 { font-size: clamp(20px, 4vw, 28px); font-weight: 900; color: #fff; margin-bottom: 8px; }
+  header .subtitle { font-size: 14px; color: #b0d4c0; }
+  .progress-bar-outer {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    height: 10px;
+    margin: 20px 0 8px;
+    overflow: hidden;
+  }
+  .progress-bar-inner {
+    height: 10px;
+    background: linear-gradient(90deg, #56ab2f, #a8e063);
+    border-radius: 20px;
+    transition: width 0.4s;
+    width: 0%;
+  }
+  .progress-text { text-align: center; font-size: 13px; color: #aaa; margin-bottom: 20px; }
+
+  .question-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+  }
+  .question-card.answered-correct { border-color: #56ab2f; background: rgba(86,171,47,0.08); }
+  .question-card.answered-wrong { border-color: #e74c3c; background: rgba(231,76,60,0.08); }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .q-num {
+    background: linear-gradient(135deg, #56ab2f, #a8e063);
+    color: #000;
+    font-weight: 900;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .q-category {
+    font-size: 11px;
+    color: #7ecf9b;
+    background: rgba(86,171,47,0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(86,171,47,0.3);
+  }
+  .q-text { font-size: 16px; font-weight: 700; line-height: 1.6; color: #fff; margin-bottom: 16px; }
+  .q-sub { font-size: 13px; color: #aaa; margin-top: -10px; margin-bottom: 14px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    color: #f0f0f0;
+    padding: 13px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: rgba(86,171,47,0.15);
+    border-color: #56ab2f;
+    transform: translateX(4px);
+  }
+  .option-btn.correct {
+    background: rgba(86,171,47,0.25);
+    border-color: #56ab2f;
+    color: #a8e063;
+    font-weight: 700;
+  }
+  .option-btn.wrong {
+    background: rgba(231,76,60,0.2);
+    border-color: #e74c3c;
+    color: #f08080;
+  }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    display: none;
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .feedback.correct-fb { background: rgba(86,171,47,0.15); border-left: 4px solid #56ab2f; color: #c8f0c8; }
+  .feedback.wrong-fb { background: rgba(231,76,60,0.12); border-left: 4px solid #e74c3c; color: #f8d7da; }
+  .feedback .fb-label { font-weight: 900; font-size: 15px; margin-bottom: 6px; }
+  .feedback .fb-point { margin-top: 8px; padding: 8px 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 13px; color: #b0d4c0; }
+
+  .result-card {
+    display: none;
+    text-align: center;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 16px;
+    padding: 40px 24px;
+    margin-top: 24px;
+  }
+  .result-score { font-size: 72px; font-weight: 900; color: #a8e063; line-height: 1; }
+  .result-total { font-size: 20px; color: #aaa; margin-bottom: 16px; }
+  .result-msg { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 20px; }
+  .result-comment { font-size: 14px; color: #b0d4c0; line-height: 1.7; margin-bottom: 24px; }
+  .retry-btn {
+    background: linear-gradient(135deg, #56ab2f, #a8e063);
+    color: #000;
+    font-weight: 900;
+    font-size: 16px;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .retry-btn:hover { opacity: 0.85; }
+
+  .tag { display: inline-block; background: rgba(168,224,99,0.15); color: #a8e063; font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid rgba(168,224,99,0.3); margin-right: 4px; }
+  .formula { font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-size: 13px; color: #a8e063; }
+  .important { color: #f0c040; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="series">ゼロからわかる高校生物 #16</div>
+    <h1>確認テスト：窒素同化・硫黄同化</h1>
+    <div class="subtitle">全10問 ｜ 脱暗記！仕組みで理解する</div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+    <div class="progress-text" id="progressText">0 / 10 問 回答済み</div>
+  </header>
+
+  <div id="quiz-area"></div>
+  <div class="result-card" id="resultCard">
+    <div class="result-score" id="resultScore">0</div>
+    <div class="result-total">/ 10 点</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-comment" id="resultComment"></div>
+    <button class="retry-btn" onclick="retryQuiz()">もう一度挑戦する 🔄</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    category: "窒素同化",
+    q: "植物の窒素同化において、NO₃⁻（硝酸イオン）がNO₂⁻（亜硝酸イオン）に還元される反応が起こる場所はどこか？",
+    options: ["葉緑体（ストロマ）", "ミトコンドリア", "細胞質基質（サイトゾル）", "液胞"],
+    correct: 2,
+    explanation: "硝酸イオン(NO₃⁻)→亜硝酸イオン(NO₂⁻)の反応は<b>細胞質基質</b>で起こります。電子供与体はNADHです。<br>一方、NO₂⁻→NH₄⁺の反応は<b>葉緑体</b>で起こります（電子供与体：還元型フェレドキシン Fd）。",
+    point: "反応場所の区別は入試最頻出！細胞質→葉緑体の順番を図で覚えよう。"
+  },
+  {
+    category: "窒素同化",
+    q: "GS-GOGAT系において、GS（グルタミン合成酵素）が触媒する反応の基質と産物の正しい組み合わせはどれか？",
+    options: [
+      "α-ケトグルタル酸 + NH₄⁺ → グルタミン酸",
+      "グルタミン酸 + NH₄⁺ → グルタミン（ATP消費）",
+      "グルタミン + α-ケトグルタル酸 → グルタミン酸 × 2",
+      "NO₂⁻ + Fd → NH₄⁺"
+    ],
+    correct: 1,
+    explanation: "<b>GS（グルタミン合成酵素）</b>：グルタミン酸 + NH₄⁺ → <b>グルタミン</b>（ATPを消費）<br><b>GOGAT（グルタミン酸合成酵素）</b>：グルタミン + α-ケトグルタル酸 → グルタミン酸 ×2<br>産生した1分子のグルタミン酸はGSにリサイクルされます。",
+    point: "GS→GOGAT→GS…のリサイクルがGS-GOGAT系の核心！NH₄⁺を遊離させず毒性を回避する仕組み。"
+  },
+  {
+    category: "窒素同化",
+    q: "GS-GOGAT系が、単純にNH₄⁺を直接グルタミン酸に組み込む経路より「有利」とされる主な理由はどれか？",
+    options: [
+      "ATPを消費しないため、エネルギー効率が高い",
+      "遊離NH₄⁺濃度を常に低く保ち、毒性を回避しながら窒素を固定できる",
+      "光エネルギーを直接利用できるため葉緑体外でも機能する",
+      "動物にも存在する汎用的な経路であるため"
+    ],
+    correct: 1,
+    explanation: "NH₄⁺は高濃度になると細胞に毒性を示します。GS-GOGAT系ではGSがNH₄⁺をただちにグルタミンへ取り込むため、<b>遊離NH₄⁺濃度を低く維持</b>できます。さらに低濃度のNH₄⁺でも効率よく固定できる利点があります。",
+    point: "「毒性回避 + 低濃度対応」が記述問題の模範解答キーワード！"
+  },
+  {
+    category: "窒素同化",
+    q: "亜硝酸イオン（NO₂⁻）をアンモニウムイオン（NH₄⁺）に還元する酵素として正しいものはどれか？",
+    options: ["硝酸還元酵素", "グルタミン合成酵素（GS）", "亜硝酸還元酵素", "GOGAT（グルタミン酸合成酵素）"],
+    correct: 2,
+    explanation: "NO₂⁻ → NH₄⁺ の反応を触媒するのは<b>亜硝酸還元酵素</b>です。<br>場所：葉緑体 / 電子供与体：還元型フェレドキシン（Fd）/ 8電子の還元反応。",
+    point: "酵素名と反応場所・電子供与体をセットで覚える！NO₃⁻→NO₂⁻は硝酸還元酵素（細胞質）。"
+  },
+  {
+    category: "硫黄同化",
+    q: "硫黄同化において、H₂S（硫化水素）がアミノ酸骨格に組み込まれる際の「受容体」として機能する物質はどれか？",
+    options: [
+      "α-ケトグルタル酸（2-オキソグルタル酸）",
+      "O-アセチルセリン（OAS）",
+      "グルタミン酸",
+      "APS（アデノシン5'-ホスホ硫酸）"
+    ],
+    correct: 1,
+    explanation: "H₂Sのアミノ酸骨格への組み込みには<b>O-アセチルセリン（OAS）</b>が受容体として働きます。<br>H₂S + OAS → <b>システイン</b> + 酢酸<br>（酵素：OAS thiol-lyase）",
+    point: "「O-アセチルセリン（OAS）」は入試で名称を問われる頻出ポイント！"
+  },
+  {
+    category: "硫黄同化",
+    q: "硫黄同化の反応経路として正しい順序はどれか？",
+    options: [
+      "SO₄²⁻ → H₂S → SO₃²⁻ → APS → システイン",
+      "SO₄²⁻ → APS → SO₃²⁻ → H₂S → システイン",
+      "APS → SO₄²⁻ → H₂S → システイン → メチオニン",
+      "SO₄²⁻ → SO₃²⁻ → H₂S → APS → システイン"
+    ],
+    correct: 1,
+    explanation: "硫黄同化の正しい順序：<br><b>SO₄²⁻ → APS → SO₃²⁻ → H₂S → システイン → メチオニン</b><br>最初にATPでSO₄²⁻を活性化してAPSを作り（ATP sulfurylase）、段階的に還元していきます。",
+    point: "経路の順番を「SO₄²⁻→APS→SO₃²⁻→H₂S→Cys→Met」と唱えて覚えよう！"
+  },
+  {
+    category: "硫黄同化",
+    q: "S-S結合（ジスルフィド結合）に関する説明として誤っているものはどれか？",
+    options: [
+      "システイン同士のチオール基（-SH）が酸化されることで形成される",
+      "タンパク質の立体構造を安定化させる働きをもつ",
+      "インスリンはジスルフィド結合によってA鎖とB鎖が連結されている",
+      "S-S結合はペプチド結合の一種であり、アミノ酸配列に直接影響する"
+    ],
+    correct: 3,
+    explanation: "S-S結合（ジスルフィド結合）はペプチド結合ではなく、<b>システインの側鎖（-SH基）同士が酸化されることで形成される共有結合</b>です。タンパク質の三次・四次構造を安定化させます。インスリンのA鎖とB鎖の連結がその代表例です。",
+    point: "「ジスルフィド結合 ≠ ペプチド結合」の区別は必須。タンパク質の立体構造維持の役割を覚えよう。"
+  },
+  {
+    category: "植物と動物の比較",
+    q: "次のうち、植物と動物の窒素・硫黄代謝の違いについて正しい記述はどれか？",
+    options: [
+      "動物も植物と同様に、無機硫黄（SO₄²⁻）を直接システインに変換できる",
+      "植物は窒素同化・硫黄同化ができるが、動物はどちらも行えないため、食物からアミノ酸を摂取する必要がある",
+      "動物は窒素同化を行うが、硫黄同化は行わない",
+      "植物は光合成があるため、窒素同化は必要ない"
+    ],
+    correct: 1,
+    explanation: "<b>植物</b>は無機窒素（NO₃⁻）・無機硫黄（SO₄²⁻）からアミノ酸を合成する<b>同化</b>を行います。<br><b>動物</b>は無機物からアミノ酸を合成できないため、食物中のタンパク質から摂取します。メチオニン等の必須アミノ酸は動物が合成できない例です。",
+    point: "「植物=同化できる、動物=できない」の対比を軸に整理！"
+  },
+  {
+    category: "総合問題",
+    q: "窒素同化と硫黄同化に共通する特徴として正しいものはどれか？",
+    options: [
+      "どちらの反応も細胞質基質のみで完結する",
+      "どちらも最終的にグルタミン酸を産生する",
+      "どちらも無機物を有機物（アミノ酸）に変換する同化反応であり、還元に電子供与体（FdやGSH）を必要とする",
+      "どちらも動物の細胞でも日常的に行われる"
+    ],
+    correct: 2,
+    explanation: "窒素同化・硫黄同化の共通点：<br>①<b>無機物 → 有機物（アミノ酸）への同化反応</b><br>②<b>還元反応を伴い、電子供与体（Fd：還元型フェレドキシン、GSH：還元型グルタチオン）を必要とする</b><br>③植物（葉緑体を持つ生物）が主な実行者<br>④どちらも合計8電子の還元が必要",
+    point: "「無機→有機の同化」「8電子還元」「植物特有」が両者の共通キーワード！"
+  },
+  {
+    category: "入試応用",
+    q: "ある植物の葉緑体機能を阻害する薬剤を与えたところ、窒素同化の一部のステップが著しく低下した。最も影響を受けると考えられる反応ステップはどれか？",
+    options: [
+      "NO₃⁻ → NO₂⁻（硝酸還元酵素による反応）",
+      "NO₂⁻ → NH₄⁺（亜硝酸還元酵素による反応）",
+      "NH₄⁺ → グルタミン（GS による反応）",
+      "グルタミン → グルタミン酸（GOGAT による反応）"
+    ],
+    correct: 1,
+    explanation: "葉緑体機能の阻害で<b>最も影響を受ける</b>のは「NO₂⁻ → NH₄⁺」の反応です。<br>理由：亜硝酸還元酵素は<b>葉緑体</b>に存在し、電子供与体として<b>還元型フェレドキシン（Fd）</b>を使います。Fdは光合成の光化学系Iで産生されるため、葉緑体機能阻害によって電子供給が断たれます。<br>（NO₃⁻→NO₂⁻は細胞質で起こるため影響は少ない）",
+    point: "「場所+電子供与体の産生場所」を組み合わせた応用問題！医学部入試頻出パターン。"
+  }
+];
+
+let answered = 0;
+let correct = 0;
+
+function buildQuiz() {
+  const area = document.getElementById('quiz-area');
+  area.innerHTML = '';
+  answered = 0; correct = 0;
+  updateProgress();
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + i;
+    let optHtml = q.options.map((opt, j) =>
+      `<button class="option-btn" id="opt-${i}-${j}" onclick="answer(${i},${j})">${String.fromCharCode(65+j)}．${opt}</button>`
+    ).join('');
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Q${i+1}</span>
+        <span class="q-category">${q.category}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optHtml}</div>
+      <div class="feedback" id="fb-${i}"></div>
+    `;
+    area.appendChild(card);
+  });
+}
+
+function answer(qi, selected) {
+  const q = questions[qi];
+  const card = document.getElementById('card-' + qi);
+  if (card.classList.contains('answered-correct') || card.classList.contains('answered-wrong')) return;
+
+  const isCorrect = selected === q.correct;
+  if (isCorrect) { correct++; card.classList.add('answered-correct'); }
+  else { card.classList.add('answered-wrong'); }
+  answered++;
+  updateProgress();
+
+  // Disable all options
+  q.options.forEach((_, j) => {
+    const btn = document.getElementById(`opt-${qi}-${j}`);
+    btn.disabled = true;
+    if (j === q.correct) btn.classList.add('correct');
+    else if (j === selected && !isCorrect) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('fb-' + qi);
+  fb.style.display = 'block';
+  if (isCorrect) {
+    fb.className = 'feedback correct-fb';
+    fb.innerHTML = `<div class="fb-label">✅ 正解！</div>${q.explanation}<div class="fb-point">📌 ポイント：${q.point}</div>`;
+  } else {
+    fb.className = 'feedback wrong-fb';
+    fb.innerHTML = `<div class="fb-label">❌ 不正解</div>正解は <b>${String.fromCharCode(65+q.correct)}．${q.options[q.correct]}</b><br><br>${q.explanation}<div class="fb-point">📌 ポイント：${q.point}</div>`;
+  }
+
+  if (answered === questions.length) {
+    setTimeout(showResult, 600);
+  }
+}
+
+function updateProgress() {
+  const pct = (answered / questions.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${answered} / ${questions.length} 問 回答済み`;
+}
+
+function showResult() {
+  const card = document.getElementById('resultCard');
+  card.style.display = 'block';
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('resultScore').textContent = correct;
+  const pct = Math.round(correct / questions.length * 100);
+  let msg, comment;
+  if (pct === 100) {
+    msg = "🏆 満点！完璧な理解です！";
+    comment = "窒素同化・硫黄同化の反応経路、酵素名、GS-GOGAT系の意義、O-アセチルセリンまで完璧に理解できています。医学部・難関大の入試問題にも対応できる実力がついています！次は化学合成・核の構造にチャレンジ！";
+  } else if (pct >= 70) {
+    msg = "👍 よくできました！";
+    comment = "基本的な理解はできています。特に「反応場所の区別（細胞質 vs 葉緑体）」と「GS-GOGAT系の意義」「O-アセチルセリン（OAS）」の問題を復習しましょう。動画の重要ポイントを見直してから再挑戦！";
+  } else if (pct >= 40) {
+    msg = "📚 もう一度復習しよう！";
+    comment = "反応経路の順序と酵素名の対応が曖昧になっています。窒素同化：NO₃⁻→NO₂⁻→NH₄⁺→グルタミン→グルタミン酸、硫黄同化：SO₄²⁻→APS→SO₃²⁻→H₂S→システインをフローで確認しよう。動画のフロー図解のパートを見返してから再挑戦！";
+  } else {
+    msg = "🔄 基礎から確認しよう！";
+    comment = "まずは動画で「仕組みの流れ」を図ごと理解することが大切です。単語の暗記ではなく「なぜこの酵素がここで働くのか？」を考えながら動画を再視聴してみてください。";
+  }
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultComment').textContent = comment;
+}
+
+function retryQuiz() {
+  document.getElementById('resultCard').style.display = 'none';
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

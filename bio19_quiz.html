@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #19 単細胞と多細胞・DNAの構造</title>
+<style>
+  :root {
+    --primary: #0d5c63;
+    --secondary: #e63946;
+    --accent: #f4a261;
+    --bg: #f0f7f7;
+    --card: #ffffff;
+    --correct: #2d6a4f;
+    --wrong: #c1121f;
+    --correct-bg: #d8f3dc;
+    --wrong-bg: #ffe5e5;
+    --text: #1b2631;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  header {
+    background: linear-gradient(135deg, #0d5c63, #1a8a8a);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(13,92,99,0.35);
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+  header p { font-size: 0.9rem; opacity: 0.85; }
+  .series-badge {
+    display: inline-block;
+    background: var(--secondary);
+    color: white;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  #progress-container {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+  #progress-text { font-size: 0.8rem; margin-top: 6px; opacity: 0.9; }
+  .question-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid var(--primary);
+    display: none;
+  }
+  .question-card.active { display: block; }
+  .question-number { font-size: 0.75rem; font-weight: bold; color: var(--primary); letter-spacing: 1px; margin-bottom: 12px; }
+  .question-text { font-size: 1.05rem; line-height: 1.7; margin-bottom: 20px; font-weight: 500; }
+  .tag {
+    display: inline-block;
+    background: #e0f5f5;
+    color: var(--primary);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    margin-bottom: 14px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--bg);
+    border: 2px solid #c8e6e6;
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) { background: #e0f5f5; border-color: var(--primary); transform: translateX(4px); }
+  .option-btn.correct { background: var(--correct-bg); border-color: var(--correct); color: var(--correct); font-weight: bold; }
+  .option-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: var(--wrong); }
+  .option-btn:disabled { cursor: not-allowed; }
+  .feedback { display: none; margin-top: 16px; padding: 14px 18px; border-radius: 12px; font-size: 0.9rem; line-height: 1.6; }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--correct-bg); color: var(--correct); border-left: 4px solid var(--correct); }
+  .feedback.wrong-fb { background: var(--wrong-bg); color: var(--wrong); border-left: 4px solid var(--wrong); }
+  .next-btn { display: none; margin-top: 16px; background: var(--primary); color: white; border: none; border-radius: 10px; padding: 12px 28px; font-size: 0.95rem; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+  .next-btn:hover { background: #094a50; }
+  .next-btn.show { display: inline-block; }
+  #results { display: none; background: var(--card); border-radius: 20px; padding: 40px 30px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  #results h2 { font-size: 1.6rem; color: var(--primary); margin-bottom: 16px; }
+  #score-circle {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: linear-gradient(135deg, #0d5c63, #1a8a8a);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 20px auto; color: white;
+    box-shadow: 0 6px 24px rgba(13,92,99,0.35);
+  }
+  #score-circle .score-num { font-size: 2.5rem; font-weight: bold; line-height: 1; }
+  #score-circle .score-label { font-size: 0.8rem; opacity: 0.85; }
+  #score-message { font-size: 1.05rem; margin: 16px 0; color: #555; }
+  .result-bar { background: #eee; border-radius: 8px; height: 10px; margin: 8px 0; overflow: hidden; }
+  .result-bar-fill { height: 100%; border-radius: 8px; background: linear-gradient(to right, #0d5c63, var(--accent)); transition: width 1s ease; }
+  #result-pct { font-size: 0.9rem; color: #666; }
+  #retry-btn { background: var(--secondary); color: white; border: none; border-radius: 12px; padding: 14px 36px; font-size: 1rem; cursor: pointer; font-weight: bold; margin-top: 16px; transition: background 0.2s; }
+  #retry-btn:hover { background: #b5242e; }
+  .note-link { display: inline-block; margin-top: 16px; color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: bold; }
+  .note-link:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2rem; }
+    .question-card { padding: 20px; }
+    .option-btn { font-size: 0.88rem; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="series-badge">ゼロからわかる高校生物 #19</div>
+  <h1>確認テスト<br>単細胞と多細胞・DNAの構造</h1>
+  <p>全14問 ｜ 選択式 ｜ 即時フィードバック</p>
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="progress-text">0 / 14 問完了</div>
+</header>
+
+<div id="quiz-container"></div>
+
+<div id="results">
+  <h2>テスト終了！🎉</h2>
+  <div id="score-circle">
+    <div class="score-num" id="score-num">0</div>
+    <div class="score-label">/ 14点</div>
+  </div>
+  <div id="score-message"></div>
+  <div>
+    <div style="font-size:0.9rem;color:#666;margin:10px 0;">正解率</div>
+    <div class="result-bar"><div class="result-bar-fill" id="result-bar-fill" style="width:0%"></div></div>
+    <div id="result-pct"></div>
+  </div>
+  <button id="retry-btn" onclick="restartQuiz()">もう一度挑戦する 🔄</button><br>
+  <a class="note-link" href="https://note.com/legit_rail216" target="_blank">📝 カズキ先生のnoteで詳しく学ぶ →</a>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "単細胞生物の説明として正しいものはどれか？",
+    tag: "単細胞生物の定義",
+    opts: [
+      "複数の細胞が集まって組織を形成する生物",
+      "1つの細胞で代謝・運動・増殖などの全生命活動を完結する生物",
+      "細胞が分化して異なる役割を担う生物",
+      "同種の単細胞が集まり、ゆるい分業を行う生物"
+    ],
+    ans: 1,
+    explain: "✅ 単細胞生物とは、1つの細胞だけですべての生命活動（代謝・運動・増殖など）を完結する生物です。例：ゾウリムシ、アメーバ、ミドリムシ、酵母、細菌など。"
+  },
+  {
+    q: "群体（ぐんたい）の説明として最も正しいものはどれか？",
+    tag: "群体の定義",
+    opts: [
+      "細胞が不可逆的に分化し、組織・器官を形成した生物集団",
+      "異種の生物が共生する集団",
+      "同種の単細胞生物が集まり、ゆるい分業を行うが、個々の細胞が単独でも生存できる集合体",
+      "1つの細胞が特殊化して複数の機能をもつもの"
+    ],
+    ans: 2,
+    explain: "✅ 群体は同種の単細胞生物が集まり、ゆるい分業はあるものの、個々の細胞が単独でも生存可能（分業が可逆的）な集合体です。例：ボルボックス、クンショウモ。多細胞生物とは「分業の不可逆性」で区別します。"
+  },
+  {
+    q: "ボルボックスを多細胞生物ではなく群体に分類する根拠として最も適切なものはどれか？",
+    tag: "ボルボックスの分類",
+    opts: [
+      "細胞に核膜がないから",
+      "光合成を行うから",
+      "細胞間の分業が可逆的で、個々の細胞が単独でも生存できるから",
+      "細胞の数が少ないから"
+    ],
+    ans: 2,
+    explain: "✅ ボルボックスは分業（生殖細胞と体細胞）がみられますが、体細胞を分離しても単独で生存できます（可逆的分業）。多細胞生物の細胞は分化によって不可逆的に特殊化し、単独では生存できません。これが群体と多細胞生物の決定的な違いです。"
+  },
+  {
+    q: "多細胞生物の「分化」について正しく説明しているものはどれか？",
+    tag: "分化の本質",
+    opts: [
+      "細胞ごとに異なるDNA配列をもつようになること",
+      "同じゲノムをもちながら、細胞ごとに異なる遺伝子を選択的に発現すること",
+      "細胞がDNAを失うことで特殊化すること",
+      "細胞が単独で生存できるようになること"
+    ],
+    ans: 1,
+    explain: "✅ 分化の本質は「同じゲノム（DNA）をもちながら、細胞の種類によって異なる遺伝子を選択的に発現させること」です。DNAの配列自体は変わらず、どの遺伝子を「ON/OFF」するかが変わります。"
+  },
+  {
+    q: "植物の体細胞の全能性（totipotency）についての説明として正しいものはどれか？",
+    tag: "全能性と脱分化",
+    opts: [
+      "植物の体細胞は全能性が極めて低く、分化後は再生できない",
+      "植物の体細胞は脱分化してカルスを形成でき、全能性が高い",
+      "動物の体細胞の方が植物より全能性が高い",
+      "全能性は初期胚の細胞にのみ存在する"
+    ],
+    ans: 1,
+    explain: "✅ 植物の体細胞は全能性が高く、適切な条件下で脱分化してカルス（未分化の細胞塊）を形成し、そこから完全な個体を再生できます。動物では初期胚（受精卵・初期割球）に全能性があり、成体の体細胞ではES細胞やiPS細胞のような多能性細胞が注目されています。"
+  },
+  {
+    q: "DNAのヌクレオチドを構成する3つの成分として正しい組み合わせはどれか？",
+    tag: "ヌクレオチドの構成",
+    opts: [
+      "リボース・リン酸・塩基",
+      "デオキシリボース・リン酸・塩基",
+      "デオキシリボース・硫酸・塩基",
+      "リボース・硫酸・アミノ酸"
+    ],
+    ans: 1,
+    explain: "✅ DNAのヌクレオチドは「デオキシリボース（糖）・リン酸・塩基」の3つで構成されます。RNAの場合は糖がリボースです。デオキシリボースとリボースの違い（2'位のOH基の有無）もおさえましょう。"
+  },
+  {
+    q: "DNAを構成する4種類の塩基をすべて正しく列挙しているものはどれか？",
+    tag: "DNAの塩基の種類",
+    opts: [
+      "アデニン(A)・ウラシル(U)・グアニン(G)・シトシン(C)",
+      "アデニン(A)・チミン(T)・グアニン(G)・シトシン(C)",
+      "アデニン(A)・チミン(T)・グアニン(G)・ウラシル(U)",
+      "アデニン(A)・チミン(T)・ヒポキサンチン(H)・シトシン(C)"
+    ],
+    ans: 1,
+    explain: "✅ DNAの塩基はA（アデニン）・T（チミン）・G（グアニン）・C（シトシン）の4種類です。RNAではTの代わりにU（ウラシル）が使われます。「ウラシルはRNAにしかない」と覚えましょう！"
+  },
+  {
+    q: "シャルガフの法則（Chargaff's rules）について正しく述べているものはどれか？",
+    tag: "シャルガフの法則",
+    opts: [
+      "一本鎖DNAにおいて、A=T、G=Cが成り立つ",
+      "二本鎖DNAにおいて、A=T、G=Cが成り立つ（モル比）",
+      "RNA分子においてのみ、A=U、G=Cが成り立つ",
+      "DNAの長さに関係なく、A+G=T+Cは成り立たない"
+    ],
+    ans: 1,
+    explain: "✅ シャルガフの法則：二本鎖DNAにおいてA（アデニン）の数＝T（チミン）の数、G（グアニン）の数＝C（シトシン）の数が成り立ちます（相補的塩基対のため）。一本鎖DNAではこの関係は成り立ちません。"
+  },
+  {
+    q: "二本鎖DNAにおいて、AとT、GとCの間の水素結合の本数として正しいものはどれか？",
+    tag: "水素結合の本数",
+    opts: [
+      "A-T：3本、G-C：2本",
+      "A-T：2本、G-C：2本",
+      "A-T：2本、G-C：3本",
+      "A-T：3本、G-C：3本"
+    ],
+    ans: 2,
+    explain: "✅ 水素結合の本数：A-T間は2本、G-C間は3本です。G-C間の方が水素結合が多いため、G+C含量が高いDNAほど2本鎖が解離しにくく（融解温度Tmが高い）なります。"
+  },
+  {
+    q: "二本鎖DNAのA（アデニン）の割合が24%のとき、G（グアニン）の割合はいくらか？",
+    tag: "シャルガフ計算問題",
+    opts: [
+      "24%",
+      "26%",
+      "28%",
+      "52%"
+    ],
+    ans: 1,
+    explain: "✅ シャルガフの法則より、A=T=24%。よってA+T=48%。残りのG+C=100-48=52%。G=C なので G=52÷2=26%。正解は26%です！計算手順をしっかりマスターしましょう。"
+  },
+  {
+    q: "G+C含量が高いDNAほど融解温度（Tm）が高くなる理由として正しいものはどれか？",
+    tag: "融解温度と塩基組成",
+    opts: [
+      "G-C間の水素結合はA-T間より1本多く、塩基スタッキング相互作用も加わるため解離に多くのエネルギーが必要だから",
+      "G-C間の水素結合はA-T間より1本少なく、結合が弱いから",
+      "G+Cの分子量がA+Tよりも大きいから",
+      "G-C間の水素結合は共有結合だから"
+    ],
+    ans: 0,
+    explain: "✅ G-C間は水素結合が3本（A-Tは2本）と多く、さらに塩基スタッキング相互作用（隣り合う塩基間のπ-π相互作用）も働くため、G+C含量が高いDNAほど2本鎖の解離に多くのエネルギーが必要となり、融解温度（Tm）が高くなります。"
+  },
+  {
+    q: "DNA二重らせんの方向性について正しいものはどれか？",
+    tag: "反平行の構造",
+    opts: [
+      "2本の鎖は同じ向き（5'→3'と5'→3'）で並んでいる（平行）",
+      "2本の鎖は逆向き（5'→3'と3'→5'）で並んでいる（反平行）",
+      "2本の鎖に5'端・3'端の区別はない",
+      "1本はDNA鎖、もう1本はRNA鎖である"
+    ],
+    ans: 1,
+    explain: "✅ DNA二重らせんの2本の鎖は「反平行（antiparallel）」で、一方が5'→3'なら他方は3'→5'の向きで並んでいます。この向きはDNA複製や転写の方向性にも直結する重要な概念です。"
+  },
+  {
+    q: "ヌクレオソームの構成として正しいものはどれか？",
+    tag: "ヌクレオソームの構造",
+    opts: [
+      "RNAポリメラーゼがDNAに巻き付いた構造",
+      "8個のヒストンタンパク質（八量体）にDNAが約1.8回転巻き付いた構造",
+      "4個のヒストンタンパク質にRNA が巻き付いた構造",
+      "DNA二本鎖が三重らせんを形成した構造"
+    ],
+    ans: 1,
+    explain: "✅ ヌクレオソームはH2A・H2B・H3・H4の各2個（計8個）のヒストンタンパク質からなるコアにDNAが約1.8回転巻き付いた構造です。これがクロマチン繊維の基本単位であり、さらに折り畳まれて染色体になります。"
+  },
+  {
+    q: "単細胞生物・群体・多細胞生物のうち、「細胞の分業が不可逆的であり、分化した細胞は単独では生存できない」という特徴をもつのはどれか？",
+    tag: "3つの分類の総整理",
+    opts: [
+      "単細胞生物のみ",
+      "群体のみ",
+      "多細胞生物のみ",
+      "群体と多細胞生物の両方"
+    ],
+    ans: 2,
+    explain: "✅ 不可逆的な分化（分業）をもち、分化した細胞が単独では生存できないのは多細胞生物の特徴です。群体の細胞は分業があっても可逆的で単独生存可能。単細胞生物はそもそも分業なし。この3つの区別は試験頻出です！"
+  }
+];
+
+let score = 0;
+let answered = [];
+
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card' + (i === 0 ? ' active' : '');
+    card.id = `q${i}`;
+    let optHtml = q.opts.map((o, j) =>
+      `<button class="option-btn" onclick="selectAnswer(${i},${j})" id="opt${i}_${j}">
+        <span style="font-weight:bold;margin-right:8px;">${['A','B','C','D'][j]}.</span>${o}
+      </button>`
+    ).join('');
+    card.innerHTML = `
+      <div class="question-number">問題 ${i+1} / ${questions.length}</div>
+      <div class="tag">📌 ${q.tag}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${optHtml}</div>
+      <div class="feedback" id="fb${i}"></div>
+      <button class="next-btn" id="next${i}" onclick="nextQuestion(${i})">
+        ${i === questions.length - 1 ? '結果を見る 🏁' : '次の問題へ →'}
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+  const q = questions[qIdx];
+  const btns = document.querySelectorAll(`[id^="opt${qIdx}_"]`);
+  btns.forEach(b => b.disabled = true);
+  btns[q.ans].classList.add('correct');
+  const fb = document.getElementById(`fb${qIdx}`);
+  if (optIdx === q.ans) {
+    score++;
+    btns[optIdx].classList.add('correct');
+    fb.className = 'feedback show correct-fb';
+    fb.innerHTML = `✅ 正解！ ${q.explain}`;
+  } else {
+    btns[optIdx].classList.add('wrong');
+    fb.className = 'feedback show wrong-fb';
+    fb.innerHTML = `❌ 不正解。正解は「${['A','B','C','D'][q.ans]}. ${q.opts[q.ans]}」<br><br>${q.explain}`;
+  }
+  document.getElementById(`next${qIdx}`).classList.add('show');
+  updateProgress(answered.filter(Boolean).length);
+}
+
+function nextQuestion(qIdx) {
+  document.getElementById(`q${qIdx}`).classList.remove('active');
+  if (qIdx + 1 < questions.length) {
+    document.getElementById(`q${qIdx+1}`).classList.add('active');
+    document.getElementById(`q${qIdx+1}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    showResults();
+  }
+}
+
+function updateProgress(done) {
+  const pct = (done / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${questions.length} 問完了`;
+}
+
+function showResults() {
+  document.getElementById('quiz-container').style.display = 'none';
+  const results = document.getElementById('results');
+  results.style.display = 'block';
+  results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('score-num').textContent = score;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('result-pct').textContent = `${pct}%（${score}/${questions.length}問正解）`;
+  setTimeout(() => { document.getElementById('result-bar-fill').style.width = pct + '%'; }, 100);
+  let msg = '';
+  if (pct === 100) msg = '🏆 満点！完璧な理解です！';
+  else if (pct >= 85) msg = '🌟 素晴らしい！ほぼ完璧です。';
+  else if (pct >= 70) msg = '👍 よくできました！苦手問題を復習しよう。';
+  else if (pct >= 50) msg = '📚 もう一度動画を見直してから再挑戦しよう！';
+  else msg = '💪 基礎から確認しよう。動画ともう一度！';
+  document.getElementById('score-message').textContent = msg;
+}
+
+function restartQuiz() {
+  score = 0; answered = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  updateProgress(0);
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

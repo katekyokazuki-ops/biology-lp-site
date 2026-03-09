@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #17 化学合成・核の構造と働き</title>
+<style>
+  :root {
+    --primary: #1a4b8c;
+    --secondary: #e63946;
+    --accent: #2ec4b6;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --correct: #2d6a4f;
+    --wrong: #c1121f;
+    --correct-bg: #d8f3dc;
+    --wrong-bg: #ffe5e5;
+    --text: #1b2631;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), #2c5f9e);
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 20px rgba(26,75,140,0.3);
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 6px; }
+  header p { font-size: 0.9rem; opacity: 0.85; }
+  .series-badge {
+    display: inline-block;
+    background: var(--secondary);
+    color: white;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  #progress-container {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+  #progress-text { font-size: 0.8rem; margin-top: 6px; opacity: 0.9; }
+
+  .question-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 5px solid var(--primary);
+    display: none;
+  }
+  .question-card.active { display: block; }
+  .question-number {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .question-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: var(--primary);
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    margin-bottom: 14px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    background: var(--bg);
+    border: 2px solid #dce6f0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) {
+    background: #e8f0fe;
+    border-color: var(--primary);
+    transform: translateX(4px);
+  }
+  .option-btn.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+    color: var(--correct);
+    font-weight: bold;
+  }
+  .option-btn.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+  .feedback {
+    display: none;
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: var(--correct-bg); color: var(--correct); border-left: 4px solid var(--correct); }
+  .feedback.wrong-fb { background: var(--wrong-bg); color: var(--wrong); border-left: 4px solid var(--wrong); }
+  .next-btn {
+    display: none;
+    margin-top: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+  .next-btn:hover { background: #163d7a; }
+  .next-btn.show { display: inline-block; }
+
+  #results {
+    display: none;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  #results h2 { font-size: 1.6rem; color: var(--primary); margin-bottom: 16px; }
+  #score-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    color: white;
+    box-shadow: 0 6px 24px rgba(26,75,140,0.35);
+  }
+  #score-circle .score-num { font-size: 2.5rem; font-weight: bold; line-height: 1; }
+  #score-circle .score-label { font-size: 0.8rem; opacity: 0.85; }
+  #score-message { font-size: 1.05rem; margin: 16px 0; color: #555; }
+  #results-breakdown { margin: 20px 0; font-size: 0.9rem; color: #666; }
+  .result-bar { background: #eee; border-radius: 8px; height: 10px; margin: 8px 0; overflow: hidden; }
+  .result-bar-fill { height: 100%; border-radius: 8px; background: linear-gradient(to right, var(--primary), var(--accent)); transition: width 1s ease; }
+  #retry-btn {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 16px;
+    transition: background 0.2s;
+  }
+  #retry-btn:hover { background: #b5242e; }
+  .note-link {
+    display: inline-block;
+    margin-top: 16px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
+  .note-link:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2rem; }
+    .question-card { padding: 20px; }
+    .option-btn { font-size: 0.88rem; padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="series-badge">ゼロからわかる高校生物 #17</div>
+  <h1>確認テスト<br>化学合成・核の構造と働き</h1>
+  <p>全12問 ｜ 選択式 ｜ 即時フィードバック</p>
+  <div id="progress-container"><div id="progress-bar"></div></div>
+  <div id="progress-text">0 / 12 問完了</div>
+</header>
+
+<div id="quiz-container"></div>
+<div id="results">
+  <h2>テスト終了！🎉</h2>
+  <div id="score-circle">
+    <div class="score-num" id="score-num">0</div>
+    <div class="score-label">/ 12点</div>
+  </div>
+  <div id="score-message"></div>
+  <div id="results-breakdown">
+    <div>正解率</div>
+    <div class="result-bar"><div class="result-bar-fill" id="result-bar-fill" style="width:0%"></div></div>
+    <div id="result-pct"></div>
+  </div>
+  <button id="retry-btn" onclick="restartQuiz()">もう一度挑戦する 🔄</button><br>
+  <a class="note-link" href="https://note.com/legit_rail216" target="_blank">📝 カズキ先生のnoteで詳しく学ぶ →</a>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "化学合成を行う生物の正しい説明はどれか？",
+    tag: "化学合成の定義",
+    opts: [
+      "光エネルギーを使ってCO₂を有機物に固定する",
+      "無機物の酸化によって得られる化学エネルギーを使ってCO₂を有機物に固定する",
+      "有機物を分解してエネルギーを得る従属栄養生物である",
+      "光合成と同じくチラコイドで反応が起きる"
+    ],
+    ans: 1,
+    explain: "✅ 化学合成は無機物の酸化反応から得た化学エネルギーを用いてCO₂を有機物（糖）に固定します。光を必要とせず、光合成とは異なる独立栄養の方法です。"
+  },
+  {
+    q: "亜硝酸菌が行う反応として正しいものはどれか？",
+    tag: "亜硝酸菌",
+    opts: [
+      "NO₂⁻ → NO₃⁻",
+      "NH₄⁺ → NO₂⁻",
+      "H₂S → S",
+      "Fe²⁺ → Fe³⁺"
+    ],
+    ans: 1,
+    explain: "✅ 亜硝酸菌（ニトロソモナスなど）はアンモニウムイオン（NH₄⁺）を亜硝酸イオン（NO₂⁻）に酸化します。この酸化で得たエネルギーで化学合成を行います。"
+  },
+  {
+    q: "硝酸菌が行う反応として正しいものはどれか？",
+    tag: "硝酸菌",
+    opts: [
+      "NH₄⁺ → NO₂⁻",
+      "H₂S → SO₄²⁻",
+      "NO₂⁻ → NO₃⁻",
+      "CO₂ → 有機物（直接）"
+    ],
+    ans: 2,
+    explain: "✅ 硝酸菌（ニトロバクターなど）は亜硝酸イオン（NO₂⁻）を硝酸イオン（NO₃⁻）に酸化し、そのエネルギーで化学合成を行います。亜硝酸菌＋硝酸菌を合わせて「硝化細菌」と呼びます。"
+  },
+  {
+    q: "硫黄細菌が酸化する基質として最も適切なものはどれか？",
+    tag: "硫黄細菌",
+    opts: [
+      "Fe²⁺（第一鉄イオン）",
+      "NO₂⁻（亜硝酸イオン）",
+      "NH₄⁺（アンモニウムイオン）",
+      "H₂S（硫化水素）"
+    ],
+    ans: 3,
+    explain: "✅ 硫黄細菌は硫化水素（H₂S）を酸化してイオウ（S）や硫酸イオン（SO₄²⁻）を生成し、その化学エネルギーで化学合成を行います。深海熱水噴出孔周辺で重要な一次生産者です。"
+  },
+  {
+    q: "化学合成と光合成の共通点として正しいものはどれか？",
+    tag: "化学合成vs光合成",
+    opts: [
+      "どちらも光エネルギーを利用する",
+      "どちらもCO₂を有機物に固定する独立栄養である",
+      "どちらもチラコイド膜で反応が起きる",
+      "どちらも酸素を発生させる"
+    ],
+    ans: 1,
+    explain: "✅ 光合成も化学合成も「CO₂を有機物に固定する独立栄養（自己栄養）」という点は共通です。違いは光合成が光エネルギーを、化学合成が化学エネルギー（無機物の酸化）を使う点です。"
+  },
+  {
+    q: "核膜の構造について正しく説明しているものはどれか？",
+    tag: "核膜の構造",
+    opts: [
+      "一重膜構造で、細胞膜と連続している",
+      "二重膜構造で、外膜は滑面小胞体と連続している",
+      "二重膜構造で、外膜は粗面小胞体と連続している",
+      "三重膜構造で、内膜にリボソームが結合している"
+    ],
+    ans: 2,
+    explain: "✅ 核膜は二重膜構造をもちます。外側の膜（外膜）は粗面小胞体（リボソームが付着した小胞体）と連続しています。"
+  },
+  {
+    q: "核孔（核膜孔）の主な機能はどれか？",
+    tag: "核孔の機能",
+    opts: [
+      "DNAの複製を行う",
+      "rRNAを合成する",
+      "核と細胞質の間で物質（タンパク質・mRNAなど）を輸送する",
+      "エネルギー産生（ATP合成）を行う"
+    ],
+    ans: 2,
+    explain: "✅ 核孔（nuclear pore）は核膜に存在する穴で、mRNAや輸送タンパク質などの物質が核と細胞質の間を行き来する通路です。転写されたmRNAは核孔を通って細胞質に出てきます。"
+  },
+  {
+    q: "核小体（ヌクレオルス）の主な働きはどれか？",
+    tag: "核小体の働き",
+    opts: [
+      "DNAの修復を行う",
+      "ゴルジ体を形成する",
+      "rRNA（リボソームRNA）を合成し、リボソームのサブユニットを組み立てる",
+      "ミトコンドリアにエネルギーを供給する"
+    ],
+    ans: 2,
+    explain: "✅ 核小体はリボソームRNA（rRNA）を大量に合成し、リボソームのサブユニットを形成する場所です。タンパク質合成が活発な細胞では核小体が大きくなります。"
+  },
+  {
+    q: "染色体の構成成分として正しい組み合わせはどれか？",
+    tag: "染色体の構成",
+    opts: [
+      "RNAとアクチンタンパク質",
+      "DNAとヒストンタンパク質",
+      "DNAとアクチンタンパク質",
+      "RNAとヒストンタンパク質"
+    ],
+    ans: 1,
+    explain: "✅ 染色体はDNAとヒストンタンパク質で構成されます。DNAがヒストンに巻き付いてヌクレオソームを形成し、さらに折り畳まれてクロマチン繊維→染色体となります。"
+  },
+  {
+    q: "ヌクレオソームの説明として正しいものはどれか？",
+    tag: "ヌクレオソーム",
+    opts: [
+      "8個のヒストンタンパク質からなるコアにDNAが巻き付いた構造",
+      "4個のヒストンタンパク質からなるコアにRNAが巻き付いた構造",
+      "核膜を構成する基本単位",
+      "リボソームの基本単位"
+    ],
+    ans: 0,
+    explain: "✅ ヌクレオソームは8個のヒストンタンパク質（H2A・H2B・H3・H4が各2個）からなるコア（ヒストン八量体）にDNAが約2周巻き付いた構造です。これがクロマチン繊維の基本単位です。"
+  },
+  {
+    q: "核の働きとして誤っているものはどれか？",
+    tag: "核の機能（誤り選択）",
+    opts: [
+      "DNAに記録された遺伝情報を保存する",
+      "DNAからmRNAへの転写を行う",
+      "細胞分裂時に遺伝情報を娘細胞に伝える",
+      "タンパク質をアミノ酸に分解する（タンパク質分解）"
+    ],
+    ans: 3,
+    explain: "✅ タンパク質の分解はプロテアソームやリソソームが担い、核の機能ではありません。核の主な機能は①遺伝情報の保存（DNA）、②転写（DNA→mRNA）、③細胞分裂の制御です。"
+  },
+  {
+    q: "化学合成細菌についての記述として誤っているものはどれか？",
+    tag: "化学合成細菌（誤り選択）",
+    opts: [
+      "亜硝酸菌と硝酸菌をまとめて硝化細菌という",
+      "深海の熱水噴出孔周辺の生態系では一次生産者として機能する",
+      "化学合成で得た有機物は葉緑体で合成される",
+      "鉄細菌は二価鉄（Fe²⁺）を三価鉄（Fe³⁺）に酸化してエネルギーを得る"
+    ],
+    ans: 2,
+    explain: "✅ 化学合成細菌は葉緑体をもちません。これらは原核生物（細菌）であり、葉緑体は真核生物の植物・藻類がもつ細胞小器官です。化学合成の炭素固定（カルビン回路）は細胞質で行われます。"
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+
+function buildQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card' + (i === 0 ? ' active' : '');
+    card.id = `q${i}`;
+    let optHtml = q.opts.map((o, j) =>
+      `<button class="option-btn" onclick="selectAnswer(${i}, ${j})" id="opt${i}_${j}">
+        <span style="font-weight:bold;margin-right:8px;">${['A','B','C','D'][j]}.</span>${o}
+      </button>`
+    ).join('');
+    card.innerHTML = `
+      <div class="question-number">問題 ${i+1} / ${questions.length}</div>
+      <div class="tag">📌 ${q.tag}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">${optHtml}</div>
+      <div class="feedback" id="fb${i}"></div>
+      <button class="next-btn" id="next${i}" onclick="nextQuestion(${i})">${i === questions.length-1 ? '結果を見る 🏁' : '次の問題へ →'}</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+  const q = questions[qIdx];
+  const btns = document.querySelectorAll(`[id^="opt${qIdx}_"]`);
+  btns.forEach(b => b.disabled = true);
+  btns[q.ans].classList.add('correct');
+  const fb = document.getElementById(`fb${qIdx}`);
+  if (optIdx === q.ans) {
+    score++;
+    btns[optIdx].classList.add('correct');
+    fb.className = 'feedback show correct-fb';
+    fb.innerHTML = `✅ 正解！ ${q.explain}`;
+  } else {
+    btns[optIdx].classList.add('wrong');
+    fb.className = 'feedback show wrong-fb';
+    fb.innerHTML = `❌ 不正解。正解は「${['A','B','C','D'][q.ans]}. ${q.opts[q.ans]}」<br><br>${q.explain}`;
+  }
+  document.getElementById(`next${qIdx}`).classList.add('show');
+  updateProgress(qIdx + 1);
+}
+
+function nextQuestion(qIdx) {
+  document.getElementById(`q${qIdx}`).classList.remove('active');
+  if (qIdx + 1 < questions.length) {
+    document.getElementById(`q${qIdx+1}`).classList.add('active');
+    document.getElementById(`q${qIdx+1}`).scrollIntoView({behavior:'smooth', block:'start'});
+  } else {
+    showResults();
+  }
+}
+
+function updateProgress(done) {
+  const pct = (done / questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${questions.length} 問完了`;
+}
+
+function showResults() {
+  document.getElementById('quiz-container').style.display = 'none';
+  const results = document.getElementById('results');
+  results.style.display = 'block';
+  results.scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('score-num').textContent = score;
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('result-pct').textContent = `${pct}%（${score}/${questions.length}問正解）`;
+  setTimeout(() => {
+    document.getElementById('result-bar-fill').style.width = pct + '%';
+  }, 100);
+  let msg = '';
+  if (pct === 100) msg = '🏆 満点！完璧な理解です！';
+  else if (pct >= 83) msg = '🌟 素晴らしい！ほぼ完璧です。';
+  else if (pct >= 67) msg = '👍 よくできました！あと少しで完璧！';
+  else if (pct >= 50) msg = '📚 半分以上正解！苦手な部分を復習しよう。';
+  else msg = '💪 動画をもう一度見直してから再挑戦しよう！';
+  document.getElementById('score-message').textContent = msg;
+}
+
+function restartQuiz() {
+  current = 0; score = 0; answered = [];
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('quiz-container').style.display = 'block';
+  updateProgress(0);
+  buildQuiz();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+buildQuiz();
+</script>
+</body>
+</html>

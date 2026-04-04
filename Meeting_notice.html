@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2回ミーティングのご案内｜偏差値爆上げ学習塾</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #faf9f6;
+    --accent: #e63946;
+    --accent-soft: #fde8ea;
+    --blue: #457b9d;
+    --blue-soft: #e8f0f5;
+    --green: #2a9d8f;
+    --green-soft: #e6f5f3;
+    --warm-gray: #6b6b7b;
+    --border: #e0ddd8;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.85;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page-wrapper {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease-out both;
+  }
+  .header .label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 5px 16px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 900;
+    font-size: clamp(22px, 5.5vw, 30px);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+  .header .date-line {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--warm-gray);
+  }
+  .header .date-line time {
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .greeting {
+    font-size: 15px;
+    color: var(--warm-gray);
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.6s 0.1s ease-out both;
+  }
+  .greeting strong { color: var(--ink); }
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 28px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+  }
+  .card:nth-child(1) { animation: fadeUp 0.6s 0.15s ease-out both; }
+  .card:nth-child(1)::before { background: var(--accent); }
+  .card:nth-child(2) { animation: fadeUp 0.6s 0.25s ease-out both; }
+  .card:nth-child(2)::before { background: var(--blue); }
+  .card:nth-child(3) { animation: fadeUp 0.6s 0.35s ease-out both; }
+  .card:nth-child(3)::before { background: var(--green); }
+  .card-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .card:nth-child(1) .card-number { background: var(--accent-soft); color: var(--accent); }
+  .card:nth-child(2) .card-number { background: var(--blue-soft); color: var(--blue); }
+  .card:nth-child(3) .card-number { background: var(--green-soft); color: var(--green); }
+  .card h2 {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  .card p {
+    font-size: 14.5px;
+    color: #3a3a4a;
+    margin-bottom: 10px;
+  }
+  .card p:last-child { margin-bottom: 0; }
+  .info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e8e6e2;
+    font-size: 14.5px;
+  }
+  .info-row:last-of-type { border-bottom: none; }
+  .info-row .label-sm {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f2f1ee;
+    color: var(--warm-gray);
+  }
+  .info-row .value { color: var(--ink); font-weight: 500; }
+  .meet-link {
+    display: block;
+    margin-top: 14px;
+    padding: 14px 18px;
+    background: #f0f7fa;
+    border: 1px solid #d0e3ed;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 700;
+    word-break: break-all;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .meet-link:hover { background: #e2eff6; transform: translateY(-1px); }
+  .deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .steps {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #fafaf8;
+    border-radius: 10px;
+    border: 1px solid #eceae5;
+  }
+  .step {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: #3a3a4a;
+  }
+  .step-num {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--warm-gray);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .step strong { color: var(--ink); }
+  .note-text {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--warm-gray);
+  }
+  .footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 12px;
+    color: #b0aead;
+    animation: fadeUp 0.6s 0.45s ease-out both;
+  }
+  .footer .brand {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--warm-gray);
+    margin-bottom: 4px;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 480px) {
+    .page-wrapper { padding: 28px 16px 60px; }
+    .card { padding: 22px 20px 20px; }
+    .info-row { flex-direction: column; gap: 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="header">
+    <span class="label">メンバーシップ会員さま</span>
+    <h1>第2回ミーティングのご案内</h1>
+    <p class="date-line">ミーティング日時：<time>2026年4月7日（火）14:30〜</time></p>
+  </header>
+
+  <p class="greeting">
+    いつもありがとうございます。カズキです。<br>
+    次回ミーティングに向けて、確認していただきたいことが <strong>3点</strong> あります。<br>
+    それぞれ内容と期限をチェックしてください。
+  </p>
+
+  <div class="cards">
+
+    <!-- 1. ミーティング情報 -->
+    <div class="card">
+      <div class="card-number">1</div>
+      <h2>次回ミーティング情報</h2>
+      <div class="info-row">
+        <span class="label-sm">日時</span>
+        <span class="value">4月7日（火）14:30〜</span>
+      </div>
+      <div class="info-row">
+        <span class="label-sm">場所</span>
+        <span class="value">Google Meet（オンライン）</span>
+      </div>
+      <a class="meet-link" href="https://meet.google.com/rpx-jiks-tin" target="_blank" rel="noopener">&#128279; https://meet.google.com/rpx-jiks-tin</a>
+      <p class="note-text">当日はこのURLからGoogle Meetにアクセスしてください。</p>
+    </div>
+
+    <!-- 2. 小テスト -->
+    <div class="card">
+      <div class="card-number">2</div>
+      <h2>小テストの実施について</h2>
+      <p>この1週間で取り組んだ内容がしっかり身についているかを確認するために、ミーティング前に小テストを実施します。</p>
+      <div class="info-row">
+        <span class="label-sm">送付</span>
+        <span class="value">4月6日（月）18:00頃にお送りします</span>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">STEP 1</span>
+          <span>届いた問題を解く</span>
+        </div>
+        <div class="step">
+          <span class="step-num">STEP 2</span>
+          <span>解き終わったノートを <strong>スマホで撮影</strong> する</span>
+        </div>
+        <div class="step">
+          <span class="step-num">STEP 3</span>
+          <span>撮影した画像を <strong>LINEで送信</strong> する</span>
+        </div>
+      </div>
+      <div class="deadline">&#9200; 提出期限：4月7日（火）12:00まで</div>
+    </div>
+
+    <!-- 3. ノート提出 -->
+    <div class="card">
+      <div class="card-number">3</div>
+      <h2>ノートの提出について</h2>
+      <p>前回のミーティングで指示した内容を正しく実行できているかチェックします。<strong>4月6日（月）分まで完了したノートすべて</strong>をスマホで撮影して、画像を<strong>LINEで送ってください。</strong></p>
+      <p class="note-text">※ 途中のものではなく、4/6（月）までに終わらせた分をまとめて提出してください。</p>
+      <div class="deadline">&#9200; 提出期限：4月7日（火）12:00まで</div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <p class="brand">偏差値爆上げ学習塾｜カズキ</p>
+    <p>不明点があればLINEで気軽に聞いてください。</p>
+  </footer>
+
+</div>
+</body>
+</html>

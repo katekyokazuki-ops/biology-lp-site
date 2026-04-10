@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ゼロからわかる高校生物 #20 確認テスト｜ガードンの核移植実験</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #ffffff;
+      --accent: #2563eb;
+      --accent2: #7c3aed;
+      --ok: #16a34a;
+      --ng: #dc2626;
+      --text: #0f172a;
+      --sub: #475569;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #312e81 100%);
+      color: #fff;
+      line-height: 1.7;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 16px 56px;
+    }
+    .hero {
+      background: linear-gradient(135deg, rgba(37,99,235,.22), rgba(124,58,237,.22));
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2;
+    }
+    .hero p { margin: 8px 0; color: #e2e8f0; }
+    .badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #111827;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .card {
+      background: var(--card);
+      color: var(--text);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(15,23,42,.18);
+      margin-bottom: 18px;
+    }
+    .card h2, .card h3 { margin-top: 0; }
+    .lead {
+      color: var(--sub);
+      margin-top: 6px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .meta div {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+    .q {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin: 16px 0;
+      background: #fff;
+    }
+    .q h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+    label.choice {
+      display: block;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: .2s ease;
+      background: #f8fafc;
+    }
+    label.choice:hover { border-color: #60a5fa; background: #eff6ff; }
+    input[type="radio"] { margin-right: 8px; }
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .ghost { background: #e2e8f0; color: #0f172a; }
+    .result {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 18px;
+      display: none;
+    }
+    .result.show { display: block; }
+    .score {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .review {
+      margin-top: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .item {
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .ok { background: #f0fdf4; border-color: #86efac; }
+    .ng { background: #fef2f2; border-color: #fca5a5; }
+    .small { color: var(--sub); font-size: 14px; }
+    .footer {
+      margin-top: 16px;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 14px;
+    }
+    a { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">ゼロからわかる高校生物 #20</div>
+      <h1>ガードンの核移植実験<br>確認テスト</h1>
+      <p>「分化した核でも個体ができるのはなぜか？」を、暗記ではなく因果で説明できるかチェックしよう。</p>
+      <div class="meta">
+        <div>全12問</div>
+        <div>4択形式</div>
+        <div>即時フィードバック</div>
+        <div>スマホ対応</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>このテストで確認できること</h2>
+      <p class="lead">ガードンの核移植実験の手順、ゲノムの等価性、分化と遺伝子のON/OFF、初期化（リプログラミング）、mtDNAの由来、iPS細胞とのつながりまで確認できます。</p>
+    </section>
+
+    <form id="quiz" class="card"></form>
+
+    <section id="result" class="result card"></section>
+
+    <p class="footer">作成：オンライン家庭教師 カズキ｜高校生物の「脱・暗記」確認テスト</p>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: 'Q1. ガードンの核移植実験で最も確かめたかったことはどれ？',
+        choices: [
+          '分化した細胞はDNAをすべて失っていること',
+          '分化した細胞核にも個体形成に必要な遺伝情報が残っていること',
+          '体色は細胞質だけで決まること',
+          '紫外線を当てると発生が促進されること'
+        ],
+        answer: 1,
+        explanation: 'ガードンの実験は、分化した体細胞核にも全遺伝情報が保持されること、つまりゲノムの等価性を示した実験です。'
+      },
+      {
+        q: 'Q2. 受け手の卵に紫外線を当てる主な目的はどれ？',
+        choices: [
+          '卵の細胞質を白色に変えるため',
+          '卵の核の働きを失わせ、移植核の影響を判定しやすくするため',
+          'ドナー核のDNAを増やすため',
+          'ミトコンドリアDNAを除去するため'
+        ],
+        answer: 1,
+        explanation: '紫外線の目的は受け手卵の核を不活性化することです。これにより、発生後の形質を移植核由来と判断しやすくなります。'
+      },
+      {
+        q: 'Q3. 白色個体の腸上皮細胞核を、除核した黒色個体の卵に移植したとき、得られる個体の体色として最も適切なのは？',
+        choices: ['黒色', '灰色', '白色', '条件によって必ず半々'],
+        answer: 2,
+        explanation: '体色の設計図は核にあるため、白色個体由来の核を使えば白色形質が現れます。'
+      },
+      {
+        q: 'Q4. この実験結果から導かれる「ゲノムの等価性」とは何か。最も適切なのは？',
+        choices: [
+          '生殖細胞だけが完全な遺伝情報を持つこと',
+          '分化した細胞では遺伝情報の半分が失われること',
+          'どの体細胞核も基本的に同じ遺伝情報を保持していること',
+          '細胞質ごとにDNA配列が変わること'
+        ],
+        answer: 2,
+        explanation: 'ゲノムの等価性とは、分化後の体細胞核でも基本的に同じ全遺伝情報を持っている、という考え方です。'
+      },
+      {
+        q: 'Q5. 分化した細胞が筋肉細胞や神経細胞など異なる働きを示す主な理由として正しいのは？',
+        choices: [
+          '細胞ごとに持つDNA配列そのものが大きく異なるから',
+          '必要な遺伝子のON/OFFが異なるから',
+          'RNAしか遺伝情報を持たないから',
+          '染色体数が細胞ごとに大きく変化するから'
+        ],
+        answer: 1,
+        explanation: '分化の本質は遺伝情報の喪失ではなく、どの遺伝子を使うかというON/OFFの違いにあります。'
+      },
+      {
+        q: 'Q6. 卵の細胞質が担う役割として最も適切なのは？',
+        choices: [
+          '体色などの形質を直接決定する設計図そのもの',
+          '核の遺伝情報を完全に削除する場所',
+          '移植された核を初期化し、胚発生に適した状態へ戻す場',
+          'DNA配列を書き換えて別の生物種に変える装置'
+        ],
+        answer: 2,
+        explanation: '卵細胞質は、分化核を初期化（リプログラミング）して胚発生に適した遺伝子発現状態へ戻す場として働きます。'
+      },
+      {
+        q: 'Q7. 「初期化（リプログラミング）」の説明として正しいものはどれ？',
+        choices: [
+          'DNAの塩基配列そのものを完全に別物へ変えること',
+          '分化した核の遺伝子発現状態を未分化な状態へ戻すこと',
+          '核を取り除いた卵を死滅させること',
+          'ミトコンドリアを核へ変えること'
+        ],
+        answer: 1,
+        explanation: '初期化とはDNA配列を変えることではなく、遺伝子発現プログラムを未分化な状態へ戻すことです。'
+      },
+      {
+        q: 'Q8. 核移植によって得られた個体のミトコンドリアDNA（mtDNA）は、一般にどこ由来と考えるのが適切？',
+        choices: [
+          '移植した体細胞核由来',
+          '受け手卵の細胞質由来',
+          '発生途中で新たに合成されるので由来はない',
+          '必ず父親由来'
+        ],
+        answer: 1,
+        explanation: 'mtDNAは主に卵の細胞質に含まれるミトコンドリア由来です。したがって、核ゲノムはドナー由来でもmtDNAは受け手卵由来になり得ます。'
+      },
+      {
+        q: 'Q9. 核移植の成功率が低かったとしても、ゲノムの等価性の証拠として価値がある理由は？',
+        choices: [
+          '1例でも正常発生したなら、分化核に個体形成能力が残ることを示せるから',
+          '成功率が低いほど遺伝情報が増えるから',
+          '失敗例はすべて細胞質が悪いと証明されるから',
+          '成功率は結論と無関係で、何も言えないから'
+        ],
+        answer: 0,
+        explanation: '重要なのは成功率そのものではなく、「分化した核でも正常個体ができた」という事実です。これが全遺伝情報保持の証拠になります。'
+      },
+      {
+        q: 'Q10. 次のうち、ガードンの核移植実験とiPS細胞研究の共通点として最も適切なのは？',
+        choices: [
+          'どちらも分化した細胞の状態を未分化側へ戻せることを示した',
+          'どちらも紫外線だけで万能細胞を作る',
+          'どちらもミトコンドリアDNAを消去する',
+          'どちらも植物細胞でのみ成功した'
+        ],
+        answer: 0,
+        explanation: 'ガードンは卵細胞質による初期化、山中iPSは遺伝子導入による初期化ですが、どちらも分化状態を戻せることを示しました。'
+      },
+      {
+        q: 'Q11. 「分化した細胞では不要な遺伝子がなくなっている」という考えが誤りである理由として最も適切なのは？',
+        choices: [
+          '分化後の核でも個体が発生したから',
+          '卵は常に黒色だから',
+          '紫外線がDNAを増やしたから',
+          '腸上皮細胞は生殖細胞だから'
+        ],
+        answer: 0,
+        explanation: '分化した体細胞核から個体形成が起きたことが、遺伝子の喪失ではなくON/OFFの違いで分化が生じることを強く支持します。'
+      },
+      {
+        q: 'Q12. 入試で「この実験を一文で説明せよ」と言われたときの要点として最も適切なのは？',
+        choices: [
+          '分化細胞の核を除核卵へ移植し、分化後も全遺伝情報が保たれることを示した実験',
+          '卵の細胞質が遺伝情報をすべて決めることを示した実験',
+          '紫外線で新しい遺伝子を作り出す実験',
+          'ミトコンドリアが核に変わることを示した実験'
+        ],
+        answer: 0,
+        explanation: '一文でまとめるなら、「分化細胞核を除核卵へ移植して発生させ、分化後も全遺伝情報が保持されることを示した実験」が核になります。'
+      }
+    ];
+
+    const quiz = document.getElementById('quiz');
+    const result = document.getElementById('result');
+
+    function renderQuiz() {
+      quiz.innerHTML = `
+        <h2>確認問題</h2>
+        <p class="lead">各問題で最も適切なものを1つ選んでください。解答後に採点と解説が表示されます。</p>
+        ${questions.map((item, i) => `
+          <div class="q">
+            <h3>${item.q}</h3>
+            <div class="choices">
+              ${item.choices.map((c, j) => `
+                <label class="choice">
+                  <input type="radio" name="q${i}" value="${j}"> ${c}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+        <div class="btns">
+          <button type="button" class="primary" onclick="gradeQuiz()">採点する</button>
+          <button type="button" class="ghost" onclick="resetQuiz()">リセット</button>
+        </div>
+      `;
+    }
+
+    window.gradeQuiz = function() {
+      let score = 0;
+      const review = [];
+
+      questions.forEach((item, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const user = selected ? Number(selected.value) : null;
+        const ok = user === item.answer;
+        if (ok) score++;
+        review.push({ item, user, ok, idx: i + 1 });
+      });
+
+      const percent = Math.round((score / questions.length) * 100);
+      let msg = '';
+      if (percent === 100) msg = '満点です！ガードンの核移植実験を因果で説明できています。';
+      else if (percent >= 80) msg = 'かなり理解できています！あとは誤答をつぶせば盤石です。';
+      else if (percent >= 60) msg = '基礎は良い感じです。ゲノムの等価性・初期化・mtDNAの由来を再確認しましょう。';
+      else msg = 'ここから伸びます！「なぜそう言えるか」を1問ずつ言語化して復習しましょう。';
+
+      result.className = 'result card show';
+      result.innerHTML = `
+        <div class="score">${score} / ${questions.length} 点（${percent}%）</div>
+        <p>${msg}</p>
+        <div class="review">
+          ${review.map(r => `
+            <div class="item ${r.ok ? 'ok' : 'ng'}">
+              <strong>Q${r.idx}. ${r.ok ? '正解' : '要復習'}</strong><br>
+              <span class="small">あなたの解答：${r.user === null ? '未回答' : r.item.choices[r.user]}</span><br>
+              <span class="small">正答：${r.item.choices[r.item.answer]}</span>
+              <p style="margin:8px 0 0;">${r.item.explanation}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      result.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    window.resetQuiz = function() {
+      renderQuiz();
+      result.className = 'result card';
+      result.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ガードンの核移植実験</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1e2530;
+    --border: #2a3441;
+    --teal: #2dd4bf;
+    --teal-dim: #1a8c7e;
+    --teal-glow: rgba(45,212,191,0.15);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.15);
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.15);
+    --amber: #fbbf24;
+    --text: #e2e8f0;
+    --text-dim: #8b95a6;
+    --radius: 12px;
+    --radius-lg: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── 背景グリッド ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(45,212,191,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45,212,191,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ── ヘッダー ── */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .header-badge::before { content: '●'; font-size: 8px; }
+  h1 {
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--teal); }
+  .header-sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* ── プログレスバー ── */
+  .progress-wrap {
+    margin-bottom: 36px;
+  }
+  .progress-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .progress-meta strong { color: var(--teal); font-family: 'DM Mono', monospace; font-size: 14px; }
+  .progress-bar-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), #38bdf8);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  /* ── 問題カード ── */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin-bottom: 20px;
+    animation: fadeSlideIn 0.4s ease both;
+  }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-meta {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px;
+  }
+  .q-num {
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 6px;
+    white-space: nowrap;
+  }
+  .q-tag {
+    background: var(--surface2);
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .q-diff {
+    margin-left: auto;
+    display: flex; gap: 3px;
+  }
+  .star { font-size: 11px; }
+  .star.on  { color: var(--amber); }
+  .star.off { color: var(--border); }
+
+  .q-text {
+    font-size: 16px; font-weight: 700;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .q-text em {
+    color: var(--teal);
+    font-style: normal;
+    border-bottom: 1px dashed var(--teal-dim);
+  }
+
+  /* ── 選択肢 ── */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    user-select: none;
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  .choice:hover:not(.disabled) {
+    border-color: var(--teal-dim);
+    background: rgba(45,212,191,0.05);
+    transform: translateX(3px);
+  }
+  .choice.disabled { cursor: default; }
+  .choice-key {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    background: var(--border);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-dim);
+    margin-top: 1px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .choice-text { flex: 1; }
+
+  .choice.correct {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+  .choice.correct .choice-key {
+    background: var(--green);
+    color: #0d1117;
+  }
+  .choice.wrong {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+  .choice.wrong .choice-key {
+    background: var(--red);
+    color: #0d1117;
+  }
+  .choice.reveal-correct {
+    border-color: var(--green);
+    background: var(--green-dim);
+    opacity: 0.6;
+  }
+  .choice.reveal-correct .choice-key {
+    background: var(--green);
+    color: #0d1117;
+  }
+
+  /* ── 解説 ── */
+  .explanation {
+    display: none;
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    animation: fadeIn 0.35s ease;
+  }
+  .explanation.show { display: block; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .exp-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .exp-label.ok  { color: var(--green); }
+  .exp-label.ng  { color: var(--red); }
+  .exp-label::before {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900;
+    flex-shrink: 0;
+  }
+  .exp-label.ok::before { content: '✓'; background: var(--green); color: #0d1117; }
+  .exp-label.ng::before { content: '✕'; background: var(--red);   color: #0d1117; }
+
+  .exp-text {
+    font-size: 13px; line-height: 1.8;
+    color: var(--text-dim);
+  }
+  .exp-text strong { color: var(--text); font-weight: 700; }
+  .exp-text .key {
+    display: inline-block;
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-dim);
+    color: var(--teal);
+    font-size: 11px; font-weight: 700;
+    padding: 1px 8px; border-radius: 5px;
+    margin: 0 2px;
+  }
+
+  /* ── ボタン ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius);
+    border: none; cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 700;
+    transition: transform 0.15s, opacity 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--teal), #38bdf8);
+    color: #0d1117;
+    box-shadow: 0 4px 20px rgba(45,212,191,0.3);
+  }
+  .btn-primary:hover { box-shadow: 0 6px 28px rgba(45,212,191,0.45); }
+  .btn-ghost {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .nav-row {
+    display: flex; justify-content: flex-end; gap: 10px;
+    margin-top: 24px;
+  }
+
+  /* ── 結果画面 ── */
+  #result-screen {
+    display: none;
+    animation: fadeSlideIn 0.5s ease;
+  }
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .score-ring {
+    width: 140px; height: 140px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle.track {
+    fill: none; stroke: var(--border); stroke-width: 8;
+  }
+  .score-ring circle.fill {
+    fill: none; stroke-width: 8;
+    stroke-linecap: round;
+    stroke: var(--teal);
+    stroke-dasharray: 377;
+    stroke-dashoffset: 377;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1) 0.3s;
+    filter: drop-shadow(0 0 6px rgba(45,212,191,0.6));
+  }
+  .score-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .score-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 36px; font-weight: 500;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .score-denom { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  .result-title {
+    font-size: 24px; font-weight: 900;
+    margin-bottom: 10px;
+  }
+  .result-msg {
+    font-size: 14px; color: var(--text-dim);
+    line-height: 1.8; margin-bottom: 32px;
+    max-width: 480px; margin-left: auto; margin-right: auto;
+  }
+
+  .result-grid {
+    display: grid; grid-template-columns: repeat(5,1fr); gap: 8px;
+    margin-bottom: 32px;
+    max-width: 400px; margin-left: auto; margin-right: auto;
+  }
+  .result-dot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .result-dot.ok { background: var(--green-dim); border: 1px solid var(--green); }
+  .result-dot.ng { background: var(--red-dim);   border: 1px solid var(--red); }
+
+  .result-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+  /* ── スタート画面 ── */
+  #start-screen {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    text-align: center;
+  }
+  .info-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+    margin: 28px 0 32px;
+  }
+  .info-cell {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 12px;
+  }
+  .info-cell .val {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px; font-weight: 500;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .info-cell .lbl { font-size: 11px; color: var(--text-dim); }
+
+  @media (max-width: 500px) {
+    .question-card { padding: 24px 18px; }
+    .info-grid { grid-template-columns: 1fr; }
+    .result-grid { grid-template-columns: repeat(5,1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-badge">ゼロからわかる高校生物 #17補足</div>
+    <h1>ガードンの<span>核移植実験</span><br>確認テスト</h1>
+    <p class="header-sub">
+      脱・暗記：「知っている」ではなく「説明できる」を確かめよう<br>
+      実験の設計・結論・誤解ポイントをまとめて復習します
+    </p>
+  </header>
+
+  <!-- スタート画面 -->
+  <div id="start-screen">
+    <div class="info-grid">
+      <div class="info-cell"><div class="val">10</div><div class="lbl">問</div></div>
+      <div class="info-cell"><div class="val">5〜8</div><div class="lbl">分で完了</div></div>
+      <div class="info-cell"><div class="val">全問</div><div class="lbl">解説つき</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-dim);line-height:1.9;margin-bottom:32px;">
+      解答後にすぐ正誤と解説が表示されます。<br>
+      全問終了後にスコアと振り返りが確認できます。
+    </p>
+    <button class="btn btn-primary" onclick="startQuiz()" style="width:100%;max-width:320px;">テストを開始する →</button>
+  </div>
+
+  <!-- 問題エリア -->
+  <div id="quiz-area" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span>問題 <strong id="q-counter">1 / 10</strong></span>
+        <span id="score-live" style="color:var(--text-dim);font-size:12px;">正解: 0</span>
+      </div>
+      <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    </div>
+    <div id="question-mount"></div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="result-screen">
+    <div class="result-card">
+      <div class="score-ring">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle class="track" cx="70" cy="70" r="60"/>
+          <circle class="fill" id="score-arc" cx="70" cy="70" r="60"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-num" id="score-display">0</div>
+          <div class="score-denom" id="score-denom">/ 10 問</div>
+        </div>
+      </div>
+      <div class="result-title" id="result-title">お疲れ様でした！</div>
+      <p class="result-msg" id="result-msg"></p>
+      <div class="result-grid" id="result-dots"></div>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="restartQuiz()">もう一度チャレンジ ↺</button>
+        <button class="btn btn-ghost" onclick="scrollToTop()">▲ 上に戻る</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 1,
+    tag: "実験の設計",
+    diff: 1,
+    text: "ガードンの実験で、受け手の未受精卵に<em>紫外線（UV）を照射する</em>目的として最も正しいものはどれか？",
+    choices: [
+      { key:"A", text:"卵の細胞質を活性化させ、核移植を受け入れやすくするため" },
+      { key:"B", text:"受け手卵の核の働きを不活性化し、発生後の形質が移植核由来だと判定できるようにするため" },
+      { key:"C", text:"卵の細胞質に含まれる初期化因子を破壊し、移植核だけで発生させるため" },
+      { key:"D", text:"白/黒の体色判定がしやすくなるよう、色素を除去するため" }
+    ],
+    answer: 1,
+    exp_label: "ok",
+    exp_html: '受け手核が残っていると「移植した核と受け手の核のどちらが働いたか」の判定ができなくなります。UVは<strong>受け手核だけを不活性化（除核）</strong>し、変数を「核」ひとつに絞るための操作です。細胞質はそのまま残し、<strong>初期化の場</strong>として機能させます。'
+  },
+  {
+    id: 2,
+    tag: "実験デザイン",
+    diff: 1,
+    text: "ガードンの実験で白個体の体細胞核を<em>黒個体の除核卵</em>に移植した。この実験の「変数」と「固定した条件」の正しい組み合わせはどれか？",
+    choices: [
+      { key:"A", text:"変数：卵の細胞質（黒）　固定条件：核（白）" },
+      { key:"B", text:"変数：体色　固定条件：核と細胞質の両方" },
+      { key:"C", text:"変数：核（白個体由来）　固定条件：卵の細胞質（黒個体由来）" },
+      { key:"D", text:"変数：発生温度　固定条件：核と細胞質の両方" }
+    ],
+    answer: 2,
+    exp_label: "ok",
+    exp_html: '対照実験の原則は<strong>「変数を1つに絞る」</strong>こと。この実験では<span class="key">核</span>だけを入れ替え、卵の細胞質（初期化の場）は黒個体由来のまま固定しています。その後に生まれた個体の体色が<strong>白か黒か</strong>で「どちらの核の情報が働いたか」を判定します。'
+  },
+  {
+    id: 3,
+    tag: "観察と結論",
+    diff: 2,
+    text: "実験の結果、発生した個体の体色は<em>白</em>になった。この観察から言えることとして最も正確なものはどれか？",
+    choices: [
+      { key:"A", text:"卵細胞質（黒）が形質（体色）を決定する" },
+      { key:"B", text:"細胞質と核の両方が同じ割合で体色を決定する" },
+      { key:"C", text:"体色などの形質は、核の遺伝情報（DNA）が作るタンパク質によって決まる" },
+      { key:"D", text:"分化した核は体色遺伝子しか持っていないことが証明された" }
+    ],
+    answer: 2,
+    exp_label: "ok",
+    exp_html: '卵の細胞質は<em>黒</em>由来なのに、生まれた個体は<strong>白</strong>になった。この結果は「体色は細胞質ではなく、<span class="key">核のDNA</span>が作るタンパク質で決まる」ことを示しています。細胞質の役割は<strong>遺伝子のON/OFFを調整する場</strong>であって、形質を直接決定する主役ではありません。'
+  },
+  {
+    id: 4,
+    tag: "ゲノムの等価性",
+    diff: 2,
+    text: "次の文の<em>正誤</em>を判断せよ。「分化に伴い、不要な遺伝子はゲノムから失われる。」",
+    choices: [
+      { key:"A", text:"正しい：腸上皮細胞は消化酵素の遺伝子しか持っていない" },
+      { key:"B", text:"誤り：分化しても核の全遺伝情報は保持され、遺伝子は失われない" },
+      { key:"C", text:"正しい：分化の程度が高いほど遺伝子が減少する" },
+      { key:"D", text:"誤り：体細胞では遺伝子は増加する" }
+    ],
+    answer: 1,
+    exp_label: "ng",
+    exp_html: '分化した細胞の核にも<strong>全遺伝情報（ゲノム）は保持</strong>されています。これを<span class="key">ゲノムの等価性</span>といいます。分化で変わるのは「遺伝子を使い分けるON/OFFパターン」であり、遺伝子そのものは消えません。ガードンの実験で<strong>分化核から個体が発生した</strong>ことがその証拠です。'
+  },
+  {
+    id: 5,
+    tag: "誤解ポイント",
+    diff: 2,
+    text: "核移植実験で「生まれた個体の体色が<em>黒</em>になった」場合、最も考えられる原因はどれか？",
+    choices: [
+      { key:"A", text:"細胞質が黒由来なので、体色が黒になるのは当然である" },
+      { key:"B", text:"除核（UV照射）が不十分で、受け手の核が残存していた" },
+      { key:"C", text:"移植した白個体の核に遺伝情報が不足していた" },
+      { key:"D", text:"成功率が低い実験なので、発生が失敗した" }
+    ],
+    answer: 1,
+    exp_label: "ok",
+    exp_html: '黒で生まれた場合、まず<strong>「除核が不十分」</strong>を疑います。受け手卵の核が残っていると黒個体の遺伝子が発現し、体色が黒になります。Aは典型的な誤解で、<strong>細胞質は形質を直接決定しません</strong>。形質の主役はあくまで<span class="key">核のDNA</span>です。'
+  },
+  {
+    id: 6,
+    tag: "初期化",
+    diff: 2,
+    text: "卵細胞質の役割として最も正しいものはどれか？",
+    choices: [
+      { key:"A", text:"体色などの形質を直接決定する" },
+      { key:"B", text:"分化核を「胚のスタート地点」に近づける初期化の場として働く" },
+      { key:"C", text:"移植された核のDNA配列を書き換えて若返らせる" },
+      { key:"D", text:"移植核を分解し、新しいDNAを合成する" }
+    ],
+    answer: 1,
+    exp_label: "ok",
+    exp_html: '卵細胞質には<strong>初期化因子</strong>（転写因子・ヒストン修飾酵素など）が豊富に含まれています。これらが分化核の<span class="key">クロマチン状態</span>を組み替え、遺伝子発現パターンを胚様に近づけます。変わるのは<strong>DNA配列ではなく、遺伝子のON/OFFパターン</strong>（エピジェネティクス的変化）です。'
+  },
+  {
+    id: 7,
+    tag: "クローンとmtDNA",
+    diff: 3,
+    text: "核移植で作られたクローン個体のゲノムについて、正しい記述はどれか？",
+    choices: [
+      { key:"A", text:"核DNAもmtDNAも完全にドナー（核提供者）と同じである" },
+      { key:"B", text:"核DNAはドナーと同じだが、ミトコンドリアDNA（mtDNA）は受け手卵由来になり得る" },
+      { key:"C", text:"核DNAは受け手卵由来で、mtDNAだけがドナーと同じになる" },
+      { key:"D", text:"核DNAとmtDNAの両方が受け手卵と同じになる" }
+    ],
+    answer: 1,
+    exp_label: "ok",
+    exp_html: '核移植クローンでは<span class="key">核ゲノム</span>はドナー（核提供者）由来となり、ほぼ同一です。しかし<strong>ミトコンドリアは細胞質に存在するため</strong>、mtDNAは受け手卵（母性遺伝）由来になり得ます。「クローン＝すべて遺伝的に完全同一」は誤りで、<strong>核DNA以外は異なる可能性がある</strong>と押さえましょう。'
+  },
+  {
+    id: 8,
+    tag: "連続核移植",
+    diff: 3,
+    text: "<em>連続核移植（serial nuclear transfer）</em>の主な意義として正しいものはどれか？",
+    choices: [
+      { key:"A", text:"核移植の成功率を高めるための実用的テクニック" },
+      { key:"B", text:"一度でも失敗した実験をやり直すための手法" },
+      { key:"C", text:"分化が進んだ核でも発生を指揮できるという能力を、より厳密に検証するための操作" },
+      { key:"D", text:"クローンの個体に多様性を持たせるために行う操作" }
+    ],
+    answer: 2,
+    exp_label: "ok",
+    exp_html: 'いったんできた胚（またはその細胞）の核を<strong>別の除核卵にさらに移植</strong>することで、「たまたまの例外」を排除し、<span class="key">分化核の発生能力</span>をより厳密に検証できます。「成功率を上げる技術」という誤解が多いので注意。これは<strong>能力の再現性・厳密性を高める</strong>ための手法です。'
+  },
+  {
+    id: 9,
+    tag: "分化とは",
+    diff: 2,
+    text: "「分化」を最も正確に説明しているものはどれか？",
+    choices: [
+      { key:"A", text:"細胞が特定の機能を持つようになる過程で、不要なDNA配列が削除される現象" },
+      { key:"B", text:"細胞が増殖しながら遺伝子の数が減少していく現象" },
+      { key:"C", text:"DNA配列は保持されたまま、使用する遺伝子のON/OFFパターン（発現）が固定・再編される過程" },
+      { key:"D", text:"新しい遺伝子が細胞に追加されることで機能が特化していく現象" }
+    ],
+    answer: 2,
+    exp_label: "ok",
+    exp_html: '分化の本質は<strong>「遺伝子の削除」ではなく、<span class="key">発現のON/OFF再編</span></strong>です。腸上皮細胞は「腸に必要な遺伝子のみON、他はOFF」という状態。全遺伝子は核に保存されており、これが<span class="key">ゲノムの等価性</span>の根拠です。卵細胞質はこのOFF状態を解除し、初期化の方向へ働かせます（<strong>エピジェネティクス</strong>）。'
+  },
+  {
+    id: 10,
+    tag: "iPS・医療接続",
+    diff: 2,
+    text: "ガードンの核移植実験と山中伸弥のiPS細胞研究の関係について、最も適切な説明はどれか？",
+    choices: [
+      { key:"A", text:"両者は全く無関係で、独立した異なる研究分野である" },
+      { key:"B", text:"ガードンが「卵細胞質で初期化できる」と示し、山中が「遺伝子導入でも初期化を再現できる」ことを示した。どちらも分化の可逆性を証明した研究として2012年にノーベル賞を受賞した" },
+      { key:"C", text:"山中のiPS研究がガードンより前に行われ、それに基づいてガードンが核移植実験を行った" },
+      { key:"D", text:"ガードンの実験は失敗が多かったため、山中が別の方法で再挑戦した研究がiPS細胞である" }
+    ],
+    answer: 1,
+    exp_label: "ok",
+    exp_html: 'ガードンは<strong>「卵細胞質という環境で分化核を初期化できる」</strong>ことを示し、山中は<strong>「特定の遺伝子を導入することで、卵細胞質なしに初期化を再現できる」</strong>ことを示しました。どちらも<span class="key">分化は可逆である</span>という原理の証明です。この原理が<strong>患者自身の細胞→初期化→必要な細胞へ誘導</strong>という再生医療の発想を支えています。'
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = [];
+let results = [];
+
+function startQuiz() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const mount = document.getElementById('question-mount');
+
+  // progress
+  document.getElementById('q-counter').textContent = `${currentQ + 1} / ${QUESTIONS.length}`;
+  document.getElementById('score-live').textContent = `正解: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(currentQ / QUESTIONS.length) * 100}%`;
+
+  const stars = (n) => [1,2,3].map(i => `<span class="star ${i<=n?'on':'off'}">★</span>`).join('');
+
+  const choicesHtml = q.choices.map((c,i) => `
+    <div class="choice" id="choice-${i}" onclick="selectAnswer(${i})">
+      <div class="choice-key">${c.key}</div>
+      <div class="choice-text">${c.text}</div>
+    </div>
+  `).join('');
+
+  mount.innerHTML = `
+    <div class="question-card">
+      <div class="q-meta">
+        <span class="q-num">Q${q.id}</span>
+        <span class="q-tag">${q.tag}</span>
+        <div class="q-diff">${stars(q.diff)}</div>
+      </div>
+      <p class="q-text">${q.text}</p>
+      <div class="choices" id="choices-wrap">${choicesHtml}</div>
+      <div class="explanation" id="explanation">
+        <div class="exp-label ${q.exp_label}">${q.exp_label==='ok'?'正解！':'不正解'}</div>
+        <p class="exp-text">${q.exp_html}</p>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" style="display:none;">
+          ${currentQ < QUESTIONS.length - 1 ? '次の問題 →' : '結果を見る →'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectAnswer(idx) {
+  if (answered[currentQ] !== undefined) return;
+  answered[currentQ] = idx;
+
+  const q = QUESTIONS[currentQ];
+  const correct = q.answer === idx;
+  if (correct) score++;
+  results[currentQ] = correct;
+
+  document.getElementById('score-live').textContent = `正解: ${score}`;
+
+  // disable all
+  q.choices.forEach((_, i) => {
+    const el = document.getElementById(`choice-${i}`);
+    el.classList.add('disabled');
+    if (i === q.answer && !correct) el.classList.add('reveal-correct');
+  });
+
+  const selected = document.getElementById(`choice-${idx}`);
+  selected.classList.add(correct ? 'correct' : 'wrong');
+
+  // show explanation label
+  const expDiv = document.getElementById('explanation');
+  expDiv.querySelector('.exp-label').textContent = correct ? '正解！' : `不正解　正解は「${q.choices[q.answer].key}」`;
+  expDiv.classList.add('show');
+
+  document.getElementById('next-btn').style.display = 'inline-flex';
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) {
+    showResult();
+  } else {
+    document.getElementById('question-mount').innerHTML = '';
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+
+  const pct = score / QUESTIONS.length;
+  document.getElementById('score-display').textContent = score;
+  document.getElementById('score-denom').textContent = `/ ${QUESTIONS.length} 問`;
+
+  // arc
+  const circ = 2 * Math.PI * 60;
+  setTimeout(() => {
+    document.getElementById('score-arc').style.strokeDashoffset = circ * (1 - pct);
+  }, 100);
+
+  // color ring by score
+  const arc = document.getElementById('score-arc');
+  if (pct >= 0.8) { arc.style.stroke = 'var(--green)'; }
+  else if (pct >= 0.6) { arc.style.stroke = 'var(--teal)'; }
+  else { arc.style.stroke = 'var(--amber)'; }
+
+  // title / msg
+  const [title, msg] = (() => {
+    if (score === 10) return ['完璧！全問正解🎉', '脱・暗記を完全達成！実験の設計から医療接続まで、すべての因果を説明できる状態です。入試本番も自信を持って挑みましょう。'];
+    if (score >= 8)  return ['優秀です！', '惜しい問題があったはず。解説を見返して「なぜそうなるか」の論理をもう一度確認しましょう。'];
+    if (score >= 6)  return ['もう一歩！', '基本はつかめています。誤解しやすいポイント（UVの目的・mtDNA・連続核移植）を重点的に復習しましょう。'];
+    return ['動画を見返そう！', '「操作→観察→言えること」の流れを意識しながら、もう一度動画を視聴してみましょう。必ず理解できます！'];
+  })();
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+
+  // dots
+  const dotsEl = document.getElementById('result-dots');
+  dotsEl.innerHTML = results.map((ok, i) =>
+    `<div class="result-dot ${ok?'ok':'ng'}" title="Q${i+1}">${ok?'✓':'✕'}</div>`
+  ).join('');
+}
+
+function restartQuiz() {
+  currentQ = 0; score = 0; answered = []; results = [];
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  renderQuestion();
+}
+
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+</script>
+</body>
+</html>

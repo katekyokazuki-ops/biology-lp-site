@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #20</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Space+Grotesk:wght@700&display=swap');
+
+  :root {
+    --bg: #0e1117;
+    --surface: #161b25;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ─── Header ─── */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f2744 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 20px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '🧬';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.04;
+    top: -40px; right: -20px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    border: 1px solid var(--accent2);
+    border-radius: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--accent2);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ─── Progress ─── */
+  .progress-wrap {
+    max-width: 720px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ─── Container ─── */
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* ─── Section header ─── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 16px;
+  }
+  .section-badge {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge-basic { background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+  .badge-standard { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+  .badge-advanced { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .section-title { font-size: 15px; font-weight: 700; color: var(--text-dim); }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #3a4a60; }
+  .card.correct { border-color: var(--green); background: rgba(16,185,129,0.05); }
+  .card.wrong { border-color: var(--red); background: rgba(239,68,68,0.05); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .q-num {
+    min-width: 32px;
+    height: 32px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.7;
+    flex: 1;
+  }
+  .q-text em {
+    font-style: normal;
+    background: rgba(59,130,246,0.15);
+    color: var(--accent2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 700;
+  }
+
+  /* ─── Options ─── */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    width: 100%;
+  }
+  .opt:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(59,130,246,0.08);
+  }
+  .opt:disabled { cursor: default; }
+  .opt.selected-correct {
+    border-color: var(--green);
+    background: rgba(16,185,129,0.1);
+    color: #6ee7b7;
+  }
+  .opt.selected-wrong {
+    border-color: var(--red);
+    background: rgba(239,68,68,0.1);
+    color: #fca5a5;
+  }
+  .opt.reveal-correct {
+    border-color: var(--green);
+    background: rgba(16,185,129,0.06);
+    color: #6ee7b7;
+  }
+  .opt-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .opt-label {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 16px;
+    flex-shrink: 0;
+  }
+  .opt.selected-correct .opt-icon { background: var(--green); border-color: var(--green); }
+  .opt.selected-wrong .opt-icon { background: var(--red); border-color: var(--red); }
+  .opt.reveal-correct .opt-icon { background: var(--green); border-color: var(--green); }
+
+  /* ─── Feedback ─── */
+  .feedback {
+    display: none;
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: #6ee7b7;
+  }
+  .feedback.ng {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #fca5a5;
+  }
+  .feedback strong { font-weight: 700; }
+
+  /* ─── Fill blanks ─── */
+  .fill-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 15px;
+    line-height: 2;
+    margin-bottom: 16px;
+  }
+  .blank-input {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    padding: 4px 10px;
+    width: 120px;
+    text-align: center;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .blank-input:focus { border-color: var(--accent); }
+  .blank-input.correct-fill { border-color: var(--green); background: rgba(16,185,129,0.08); color: #6ee7b7; }
+  .blank-input.wrong-fill { border-color: var(--red); background: rgba(239,68,68,0.08); color: #fca5a5; }
+  .check-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 18px;
+    transition: opacity 0.2s;
+  }
+  .check-btn:hover { opacity: 0.85; }
+  .check-btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ─── Result ─── */
+  #result-section {
+    display: none;
+    margin-top: 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 56px; margin-bottom: 12px; }
+  .result-score {
+    font-size: 48px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .result-label { color: var(--text-dim); font-size: 15px; margin-bottom: 20px; }
+  .result-msg {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text);
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .retry-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 36px;
+    transition: opacity 0.2s;
+  }
+  .retry-btn:hover { opacity: 0.85; }
+
+  .submit-wrap {
+    text-align: center;
+    margin-top: 32px;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 48px;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+  }
+  .submit-btn:hover { opacity: 0.85; }
+
+  .icon-check::before { content: '✓'; }
+  .icon-x::before { content: '✗'; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#20</span><br>確認テスト</h1>
+  <p>膜なし構造体・一重膜構造体・タンパク質輸送経路</p>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">20</div><div class="stat-label">問</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">難易度レベル</div></div>
+    <div class="stat"><div class="stat-num">合格</div><div class="stat-label">目標：全問正解</div></div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-header">
+    <span id="prog-text">0 / 20 回答済み</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<div class="container" id="quiz-container">
+
+  <!-- ==================== BASIC ==================== -->
+  <div class="section-head">
+    <span class="section-badge badge-basic">BASIC</span>
+    <span class="section-title">基礎確認 — 構造と用語</span>
+  </div>
+
+  <!-- Q1 -->
+  <div class="card" id="card-1">
+    <div class="q-header">
+      <div class="q-num">Q1</div>
+      <div class="q-text">リボソームは何と何からできているか。正しいものを選べ。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(1,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>DNA とタンパク質</button>
+      <button class="opt" onclick="answer(1,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>リボソームRNA とタンパク質</button>
+      <button class="opt" onclick="answer(1,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>mRNA とリン脂質</button>
+      <button class="opt" onclick="answer(1,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>rRNA と DNA</button>
+    </div>
+    <div class="feedback" id="fb-1"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="card" id="card-2">
+    <div class="q-header">
+      <div class="q-num">Q2</div>
+      <div class="q-text">原核生物のリボソームのサイズとして正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(2,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>60 S</button>
+      <button class="opt" onclick="answer(2,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>80 S</button>
+      <button class="opt" onclick="answer(2,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>70 S</button>
+      <button class="opt" onclick="answer(2,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>50 S</button>
+    </div>
+    <div class="feedback" id="fb-2"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="card" id="card-3">
+    <div class="q-header">
+      <div class="q-num">Q3</div>
+      <div class="q-text">中心体の構造として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(3,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>9+2 の二重微小管構造</button>
+      <button class="opt" onclick="answer(3,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>リン脂質二重層で覆われた球状構造</button>
+      <button class="opt" onclick="answer(3,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>9+0 の三連微小管が環状に配列した2個の中心小体</button>
+      <button class="opt" onclick="answer(3,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>二重膜に包まれた独自 DNA をもつ構造</button>
+    </div>
+    <div class="feedback" id="fb-3"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="card" id="card-4">
+    <div class="q-header">
+      <div class="q-num">Q4</div>
+      <div class="q-text">次のオルガネラのうち、<em>膜をもたない</em>ものをすべて選べ（正しい組み合わせ）。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(4,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ゴルジ体・液胞</button>
+      <button class="opt" onclick="answer(4,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>リボソーム・中心体</button>
+      <button class="opt" onclick="answer(4,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>小胞体・ペルオキシソーム</button>
+      <button class="opt" onclick="answer(4,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>ミトコンドリア・リソソーム</button>
+    </div>
+    <div class="feedback" id="fb-4"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="card" id="card-5">
+    <div class="q-header">
+      <div class="q-num">Q5</div>
+      <div class="q-text">粗面小胞体（RER）の「粗面」の原因として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(5,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ゴルジ体からの小胞が付着しているから</button>
+      <button class="opt" onclick="answer(5,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>リボソームが膜表面に付着しているから</button>
+      <button class="opt" onclick="answer(5,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>リン脂質二重層が二重になっているから</button>
+      <button class="opt" onclick="answer(5,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>DNA が膜上に絡まっているから</button>
+    </div>
+    <div class="feedback" id="fb-5"></div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="card" id="card-6">
+    <div class="q-header">
+      <div class="q-num">Q6</div>
+      <div class="q-text">ゴルジ体の主な機能として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(6,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ATP の合成</button>
+      <button class="opt" onclick="answer(6,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>DNA の複製</button>
+      <button class="opt" onclick="answer(6,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>タンパク質の修飾・仕分けと分泌</button>
+      <button class="opt" onclick="answer(6,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>mRNA への転写</button>
+    </div>
+    <div class="feedback" id="fb-6"></div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="card" id="card-7">
+    <div class="q-header">
+      <div class="q-num">Q7</div>
+      <div class="q-text">リソソームが低 pH（酸性）環境を保つ理由として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(7,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ゴルジ体から酸性タンパク質を受け取るから</button>
+      <button class="opt" onclick="answer(7,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>リン脂質が酸性イオンを産生するから</button>
+      <button class="opt" onclick="answer(7,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>V 型 ATPase（液胞型プロトンポンプ）がプロトンを内部に輸送するから</button>
+      <button class="opt" onclick="answer(7,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>ミトコンドリアの ATP が酸として放出されるから</button>
+    </div>
+    <div class="feedback" id="fb-7"></div>
+  </div>
+
+  <!-- ==================== STANDARD ==================== -->
+  <div class="section-head">
+    <span class="section-badge badge-standard">STANDARD</span>
+    <span class="section-title">標準問題 — 機能・因果・比較</span>
+  </div>
+
+  <!-- Q8 -->
+  <div class="card" id="card-8">
+    <div class="q-header">
+      <div class="q-num">Q8</div>
+      <div class="q-text">遊離リボソームで合成されるタンパク質と、粗面小胞体付着型リボソームで合成されるタンパク質の行き先について、正しい組み合わせはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(8,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>遊離→分泌用、付着型→細胞内</button>
+      <button class="opt" onclick="answer(8,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>遊離→細胞内（酵素・細胞骨格など）、付着型→分泌用・膜タンパク・リソソーム用</button>
+      <button class="opt" onclick="answer(8,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>遊離→核内、付着型→細胞質</button>
+      <button class="opt" onclick="answer(8,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>遊離→ミトコンドリア内、付着型→液胞</button>
+    </div>
+    <div class="feedback" id="fb-8"></div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="card" id="card-9">
+    <div class="q-header">
+      <div class="q-num">Q9</div>
+      <div class="q-text">コルヒチンを細胞に与えると何が起こるか。<em>最も適切</em>な説明を選べ。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(9,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>リボソームのタンパク質合成が阻害される</button>
+      <button class="opt" onclick="answer(9,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>ミトコンドリアの ATP 合成が停止する</button>
+      <button class="opt" onclick="answer(9,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>微小管の重合が阻害されて紡錘体が形成できず、細胞分裂が停止する</button>
+      <button class="opt" onclick="answer(9,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>ゴルジ体からの小胞輸送が阻害される</button>
+    </div>
+    <div class="feedback" id="fb-9"></div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="card" id="card-10">
+    <div class="q-header">
+      <div class="q-num">Q10</div>
+      <div class="q-text">ミトコンドリアと葉緑体の中に 70 S リボソームが存在することは、何の証拠として使われるか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(10,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>細胞内消化説（エンドサイトーシス起源説）</button>
+      <button class="opt" onclick="answer(10,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>DNA 二重らせん説</button>
+      <button class="opt" onclick="answer(10,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>細胞内共生説（ミトコンドリア・葉緑体の起源）</button>
+      <button class="opt" onclick="answer(10,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>ゴルジ体起源説</button>
+    </div>
+    <div class="feedback" id="fb-10"></div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="card" id="card-11">
+    <div class="q-header">
+      <div class="q-num">Q11</div>
+      <div class="q-text">抗生物質（例：ストレプトマイシン）が<em>細菌だけを選択的に殺せる</em>理由として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(11,this,true)"><div class="opt-label">A</div><div class="opt-icon"></div>70 S リボソームにのみ作用し、80 S をもつ真核生物細胞には影響しないから</button>
+      <button class="opt" onclick="answer(11,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>細菌の細胞膜成分は真核生物と異なり薬物を取り込みやすいから</button>
+      <button class="opt" onclick="answer(11,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>細菌の DNA が人間の細胞の外にあるから</button>
+      <button class="opt" onclick="answer(11,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>細菌は細胞壁をもつためリボソームが薬物に過敏だから</button>
+    </div>
+    <div class="feedback" id="fb-11"></div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="card" id="card-12">
+    <div class="q-header">
+      <div class="q-num">Q12</div>
+      <div class="q-text">タンパク質が小胞体（ER）に取り込まれるために必要なシグナルを何というか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(12,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>NLS（核移行シグナル）</button>
+      <button class="opt" onclick="answer(12,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>M6P（マンノース 6-リン酸）</button>
+      <button class="opt" onclick="answer(12,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>シグナルペプチド（Nmatanシグナルペプチド）</button>
+      <button class="opt" onclick="answer(12,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>KDEL 配列</button>
+    </div>
+    <div class="feedback" id="fb-12"></div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="card" id="card-13">
+    <div class="q-header">
+      <div class="q-num">Q13</div>
+      <div class="q-text">ゴルジ体でリソソーム酵素に付加されるタグとして正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(13,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>KDEL 配列</button>
+      <button class="opt" onclick="answer(13,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>M6P（マンノース 6-リン酸）</button>
+      <button class="opt" onclick="answer(13,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>NLS（核移行シグナル）</button>
+      <button class="opt" onclick="answer(13,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>シグナルペプチド</button>
+    </div>
+    <div class="feedback" id="fb-13"></div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="card" id="card-14">
+    <div class="q-header">
+      <div class="q-num">Q14</div>
+      <div class="q-text">多くの被子植物が<em>典型的な中心体を持たない</em>が、体細胞分裂できる理由として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(14,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>植物は分裂する必要がないから</button>
+      <button class="opt" onclick="answer(14,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>細胞壁が紡錘体の代わりをするから</button>
+      <button class="opt" onclick="answer(14,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>核周辺などに別の微小管組織化センター（MTOC）が存在するから</button>
+      <button class="opt" onclick="answer(14,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>植物はリボソームが中心体の代わりをするから</button>
+    </div>
+    <div class="feedback" id="fb-14"></div>
+  </div>
+
+  <!-- ==================== FILL ==================== -->
+  <div class="section-head">
+    <span class="section-badge badge-standard">FILL</span>
+    <span class="section-title">穴埋め問題</span>
+  </div>
+
+  <!-- Q15 -->
+  <div class="card" id="card-15">
+    <div class="q-header">
+      <div class="q-num">Q15</div>
+      <div class="q-text">次の文章の空欄を埋めよ。</div>
+    </div>
+    <div class="fill-row">
+      真核生物のリボソームは<input class="blank-input" id="fill-15a" placeholder="? S">で、原核生物は<input class="blank-input" id="fill-15b" placeholder="? S">のサイズをもつ。
+    </div>
+    <button class="check-btn" id="check-15" onclick="checkFill15()">確認する</button>
+    <div class="feedback" id="fb-15"></div>
+  </div>
+
+  <!-- Q16 -->
+  <div class="card" id="card-16">
+    <div class="q-header">
+      <div class="q-num">Q16</div>
+      <div class="q-text">次の文章の空欄を埋めよ。</div>
+    </div>
+    <div class="fill-row">
+      DNA → mRNA への情報転写を<input class="blank-input" id="fill-16a" placeholder="____">と呼び、mRNA を読んでタンパク質を合成する過程を<input class="blank-input" id="fill-16b" placeholder="____">と呼ぶ。
+    </div>
+    <button class="check-btn" id="check-16" onclick="checkFill16()">確認する</button>
+    <div class="feedback" id="fb-16"></div>
+  </div>
+
+  <!-- ==================== ADVANCED ==================== -->
+  <div class="section-head">
+    <span class="section-badge badge-advanced">ADVANCED</span>
+    <span class="section-title">発展問題 — 論理的推論</span>
+  </div>
+
+  <!-- Q17 -->
+  <div class="card" id="card-17">
+    <div class="q-header">
+      <div class="q-num">Q17</div>
+      <div class="q-text">KDEL 配列の機能として正しいものはどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(17,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ER からリソソームへの直接輸送シグナル</button>
+      <button class="opt" onclick="answer(17,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>細胞外への分泌を促進するシグナル</button>
+      <button class="opt" onclick="answer(17,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>ゴルジ体から ER への回収シグナル（ER 在住タンパク質の保持）</button>
+      <button class="opt" onclick="answer(17,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>核から細胞質への移行を促進するシグナル</button>
+    </div>
+    <div class="feedback" id="fb-17"></div>
+  </div>
+
+  <!-- Q18 -->
+  <div class="card" id="card-18">
+    <div class="q-header">
+      <div class="q-num">Q18</div>
+      <div class="q-text">ある細胞でオートファジーが進行中に<em>「オートファゴソームは増加しているが内容物の分解が進まない」</em>状態が観察された。最も考えられる原因はどれか。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(18,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ゴルジ体の M6P 負荷機能の亢進</button>
+      <button class="opt" onclick="answer(18,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>粗面小胞体のリボソーム脱落</button>
+      <button class="opt" onclick="answer(18,this,true)"><div class="opt-label">C</div><div class="opt-icon"></div>リソソームの機能不全（pH 維持障害または加水分解酵素の欠如）</button>
+      <button class="opt" onclick="answer(18,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>中心体の微小管形成障害</button>
+    </div>
+    <div class="feedback" id="fb-18"></div>
+  </div>
+
+  <!-- Q19 -->
+  <div class="card" id="card-19">
+    <div class="q-header">
+      <div class="q-num">Q19</div>
+      <div class="q-text">粗面小胞体（RER）の出口を薬物で完全に閉鎖した場合、どのような結果が予測されるか。<em>最も適切</em>なものを選べ。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(19,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>ゴルジ体での M6P 付加が停止するため、リソソーム酵素だけが届かなくなる</button>
+      <button class="opt" onclick="answer(19,this,true)"><div class="opt-label">B</div><div class="opt-icon"></div>ゴルジ体以降の全工程（M6P 付加・分泌・膜タンパク輸送）が停止し、RER 内に小胞が蓄積する</button>
+      <button class="opt" onclick="answer(19,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>遊離リボソームが代わりに分泌タンパク質を合成する</button>
+      <button class="opt" onclick="answer(19,this,false)"><div class="opt-label">D</div><div class="opt-icon"></div>細胞核のタンパク質輸送のみが影響を受ける</button>
+    </div>
+    <div class="feedback" id="fb-19"></div>
+  </div>
+
+  <!-- Q20 -->
+  <div class="card" id="card-20">
+    <div class="q-header">
+      <div class="q-num">Q20</div>
+      <div class="q-text">次の①〜④の「シグナル → 行き先」の対応として<em>正しいもの</em>を選べ。</div>
+    </div>
+    <div class="options">
+      <button class="opt" onclick="answer(20,this,false)"><div class="opt-label">A</div><div class="opt-icon"></div>NLS → リソソーム</button>
+      <button class="opt" onclick="answer(20,this,false)"><div class="opt-label">B</div><div class="opt-icon"></div>M6P → ER（小胞体）</button>
+      <button class="opt" onclick="answer(20,this,false)"><div class="opt-label">C</div><div class="opt-icon"></div>KDEL → 細胞外分泌</button>
+      <button class="opt" onclick="answer(20,this,true)"><div class="opt-label">D</div><div class="opt-icon"></div>シグナルペプチド（SP）→ ER（小胞体導入）</button>
+    </div>
+    <div class="feedback" id="fb-20"></div>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="showResult()">採点する</button>
+  </div>
+
+  <!-- ==================== RESULT ==================== -->
+  <div id="result-section">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <div class="result-score" id="result-score" style="color: var(--accent2);">0 / 20</div>
+    <div class="result-label" id="result-label">正解</div>
+    <div class="result-msg" id="result-msg"></div>
+    <button class="retry-btn" onclick="retry()">もう一度挑戦する</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+const FEEDBACKS = {
+  1: {ok:"✅ 正解！リボソームは rRNA（リボソームRNA）とタンパク質の複合体です。rRNAがリボソーム全重量の約60〜70%を占めます。", ng:"❌ 不正解。リボソームは <strong>リボソーム RNA（rRNA）+ タンパク質</strong>の複合体です。DNA は含まれません。"},
+  2: {ok:"✅ 正解！原核生物（細菌等）のリボソームは 70 S です。真核生物は 80 S です。この違いが抗生物質の選択毒性の根拠になります。", ng:"❌ 不正解。<strong>原核生物 = 70 S、真核生物 = 80 S</strong> です。必ず覚えてください。入試頻出です。"},
+  3: {ok:"✅ 正解！中心体は2個の中心小体（9+0 の三連微小管が環状配列）からなります。中心部（0）に微小管がないのが特徴です。", ng:"❌ 不正解。中心体は <strong>9+0 の三連微小管が環状配列した2個の中心小体</strong>で構成されます。膜はありません。"},
+  4: {ok:"✅ 正解！リボソームと中心体のみが膜をもたない（膜なし構造体）です。他のオルガネラは一重膜または二重膜を持ちます。", ng:"❌ 不正解。<strong>膜なし構造体はリボソームと中心体</strong>の2つのみです。"},
+  5: {ok:"✅ 正解！粗面小胞体（RER）の表面にリボソームが付着しているため「粗面」に見えます。滑面小胞体（SER）にはリボソームがありません。", ng:"❌ 不正解。「粗面」の原因は <strong>リボソームが膜表面に付着</strong>しているためです。"},
+  6: {ok:"✅ 正解！ゴルジ体はタンパク質の修飾（糖鎖付加など）・仕分け・分泌を担います。物流センターのような役割です。", ng:"❌ 不正解。ゴルジ体の主な機能は <strong>タンパク質の修飾・仕分け・分泌</strong>です。"},
+  7: {ok:"✅ 正解！V型ATPase（液胞型プロトンポンプ）がATPを使ってプロトン（H⁺）をリソソーム内に輸送することで酸性環境を維持します。", ng:"❌ 不正解。<strong>V型ATPase（液胞型プロトンポンプ）</strong>がプロトンを内部に送り込んで酸性環境を維持します。"},
+  8: {ok:"✅ 正解！遊離リボソーム→細胞内タンパク質（酵素・細胞骨格など）、付着型→分泌用・膜タンパク・リソソーム用タンパク質です。", ng:"❌ 不正解。<strong>遊離 → 細胞内利用、付着型 → 分泌・膜タンパク・リソソーム用</strong>が正しい対応です。"},
+  9: {ok:"✅ 正解！コルヒチンは微小管の重合を阻害します。紡錘体が形成できないため染色体を引っ張れず、細胞分裂が停止します。種なしスイカの作出にも使われます。", ng:"❌ 不正解。コルヒチンは <strong>微小管の重合を阻害 → 紡錘体形成不全 → 細胞分裂停止</strong>という連鎖が起こります。"},
+  10: {ok:"✅ 正解！ミトコンドリア・葉緑体の70Sリボソームは、これらが昔の原核生物（細菌）が真核細胞に共生したという「細胞内共生説」の証拠の一つです。", ng:"❌ 不正解。<strong>細胞内共生説</strong>の証拠です。ミトコンドリア・葉緑体の祖先が原核生物であることを示します。"},
+  11: {ok:"✅ 正解！抗生物質は70Sリボソームのみに作用し、真核生物（人体）の80Sリボソームには影響しません。これを選択毒性といいます。", ng:"❌ 不正解。<strong>70 S に作用し 80 S には影響しない</strong>という選択毒性がポイントです。"},
+  12: {ok:"✅ 正解！ER への導入にはシグナルペプチド（N末端シグナルペプチド）が必要です。翻訳開始直後に ER へ誘導します。", ng:"❌ 不正解。ER への導入シグナルは <strong>シグナルペプチド（N末端シグナルペプチド）</strong>です。NLS は核、M6P はリソソーム、KDELはERへの回収シグナルです。"},
+  13: {ok:"✅ 正解！リソソーム酵素には、ゴルジ体で M6P（マンノース6-リン酸）タグが付加されます。このタグがリソソームへの宛先指定になります。", ng:"❌ 不正解。リソソーム酵素の宛先タグは <strong>M6P（マンノース6-リン酸）</strong>で、ゴルジ体で付加されます。"},
+  14: {ok:"✅ 正解！多くの被子植物には典型的な中心体がありませんが、核周辺などに別のMTOC（微小管組織化センター）が存在するため正常に分裂できます。", ng:"❌ 不正解。植物は中心体がなくても <strong>核周辺の MTOC</strong> で紡錘体を形成できます。「中心体なし = 分裂できない」は誤りです。"},
+  17: {ok:"✅ 正解！KDEL 配列はゴルジ体から ER への回収シグナルです。ER 在住タンパク質（シャペロン等）がゴルジ体に迷い込んでも ER に戻されます。", ng:"❌ 不正解。KDEL は <strong>ゴルジ体 → ER への回収シグナル</strong>です。ER 出口ではなく「ERに帰れ」という信号です。"},
+  18: {ok:"✅ 正解！オートファゴソームは増加しているがリソソームとの融合後に分解が進まない → リソソームの機能不全（pH が低下しない、または加水分解酵素の不活性）が原因です。", ng:"❌ 不正解。「形成は正常だが分解が進まない」は <strong>リソソームの機能不全</strong>（pH 維持障害または酵素の欠如）が原因です。"},
+  19: {ok:"✅ 正解！RER 出口の閉鎖はボトルネックとなり、M6P 付加もゴルジ体経由の分泌も膜タンパク輸送も「すべて停止」します。「M6P が付かないからリソソームだけ」という答えは誤りです。", ng:"❌ 不正解。RER 出口の閉鎖は <strong>ゴルジ体以降の全工程を停止</strong>させます。上流の詰まりは下流すべてに影響します。"},
+  20: {ok:"✅ 正解！シグナルペプチド（SP）は翻訳開始直後にリボソームを ER へ誘導し、ER にタンパク質を導入するためのシグナルです。", ng:"❌ 不正解。正しい対応は <strong>SP → ER 導入 / M6P → リソソーム / KDEL → ER 回収 / NLS → 核</strong>です。"},
+};
+
+const answers = {};
+let answeredCount = 0;
+const TOTAL = 20;
+
+function answer(qn, btn, isCorrect) {
+  const card = document.getElementById('card-' + qn);
+  if (card.dataset.answered) return;
+  card.dataset.answered = 'true';
+
+  const opts = card.querySelectorAll('.opt');
+  opts.forEach(o => o.disabled = true);
+
+  const fb = document.getElementById('fb-' + qn);
+  const data = FEEDBACKS[qn];
+
+  if (isCorrect) {
+    btn.classList.add('selected-correct');
+    btn.querySelector('.opt-icon').innerHTML = '✓';
+    card.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.innerHTML = data.ok;
+    answers[qn] = true;
+  } else {
+    btn.classList.add('selected-wrong');
+    btn.querySelector('.opt-icon').innerHTML = '✗';
+    card.classList.add('wrong');
+    // reveal correct
+    opts.forEach(o => {
+      const handler = o.getAttribute('onclick') || '';
+      if (handler.includes(',true)')) {
+        o.classList.add('reveal-correct');
+        o.querySelector('.opt-icon').innerHTML = '✓';
+      }
+    });
+    fb.className = 'feedback show ng';
+    fb.innerHTML = data.ng;
+    answers[qn] = false;
+  }
+
+  answeredCount++;
+  updateProgress();
+}
+
+function checkFill15() {
+  const a = document.getElementById('fill-15a');
+  const b = document.getElementById('fill-15b');
+  const fb = document.getElementById('fb-15');
+  const btn = document.getElementById('check-15');
+  const card = document.getElementById('card-15');
+  if (card.dataset.answered) return;
+
+  const va = a.value.trim().replace(/[sSｓＳ]/g,'');
+  const vb = b.value.trim().replace(/[sSｓＳ]/g,'');
+  const okA = va === '80';
+  const okB = vb === '70';
+
+  a.disabled = true; b.disabled = true; btn.disabled = true;
+  card.dataset.answered = 'true';
+
+  if (okA) { a.classList.add('correct-fill'); } else { a.classList.add('wrong-fill'); a.value = '80 S'; }
+  if (okB) { b.classList.add('correct-fill'); } else { b.classList.add('wrong-fill'); b.value = '70 S'; }
+
+  if (okA && okB) {
+    card.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.innerHTML = '✅ 正解！真核生物 = 80 S、原核生物 = 70 S です。入試最頻出の数値なので完璧に覚えてください。';
+    answers[15] = true;
+  } else {
+    card.classList.add('wrong');
+    fb.className = 'feedback show ng';
+    fb.innerHTML = '❌ 不正解。<strong>真核生物 = 80 S、原核生物 = 70 S</strong> です。ミトコンドリア・葉緑体は原核生物サイズの 70 S をもつことも要注意です。';
+    answers[15] = false;
+  }
+  answeredCount++;
+  updateProgress();
+}
+
+function checkFill16() {
+  const a = document.getElementById('fill-16a');
+  const b = document.getElementById('fill-16b');
+  const fb = document.getElementById('fb-16');
+  const btn = document.getElementById('check-16');
+  const card = document.getElementById('card-16');
+  if (card.dataset.answered) return;
+
+  const va = a.value.trim();
+  const vb = b.value.trim();
+  const okA = ['転写', 'てんしゃ'].includes(va);
+  const okB = ['翻訳', 'ほんやく'].includes(vb);
+
+  a.disabled = true; b.disabled = true; btn.disabled = true;
+  card.dataset.answered = 'true';
+
+  if (okA) { a.classList.add('correct-fill'); } else { a.classList.add('wrong-fill'); a.value = '転写'; }
+  if (okB) { b.classList.add('correct-fill'); } else { b.classList.add('wrong-fill'); b.value = '翻訳'; }
+
+  if (okA && okB) {
+    card.classList.add('correct');
+    fb.className = 'feedback show ok';
+    fb.innerHTML = '✅ 正解！DNA → mRNA = <strong>転写</strong>、mRNA → タンパク質 = <strong>翻訳</strong>。セントラルドグマの基本です。';
+    answers[16] = true;
+  } else {
+    card.classList.add('wrong');
+    fb.className = 'feedback show ng';
+    fb.innerHTML = '❌ 不正解。<strong>転写（DNA → mRNA）・翻訳（mRNA → タンパク質）</strong>の順序を確認しましょう。';
+    answers[16] = false;
+  }
+  answeredCount++;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((answeredCount / TOTAL) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = answeredCount + ' / ' + TOTAL + ' 回答済み';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function showResult() {
+  const correct = Object.values(answers).filter(Boolean).length;
+  const pct = Math.round((correct / TOTAL) * 100);
+
+  document.getElementById('result-score').textContent = correct + ' / ' + TOTAL;
+  document.getElementById('result-label').textContent = '問正解（' + pct + '%）';
+
+  let emoji, msg;
+  if (correct === TOTAL) {
+    emoji = '🏆';
+    document.getElementById('result-score').style.color = '#10b981';
+    msg = '完璧です！全問正解おめでとうございます🎉<br>膜なし構造体・一重膜構造体・タンパク質輸送のシグナルまで完全に理解できています。次回の「生体物質（水・脂質・炭水化物）」も同じ脱暗記スタイルで攻略しましょう！';
+  } else if (correct >= 16) {
+    emoji = '🌟';
+    document.getElementById('result-score').style.color = '#3b82f6';
+    msg = '惜しい！あと少しで満点です。<br>間違えた問題の解説をもう一度確認し、特にシグナル（SP・M6P・KDEL・NLS）の対応関係を整理し直してみてください。';
+  } else if (correct >= 12) {
+    emoji = '📖';
+    document.getElementById('result-score').style.color = '#f59e0b';
+    msg = 'もう一息！基礎は固まっていますが応用問題で迷いが出ています。<br>「膜なし → 直接やり取り」「輸送経路の順番（ER → ゴルジ → 行き先）」という因果の流れを動画を見返して確認しましょう。';
+  } else {
+    emoji = '💪';
+    document.getElementById('result-score').style.color = '#ef4444';
+    msg = '動画をもう一度見返してから再挑戦しましょう！<br>まずは①膜のあり・なし ②各オルガネラの機能 ③タンパク質輸送の流れ（ER→ゴルジ→行き先）の3点を整理することから始めてください。';
+  }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-msg').innerHTML = msg;
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('result-section').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function retry() {
+  location.reload();
+}
+</script>
+</body>
+</html>

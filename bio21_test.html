@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #21</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root {
+    --bg:#0d1117; --sur:#161b25; --sur2:#1e2535; --bdr:#2a3347;
+    --acc:#06b6d4; --acc2:#3b82f6; --grn:#10b981; --red:#ef4444;
+    --yel:#f59e0b; --txt:#e2e8f0; --muted:#64748b; --dim:#94a3b8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+
+  .hero{background:linear-gradient(135deg,#0a0e1a,#0f2744,#0a1a2e);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'💧';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+
+  .prog-wrap{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .prog-hd{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .prog-bar{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));border-radius:3px;transition:width .4s ease;width:0}
+
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sec-hd{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .b-basic{background:rgba(59,130,246,.15);color:var(--acc2);border:1px solid rgba(59,130,246,.3)}
+  .b-std{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .b-adv{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .b-fill{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+  .sec-ttl{font-size:15px;font-weight:700;color:var(--dim)}
+
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--grn);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qnum{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc2);flex-shrink:0}
+  .qtxt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qtxt em{font-style:normal;background:rgba(6,182,212,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc2);background:rgba(59,130,246,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--grn);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--grn);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .olbl{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oic{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oic{background:var(--grn);border-color:var(--grn)}
+  .opt.sw .oic{background:var(--red);border-color:var(--red)}
+  .opt.rc .oic{background:var(--grn);border-color:var(--grn)}
+
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+
+  .fill-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2;margin-bottom:16px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:130px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc2)}
+  .bi.cf{border-color:var(--grn);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .chk-btn{background:linear-gradient(135deg,var(--acc2),var(--acc));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .chk-btn:hover{opacity:.85}
+  .chk-btn:disabled{opacity:.4;cursor:default}
+
+  .sub-wrap{text-align:center;margin-top:32px}
+  .sub-btn{background:linear-gradient(135deg,var(--acc2),var(--acc));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(59,130,246,.3);transition:opacity .2s}
+  .sub-btn:hover{opacity:.85}
+
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .retry{background:linear-gradient(135deg,var(--acc2),var(--acc));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .retry:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#21</span><br>確認テスト</h1>
+  <p>生体物質（水・核酸・脂質・炭水化物）</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-hd"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
+</div>
+
+<div class="con" id="quiz">
+
+  <!-- BASIC -->
+  <div class="sec-hd"><span class="bdg b-basic">BASIC</span><span class="sec-ttl">基礎確認 — 構造と性質</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qnum">Q1</div><div class="qtxt">水分子が<em>極性分子</em>である理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(1,this,false)"><div class="olbl">A</div><div class="oic"></div>水素と酸素の質量差が大きいから</button>
+      <button class="opt" onclick="ans(1,this,true)"><div class="olbl">B</div><div class="oic"></div>酸素の電気陰性度が水素より強く、V字型構造により電荷の偏りが生じるから</button>
+      <button class="opt" onclick="ans(1,this,false)"><div class="olbl">C</div><div class="oic"></div>水分子の分子量が18と小さいから</button>
+      <button class="opt" onclick="ans(1,this,false)"><div class="olbl">D</div><div class="oic"></div>水素結合の数が多いから</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qnum">Q2</div><div class="qtxt">水の<em>比熱が大きい</em>ことと、<em>蒸発熱が大きい</em>ことの説明として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(2,this,false)"><div class="olbl">A</div><div class="oic"></div>比熱が大きい→汗で冷える、蒸発熱が大きい→海が温まりにくい</button>
+      <button class="opt" onclick="ans(2,this,true)"><div class="olbl">B</div><div class="oic"></div>比熱が大きい→海が温まりにくく冷めにくい、蒸発熱が大きい→汗で体温が下がる</button>
+      <button class="opt" onclick="ans(2,this,false)"><div class="olbl">C</div><div class="oic"></div>比熱が大きい→氷が水に浮く、蒸発熱が大きい→毛細管現象が起きる</button>
+      <button class="opt" onclick="ans(2,this,false)"><div class="olbl">D</div><div class="oic"></div>両方とも水素結合のネットワークとは無関係</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qnum">Q3</div><div class="qtxt">氷が水に浮く理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(3,this,false)"><div class="olbl">A</div><div class="oic"></div>氷になると水素結合がなくなり軽くなるから</button>
+      <button class="opt" onclick="ans(3,this,false)"><div class="olbl">B</div><div class="oic"></div>水は4°Cで密度が最小になり、それより低温では密度が上がるから</button>
+      <button class="opt" onclick="ans(3,this,true)"><div class="olbl">C</div><div class="oic"></div>水は4°Cで密度が最大になり、0°Cの氷は正四面体構造の隙間が多く密度が低いから</button>
+      <button class="opt" onclick="ans(3,this,false)"><div class="olbl">D</div><div class="oic"></div>氷の分子量は水より小さくなるから</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qnum">Q4</div><div class="qtxt">毛細管現象を正しく説明しているものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(4,this,false)"><div class="olbl">A</div><div class="oic"></div>表面張力のみによって水が管内を上昇する現象</button>
+      <button class="opt" onclick="ans(4,this,true)"><div class="olbl">B</div><div class="oic"></div>水分子同士の凝集力（業性）と管壁への付着力の合力で水が上昇する現象</button>
+      <button class="opt" onclick="ans(4,this,false)"><div class="olbl">C</div><div class="oic"></div>浸透圧のみによって水が引き上げられる現象</button>
+      <button class="opt" onclick="ans(4,this,false)"><div class="olbl">D</div><div class="oic"></div>水の蒸発熱が管内の水を押し上げる現象</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qnum">Q5</div><div class="qtxt">DNAとRNAの構造の違いとして<em>正しいもの</em>をすべて含む組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(5,this,false)"><div class="olbl">A</div><div class="oic"></div>DNAは一本鎖、RNAは二本鎖</button>
+      <button class="opt" onclick="ans(5,this,false)"><div class="olbl">B</div><div class="oic"></div>DNAはリボース、RNAはデオキシリボースを使う</button>
+      <button class="opt" onclick="ans(5,this,true)"><div class="olbl">C</div><div class="oic"></div>DNAはデオキシリボース+T塩基+二本鎖、RNAはリボース+U塩基+一本鎖</button>
+      <button class="opt" onclick="ans(5,this,false)"><div class="olbl">D</div><div class="oic"></div>DNAとRNAは塩基の種類は全く同じ</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qnum">Q6</div><div class="qtxt">リン脂質（ホスファチジルコリンなど）が細胞膜を形成できる理由として最も適切なものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(6,this,false)"><div class="olbl">A</div><div class="oic"></div>完全に疎水性で水を全く通さないから</button>
+      <button class="opt" onclick="ans(6,this,false)"><div class="olbl">B</div><div class="oic"></div>分子量が非常に大きくて安定しているから</button>
+      <button class="opt" onclick="ans(6,this,true)"><div class="olbl">C</div><div class="oic"></div>親水性の頭部（リン酸）と疎水性の尾部（脂肪酸）を持つ両親媒性分子であり、水中で自己組織化して脂質二重層を形成するから</button>
+      <button class="opt" onclick="ans(6,this,false)"><div class="olbl">D</div><div class="oic"></div>α-グリコシド結合で連結されているから</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qnum">Q7</div><div class="qtxt">セルロースが人において消化されない理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(7,this,false)"><div class="olbl">A</div><div class="oic"></div>セルロースはα-グリコシド結合で連結されているから</button>
+      <button class="opt" onclick="ans(7,this,true)"><div class="olbl">B</div><div class="oic"></div>セルロースはβ-グリコシド結合で連結されており、人はβ結合を切断する消化酵素（β-グルコシダーゼ）を持たないから</button>
+      <button class="opt" onclick="ans(7,this,false)"><div class="olbl">C</div><div class="oic"></div>セルロースは水に溶けないから</button>
+      <button class="opt" onclick="ans(7,this,false)"><div class="olbl">D</div><div class="oic"></div>セルロースはタンパク質の一種で消化管に届かないから</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sec-hd"><span class="bdg b-std">STANDARD</span><span class="sec-ttl">標準問題 — 比較・因果・引っかけ</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qnum">Q8</div><div class="qtxt">次の記述のうち<em>正しいもの</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(8,this,false)"><div class="olbl">A</div><div class="oic"></div>水は比熱が小さいため体温を一定に保つ役割を果たしている</button>
+      <button class="opt" onclick="ans(8,this,false)"><div class="olbl">B</div><div class="oic"></div>水は極性分子であるため脂質などの非極性物質をよく溶かす</button>
+      <button class="opt" onclick="ans(8,this,false)"><div class="olbl">C</div><div class="oic"></div>汗による体温低下は水の大きな比熱によるものである</button>
+      <button class="opt" onclick="ans(8,this,true)"><div class="olbl">D</div><div class="oic"></div>植物細胞の膨圧は細胞内への水の浸透と細胞壁の反発力によって生じる</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qnum">Q9</div><div class="qtxt">中性脂肪が長期エネルギー貯蔵に適している理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(9,this,false)"><div class="olbl">A</div><div class="oic"></div>水に溶けやすく輸送しやすいから</button>
+      <button class="opt" onclick="ans(9,this,false)"><div class="olbl">B</div><div class="oic"></div>α-グリコシド結合で分岐構造を持ち、酵素が作用しやすいから</button>
+      <button class="opt" onclick="ans(9,this,true)"><div class="olbl">C</div><div class="oic"></div>完全に疎水性で水分子を含まないため高密度パッキングが可能で、単位重量あたりのエネルギー量が糖の2倍以上だから</button>
+      <button class="opt" onclick="ans(9,this,false)"><div class="olbl">D</div><div class="oic"></div>親水性の頭部を持つため水中で安定して存在できるから</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qnum">Q10</div><div class="qtxt">コレステロールの膜流動性への作用として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(10,this,false)"><div class="olbl">A</div><div class="oic"></div>温度に関わらず常に膜を流動化させる</button>
+      <button class="opt" onclick="ans(10,this,false)"><div class="olbl">B</div><div class="oic"></div>温度に関わらず常に膜の流動性を低下させる</button>
+      <button class="opt" onclick="ans(10,this,true)"><div class="olbl">C</div><div class="oic"></div>低温時は脂肪酸の凝固を防いで流動性を増加させ、高温時は過剰な流動化を抑制する——温度に応じて双方向に調節する</button>
+      <button class="opt" onclick="ans(10,this,false)"><div class="olbl">D</div><div class="oic"></div>膜のα-グリコシド結合を強化して安定化させる</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qnum">Q11</div><div class="qtxt">デンプン（アミロース・アミロペクチン）とセルロースの違いを正しく説明しているものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(11,this,false)"><div class="olbl">A</div><div class="oic"></div>デンプンはβ-グリコシド結合、セルロースはα-グリコシド結合</button>
+      <button class="opt" onclick="ans(11,this,false)"><div class="olbl">B</div><div class="oic"></div>どちらもα-グリコシド結合だが、デンプンは直鎖型、セルロースは分岐型</button>
+      <button class="opt" onclick="ans(11,this,true)"><div class="olbl">C</div><div class="oic"></div>デンプンはα-グリコシド結合（消化可能・エネルギー貯蔵用）、セルロースはβ-グリコシド結合（消化不能・細胞壁の構造材）</button>
+      <button class="opt" onclick="ans(11,this,false)"><div class="olbl">D</div><div class="oic"></div>デンプンはグルコース、セルロースはフルクトースが連結したもの</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qnum">Q12</div><div class="qtxt">RNAがアルカリ条件でDNAより分解されやすい根本的な理由はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(12,this,false)"><div class="olbl">A</div><div class="oic"></div>RNAはウラシルを使い、DNAはチミンを使うため</button>
+      <button class="opt" onclick="ans(12,this,false)"><div class="olbl">B</div><div class="oic"></div>RNAは一本鎖であるため</button>
+      <button class="opt" onclick="ans(12,this,true)"><div class="olbl">C</div><div class="oic"></div>RNAのリボースは2'位に水酸基（2'-OH）を持ち、アルカリ条件でこれが活性化されて隣接するリン酸ジエステル結合を自己攻撃して加水分解されるから</button>
+      <button class="opt" onclick="ans(12,this,false)"><div class="olbl">D</div><div class="oic"></div>RNAはGC含量が低いため</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qnum">Q13</div><div class="qtxt">「ヌクレオシド」と「ヌクレオチド」の定義として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(13,this,false)"><div class="olbl">A</div><div class="oic"></div>ヌクレオシド＝塩基＋糖＋リン酸、ヌクレオチド＝塩基＋糖</button>
+      <button class="opt" onclick="ans(13,this,true)"><div class="olbl">B</div><div class="oic"></div>ヌクレオシド＝塩基＋糖、ヌクレオチド＝塩基＋糖＋リン酸</button>
+      <button class="opt" onclick="ans(13,this,false)"><div class="olbl">C</div><div class="oic"></div>ヌクレオシド＝塩基のみ、ヌクレオチド＝塩基＋リン酸</button>
+      <button class="opt" onclick="ans(13,this,false)"><div class="olbl">D</div><div class="oic"></div>両者に違いはなく同義語として使われる</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qnum">Q14</div><div class="qtxt">過剰施肥で植物が枯れる理由を水ポテンシャルの観点から説明したものとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(14,this,false)"><div class="olbl">A</div><div class="oic"></div>土壌の水ポテンシャルが上昇し、根から細胞外へ水が流出するから</button>
+      <button class="opt" onclick="ans(14,this,true)"><div class="olbl">B</div><div class="oic"></div>土壌の溶質濃度上昇により土壌の水ポテンシャルが低下し、根と土壌の水ポテンシャル差が縮小または逆転して根への水流入が減少するから</button>
+      <button class="opt" onclick="ans(14,this,false)"><div class="olbl">C</div><div class="oic"></div>肥料が気孔を物理的にふさいで蒸散を止めるから</button>
+      <button class="opt" onclick="ans(14,this,false)"><div class="olbl">D</div><div class="oic"></div>肥料の成分が水素結合を切断して水の輸送を阻害するから</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sec-hd"><span class="bdg b-fill">FILL</span><span class="sec-ttl">穴埋め問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qnum">Q15</div><div class="qtxt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fill-row">
+      水の<input class="bi" id="f15a" placeholder="____">は液体のまま温度が1°C変化するのに必要な熱量を表し、<input class="bi" id="f15b" placeholder="____">は液体→気体に変化する際に奪う熱量を表す。
+    </div>
+    <button class="chk-btn" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qnum">Q16</div><div class="qtxt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fill-row">
+      デンプンの構成単位グルコースは<input class="bi" id="f16a" placeholder="____">結合で連結される。一方セルロースは<input class="bi" id="f16b" placeholder="____">結合で連結され、人には消化できない。
+    </div>
+    <button class="chk-btn" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sec-hd"><span class="bdg b-adv">ADVANCED</span><span class="sec-ttl">発展問題 — 統合的論理思考</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qnum">Q17</div><div class="qtxt">次の誤りを含む記述のうち、<em>誤りの理由まで正しく説明されているもの</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(17,this,false)"><div class="olbl">A</div><div class="oic"></div>「脂質は全て膜を作る」は誤り→中性脂肪は膜を作らない。なぜなら中性脂肪は親水性の頭部を持つから</button>
+      <button class="opt" onclick="ans(17,this,false)"><div class="olbl">B</div><div class="oic"></div>「糖は全てエネルギー貯蔵に使われる」は誤り→セルロースはエネルギー貯蔵ではなく構造材。なぜならα-グリコシド結合だから</button>
+      <button class="opt" onclick="ans(17,this,true)"><div class="olbl">C</div><div class="oic"></div>「糖は全てエネルギー貯蔵に使われる」は誤り→セルロースはエネルギー貯蔵ではなく細胞壁の構造材。なぜならβ-グリコシド結合で連結されており、人はβ結合を切断する消化酵素を持たないから</button>
+      <button class="opt" onclick="ans(17,this,false)"><div class="olbl">D</div><div class="oic"></div>「リン脂質は完全疎水性」は誤り→リン脂質は完全親水性の両親媒性分子だから</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qnum">Q18</div><div class="qtxt">次の4つの機能（A〜D）に最も適した生体分子を答えた組み合わせとして正しいものはどれか。<br><small style="color:var(--dim)">A：細胞膜の骨格　B：迅速な情報伝達の中間体　C：長期エネルギーの最小体積貯蔵　D：遺伝情報の長期安定保存</small></div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(18,this,false)"><div class="olbl">A</div><div class="oic"></div>A：中性脂肪、B：DNA、C：リン脂質、D：RNA</button>
+      <button class="opt" onclick="ans(18,this,false)"><div class="olbl">B</div><div class="oic"></div>A：セルロース、B：mRNA、C：デンプン、D：DNA</button>
+      <button class="opt" onclick="ans(18,this,true)"><div class="olbl">C</div><div class="oic"></div>A：リン脂質、B：mRNA、C：中性脂肪、D：DNA</button>
+      <button class="opt" onclick="ans(18,this,false)"><div class="olbl">D</div><div class="oic"></div>A：コレステロール、B：グルコース、C：RNA、D：デンプン</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qnum">Q19</div><div class="qtxt">過剰施肥後に土壌の溶質濃度が上昇した場合の植物の応答として正しい<em>因果の連鎖</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(19,this,false)"><div class="olbl">A</div><div class="oic"></div>土壌ψ上昇→根への水流入増加→気孔開放→蒸散促進</button>
+      <button class="opt" onclick="ans(19,this,true)"><div class="olbl">B</div><div class="oic"></div>土壌ψ低下→根との差縮小→根への水流入減少→孔辺細胞の膨圧低下→気孔閉鎖→蒸散速度低下→道管内水流低下</button>
+      <button class="opt" onclick="ans(19,this,false)"><div class="olbl">C</div><div class="oic"></div>土壌ψ低下→気孔開放→蒸散増加→根の水流入増加</button>
+      <button class="opt" onclick="ans(19,this,false)"><div class="olbl">D</div><div class="oic"></div>土壌ψ変化なし→植物体の水分量は変化しない</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qnum">Q20</div><div class="qtxt">「構造が変われば性質が変わる→性質が変われば役割が変わる」の論理を<em>最もよく体現している説明</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="ans(20,this,false)"><div class="olbl">A</div><div class="oic"></div>デンプンとセルロースは構造が同じだから役割も同じである</button>
+      <button class="opt" onclick="ans(20,this,false)"><div class="olbl">B</div><div class="oic"></div>中性脂肪は水に溶けるから細胞膜を形成できる</button>
+      <button class="opt" onclick="ans(20,this,true)"><div class="olbl">C</div><div class="oic"></div>RNAのリボースは2'-OH基を持つ（構造）→アルカリで加水分解されやすい（性質）→使い捨て情報伝達分子として機能する（役割）、という因果で説明できる</button>
+      <button class="opt" onclick="ans(20,this,false)"><div class="olbl">D</div><div class="oic"></div>水素結合は共有結合と同じ強さなので水の性質に大きく影響しない</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sub-wrap"><button class="sub-btn" onclick="showResult()">採点する</button></div>
+
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="retry" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！酸素の電気陰性度（F>O>N>C>H の順）が水素より強く、V字型（くの字型）構造により電荷の偏りが生まれます。これが水の「極性分子」の本質です。",ng:"❌ 不正解。水が極性分子な理由は<strong>酸素の高い電気陰性度＋V字型構造</strong>による電荷の偏りです。"},
+  2:{ok:"✅ 正解！比熱＝液体のまま温度が変わりにくい性質→海・体温の安定。蒸発熱＝気化時に大量の熱を奪う→汗で冷える。この2つの混同は入試頻出の引っかけです。",ng:"❌ 不正解。<strong>比熱→温度変化のしにくさ（海・体温安定）、蒸発熱→気化時の熱吸収（汗で冷える）</strong>をセットで覚えてください。"},
+  3:{ok:"✅ 正解！水は4°Cで密度最大。0°Cの氷は水素結合で正四面体状に固定され隙間が多く、液体の水より密度が低いため浮きます。湖が表面から凍る理由でもあります。",ng:"❌ 不正解。<strong>水は4°Cで密度最大→0°Cの氷は正四面体構造で隙間が多く密度が低い→氷は水に浮く</strong>という因果です。"},
+  4:{ok:"✅ 正解！毛細管現象は表面張力だけでは説明できません。水分子同士の<strong>凝集力（業性）＋管壁への付着力</strong>の合力で水が上昇します。「表面張力だけ」は入試頻出の誤りです。",ng:"❌ 不正解。毛細管現象は<strong>凝集力（業性）＋付着力</strong>の合力によるものです。表面張力だけで説明しようとするのは誤りです。"},
+  5:{ok:"✅ 正解！DNA：デオキシリボース＋チミン（T）＋二本鎖、RNA：リボース＋ウラシル（U）＋一本鎖。この3点セットを整理して覚えてください。",ng:"❌ 不正解。<strong>DNA：デオキシリボース＋T＋二本鎖、RNA：リボース＋U＋一本鎖</strong>です。"},
+  6:{ok:"✅ 正解！リン脂質は親水性の頭部（リン酸）＋疎水性の尾部（脂肪酸）を持つ<strong>両親媒性分子</strong>。水中では疎水性効果で自己組織化し脂質二重層を形成します。",ng:"❌ 不正解。リン脂質が膜を作れるのは<strong>両親媒性分子（親水性頭部＋疎水性尾部）</strong>として水中で自己組織化するからです。中性脂肪は完全疎水性なので膜を作りません。"},
+  7:{ok:"✅ 正解！セルロースはβ-グリコシド結合→人はβ結合を切る酵素を持たない→消化不能→食物繊維として腸の運動を助けるがATPには使えない。この因果が論述の骨格です。",ng:"❌ 不正解。<strong>β-グリコシド結合→β結合を切断する消化酵素なし→消化不能</strong>が正しい因果です。αとβの違いが役割の差を生む好例です。"},
+  8:{ok:"✅ 正解！D「植物細胞の膨圧は細胞内への水の浸透＋細胞壁の反発力」は正しい記述です。A（比熱が小さい→誤り、大きいが正）、B（非極性物質は溶かせない）、C（汗の冷却は蒸発熱、比熱ではない）はすべて誤りです。",ng:"❌ 不正解。正しいのはD。A：水の比熱は<strong>大きい</strong>（小さいは誤り）。B：水は<strong>非</strong>極性物質は溶かせない。C：汗の冷却は<strong>蒸発熱</strong>（比熱ではない）。"},
+  9:{ok:"✅ 正解！中性脂肪は完全疎水性で水分子を含まず高密度パッキング可能。単位重量あたりのエネルギーは糖の2倍以上。最小体積に最大エネルギーを詰め込める構造です。",ng:"❌ 不正解。中性脂肪が貯蔵に適しているのは<strong>完全疎水性で高密度パッキング可能＋単位重量エネルギーが糖の2倍以上</strong>だからです。"},
+  10:{ok:"✅ 正解！コレステロールは双方向の調節剤です。低温→脂肪酸の凝固を防ぎ流動性UP。高温→過剰な流動化を抑制。「常に流動化」は入試頻出の誤りです。",ng:"❌ 不正解。コレステロールは<strong>温度に応じて双方向に調節</strong>します。「常に流動化」「常に低下」は誤りです。"},
+  11:{ok:"✅ 正解！α-グリコシド結合→らせん構造→消化可能（エネルギー貯蔵用）。β-グリコシド結合→直線状の強固な繊維構造→消化不能（細胞壁構造材）。構造の違いが役割の差を生む典型例です。",ng:"❌ 不正解。<strong>デンプン：α結合・消化可能、セルロース：β結合・消化不能</strong>です。α/βの違いが消化できるかどうかを決定します。"},
+  12:{ok:"✅ 正解！RNAのリボースが持つ2'-OH基がアルカリ条件で活性化され、隣のリン酸ジエステル結合に自己攻撃→2',3'-環状中間体を形成→加水分解。DNAはデオキシリボースで2'位がHなのでこの自己攻撃が起こらず安定です。",ng:"❌ 不正解。根本原因は<strong>リボースの2'-OH基が隣のリン酸ジエステル結合に自己攻撃して加水分解される</strong>ことです。U/TやA/G、本数の違いは根本原因ではありません。"},
+  13:{ok:"✅ 正解！ヌクレオシド＝塩基＋糖のみ。ヌクレオチド＝塩基＋糖＋リン酸。つまりヌクレオチド＝ヌクレオシド＋リン酸です。入試で厳密に問われる定義なのでしっかり覚えてください。",ng:"❌ 不正解。<strong>ヌクレオシド＝塩基＋糖、ヌクレオチド＝塩基＋糖＋リン酸</strong>。リン酸の有無が違いです。"},
+  14:{ok:"✅ 正解！過剰施肥→土壌の溶質濃度上昇→土壌の水ポテンシャル（ψ）低下→根と土壌のψ差縮小・逆転→根への水流入減少→植物体の水分低下→枯れる、という因果の連鎖です。",ng:"❌ 不正解。<strong>溶質濃度上昇→土壌ψ低下→根との差縮小→根への水流入減少</strong>が正しい因果です。「溶質が増える=水も増える」は逆の誤解です。"},
+  17:{ok:"✅ 正解！セルロースが消化できない根本理由はβ-グリコシド結合＋β結合切断酵素の欠如です。「α結合だから」は誤り。「中性脂肪は親水性頭部→膜を作らない」も誤り（中性脂肪は完全疎水性）。",ng:"❌ 不正解。C以外の選択肢には構造説明の誤りが含まれます。<strong>セルロースのβ結合→消化酵素なし→消化不能</strong>が正しい因果です。"},
+  18:{ok:"✅ 正解！A：リン脂質（両親媒性→膜形成）、B：mRNA（化学的に不安定な一時的分子→使い捨て伝達）、C：中性脂肪（完全疎水性・高エネルギー密度→長期貯蔵）、D：DNA（2'位がH→安定・長期保存）です。",ng:"❌ 不正解。<strong>A=リン脂質、B=mRNA、C=中性脂肪、D=DNA</strong>が正しい対応です。各分子の構造と性質から役割を導いてください。"},
+  19:{ok:"✅ 正解！土壌ψ低下→根との差縮小→水流入減少→孔辺細胞膨圧低下→気孔閉鎖→蒸散低下→道管水流低下、という連鎖です。「気孔閉鎖→蒸散増加」は上下逆転の誤りです。",ng:"❌ 不正解。正しい連鎖は<strong>土壌ψ低下→根への水流入減少→孔辺細胞膨圧低下→気孔閉鎖→蒸散速度低下→道管内水流低下</strong>です。"},
+  20:{ok:"✅ 正解！RNAのリボースの2'-OH基（構造）→アルカリで加水分解されやすい（性質）→使い捨て情報伝達分子として機能（役割）、という因果は今回の核心的な論理の完璧な体現です。",ng:"❌ 不正解。<strong>構造→性質→役割</strong>の因果を最もよく示す例はC（RNAのリボース2'-OH→不安定→使い捨て分子）です。"},
+};
+
+const answers={};
+let cnt=0;
+const TOTAL=20;
+
+function ans(n,btn,ok){
+  const c=document.getElementById('c'+n);
+  if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){
+    btn.classList.add('sc');
+    btn.querySelector('.oic').innerHTML='✓';
+    c.classList.add('correct');
+    fb.className='fb show ok';
+    fb.innerHTML=FB[n].ok;
+    answers[n]=true;
+  }else{
+    btn.classList.add('sw');
+    btn.querySelector('.oic').innerHTML='✗';
+    c.classList.add('wrong');
+    opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oic').innerHTML='✓';}});
+    fb.className='fb show ng';
+    fb.innerHTML=FB[n].ng;
+    answers[n]=false;
+  }
+  cnt++;updateProg();
+}
+
+function fillCheck(ids,corrects,qn,ckId,btnId){
+  const card=document.getElementById('c'+qn);
+  if(card.dataset.answered)return;
+  card.dataset.answered='1';
+  const btn=document.getElementById(btnId);
+  btn.disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    el.disabled=true;
+    const ok=corrects[i].some(v=>el.value.trim()===v);
+    if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}
+    else{el.classList.add('cf');}
+  });
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;updateProg();
+  return allOk;
+}
+
+function cf15(){
+  const ok=fillCheck(['f15a','f15b'],[['比熱','ひねつ'],['蒸発熱','じょうはつねつ','気化熱','きかねつ']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！比熱＝液体のまま温度1°C変化に必要な熱量（温まりにくさ）。蒸発熱（気化熱）＝液体→気体の状態変化で奪う熱量。この2つの混同は入試最頻出の引っかけです。';
+  else fb.innerHTML='❌ 不正解。<strong>比熱</strong>＝温度変化のしにくさ（液体→液体）、<strong>蒸発熱（気化熱）</strong>＝状態変化（液体→気体）の際に奪う熱量。汗で冷えるのは蒸発熱、海が温まりにくいのは比熱です。';
+}
+function cf16(){
+  const ok=fillCheck(['f16a','f16b'],[['α-グリコシド','αグリコシド','α'],['β-グリコシド','βグリコシド','β']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！α-グリコシド結合→らせん・分岐構造→消化可能（デンプン・グリコーゲン）。β-グリコシド結合→直線状強固繊維→消化不能（セルロース）。αとβの違いが役割の差を生みます。';
+  else fb.innerHTML='❌ 不正解。デンプン＝<strong>α-グリコシド結合</strong>、セルロース＝<strong>β-グリコシド結合</strong>です。';
+}
+
+function updateProg(){
+  const p=Math.round(cnt/TOTAL*100);
+  document.getElementById('pf').style.width=p+'%';
+  document.getElementById('pt').textContent=cnt+' / '+TOTAL+' 回答済み';
+  document.getElementById('pp').textContent=p+'%';
+}
+
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;
+  const p=Math.round(cor/TOTAL*100);
+  document.getElementById('rs').textContent=cor+' / '+TOTAL;
+  document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===TOTAL){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>「構造→性質→役割」の因果を完全に掴んでいます。次回の「動物の組織・器官系」も同じ脱暗記スタイルで攻略しましょう！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#3b82f6';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①比熱と蒸発熱の違い②α/β結合と消化の関係③RNA不安定の根本原因（2\'-OH基）を整理し直してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「構造が変われば性質が変わる→性質が変われば役割が変わる」という1本の論理で全内容をつなぐ練習をしましょう。動画を見返すことをおすすめします。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①水の6つの性質と生命現象の対応 ②脂質3種（リン脂質・中性脂肪・コレステロール）の構造と役割の違い ③DNA/RNA・デンプン/セルロースの比較から整理してください。';}
+  document.getElementById('re').textContent=em;
+  document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

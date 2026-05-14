@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #22</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#06b6d4;--acc2:#3b82f6;--grn:#10b981;--red:#ef4444;--yel:#f59e0b;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+
+  .hero{background:linear-gradient(135deg,#0a0e1a,#0d2b1f,#0a1429);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🫀';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--grn);text-transform:uppercase;padding:4px 12px;border:1px solid var(--grn);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--grn),var(--acc));border-radius:3px;transition:width .4s ease;width:0}
+
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(59,130,246,.15);color:var(--acc2);border:1px solid rgba(59,130,246,.3)}
+  .bs{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--grn);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--grn);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(6,182,212,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc2);background:rgba(59,130,246,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--grn);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--grn);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oi{background:var(--grn);border-color:var(--grn)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--grn);border-color:var(--grn)}
+
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+
+  table{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:13px}
+  th{background:var(--sur2);padding:8px 10px;border:1px solid var(--bdr);color:var(--acc);font-weight:700;text-align:center}
+  td{padding:8px 10px;border:1px solid var(--bdr);color:var(--txt);text-align:center}
+  tr:hover td{background:rgba(255,255,255,.02)}
+
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2;margin-bottom:16px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:120px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc2)}
+  .bi.cf{border-color:var(--grn);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc2),var(--acc));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc2),var(--grn));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(16,185,129,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc2),var(--grn));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#22</span><br>確認テスト</h1>
+  <p>動物の組織（上皮・結合・筋・神経）＋動物の器官系（消化・呼吸・循環）</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+
+<div class="con" id="quiz">
+
+  <!-- BASIC -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — 組織の種類と特徴</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">動物の4大組織の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>上皮組織→指示・輸送・貯蔵 / 結合組織→保護・分泌・吸収</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>上皮組織→保護・分泌・吸収 / 結合組織→指示・輸送・貯蔵 / 筋組織→収縮・運動 / 神経組織→情報伝達・処理</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>上皮組織→収縮・運動 / 筋組織→保護・分泌・吸収</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>結合組織→情報伝達 / 神経組織→指示・輸送・貯蔵</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt"><em>血液</em>の組織分類として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>上皮組織</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>結合組織</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>筋組織</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>神経組織</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">筋組織の3種類の比較として正しい組み合わせはどれか。<br><small style="color:var(--dim)">（随意性 / 横紋の有無 / 核の数 / 代表部位）</small></div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>骨格筋＝不随意・横紋なし・多核 / 心筋＝随意・横紋あり・単核 / 平滑筋＝不随意・横紋なし・単核</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">B</div><div class="oi"></div>骨格筋＝随意・横紋あり・多核（腕・足など）/ 心筋＝不随意・横紋あり・単核・介在板あり（心臓のみ）/ 平滑筋＝不随意・横紋なし・単核（消化管・血管壁など）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">C</div><div class="oi"></div>骨格筋＝不随意・横紋あり・単核 / 心筋＝随意・横紋なし・多核 / 平滑筋＝随意・横紋なし・単核</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>3種類はすべて横紋を持つ</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">上皮組織の<em>介在板（カイザイ板）</em>が存在する筋の種類と、その機能として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>骨格筋に存在し、多核形成を助ける</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">B</div><div class="oi"></div>平滑筋に存在し、紡錘形の形態を維持する</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">C</div><div class="oi"></div>心筋細胞同士の連結部位に存在し、ギャップ結合を通じてイオンを隣の細胞に伝えることで心筋全体が同期して収縮できる</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>骨格筋に存在し、体性神経からの刺激を受け取る終板の別名</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">小腸の内壁が<em>単層円柱上皮</em>で、皮膚が<em>重層扁平上皮</em>である理由として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>小腸が重層のため物質を多く吸収でき、皮膚は単層のため乾燥に強い</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">B</div><div class="oi"></div>小腸は摩擦がほぼなく栄養吸収の効率を最優先（一層で物質が通過しやすい）/皮膚は外部の摩擦・乾燥・紫外線にさらされるため多層で表面が剥がれても下から補充される</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>どちらも同じ上皮の種類でよいが、発生の過程で偶然異なる形になった</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>小腸は腸液を分泌するために多層、皮膚は物質を吸収しないために単層になった</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">心筋が骨格筋と同じ横紋筋であるにもかかわらず<em>疲労しない</em>理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>心筋には筋フィラメントがないためエネルギーをほとんど消費しないから</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">B</div><div class="oi"></div>心筋は骨格筋と異なり解糖系（無酸素代謝）を主に使うため乳酸が蓄積しないから</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">C</div><div class="oi"></div>心筋はミトコンドリアが豊富で脂肪酸を主燃料としてほぼ100%有酸素代謝で働くため、血流からの酸素供給が途切れない限り乳酸が蓄積しないから</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>心筋は不随意筋であるため体性神経からの過剰な刺激を受けず疲労しないから</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">結合組織に含まれる3種の繊維の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">A</div><div class="oi"></div>膠原繊維（コラーゲン）→強い引張強度・腱・靭帯の主成分 / 弾性繊維→弾力性・血管壁・肺に多い / 網状繊維→細かい網状・リンパ節・脾臓に多い</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">B</div><div class="oi"></div>膠原繊維→弾力性・血管壁 / 弾性繊維→引張強度・腱 / 網状繊維→骨格を形成</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>3種類の繊維はすべて同じコラーゲンタンパク質でできている</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>網状繊維→引張強度・腱 / 膠原繊維→細かい網状・脾臓</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 機関系の機能・連携</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">脂質の吸収経路として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>乳化→膵リパーゼで分解→アミノ酸として毛細血管へ直接吸収</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">B</div><div class="oi"></div>モノグリセリドと脂肪酸として毛細血管に吸収→門脈→肝臓へ</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">C</div><div class="oi"></div>胆汁で乳化→膵リパーゼで分解→小腸上皮内でカイロミクロン形成→毛細リンパ管（乳糜管）→左鎖骨下静脈→血流に合流</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>胆嚢が脂質を直接分解→すべて門脈から肝臓へ</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">胆嚢を摘出した場合に最も直接的に影響を受けるのはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>胆汁の産生が停止するため脂質の消化が完全に不能になる</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">B</div><div class="oi"></div>胆汁の貯留・濃縮ができなくなるため、食後の脂質乳化効率が低下し膵リパーゼの作用表面積が減少して脂肪便が生じる可能性がある（胆汁産生は肝臓が担うため停止はしない）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">C</div><div class="oi"></div>膵液の分泌が停止するため蛋白質の消化が不能になる</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>リンパ管への吸収が完全に停止する</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">平滑筋が横紋を持たない理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>平滑筋にはアクチンもミオシンも存在しないから</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">B</div><div class="oi"></div>平滑筋は不随意筋であるため筋フィラメントが不要だから</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">C</div><div class="oi"></div>平滑筋にもアクチンとミオシンは存在するが、骨格筋・心筋と異なり整然と配列していないため横紋が見えないから</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>平滑筋は核を持たないため収縮に必要なタンパク質を合成できないから</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">「腸管の内腔は体外扱いである」という記述について正しい説明はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>誤りで、腸管内は血管があるため体内に分類される</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>正しい。消化管は口から肛門まで一つながりで、その内腔は外界とつながっているため生物学的には「体外」として扱われる。上皮組織が内腔を覆うことで体内との界面を形成している</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>誤りで、腸管内腔は食物が通るため体内である</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>正しいが、この分類は入試に出題されないため覚える必要はない</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">組織→器官→器官系→個体という階層構造について、胃を例にとった説明として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>胃は上皮組織のみで構成された器官である</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">B</div><div class="oi"></div>胃は粘膜上皮（上皮組織）・粘膜固有層（結合組織）・胃壁の筋肉（筋組織）・神経叢（神経組織）の4種類の組織が組み合わさった器官であり、単独の組織だけで器官は機能しない</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>胃は筋組織と神経組織のみで構成されている</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>器官は1種類の組織から構成されるのが原則で、胃も例外ではない</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">外分泌腺と内分泌腺の違いとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>外分泌腺は管を持たず血管に直接ホルモンを放出する / 内分泌腺は管を通じて消化管内に分泌物を放出する</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>外分泌腺は管を通じて体外（消化管内腔など）に分泌物を放出する（汗腺・唾液腺・消化腺など）/ 内分泌腺は管を持たずホルモンなどを血管に直接放出する（甲状腺・下垂体・副腎など）</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>外分泌腺と内分泌腺は同一の組織であり分泌先によって分類が変わるだけ</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>すい臓はすべて内分泌腺の働きしか持たない</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">骨格筋が<em>多核細胞</em>である理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>骨格筋は発生過程で細胞分裂を繰り返し、核だけが増殖したから</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">B</div><div class="oi"></div>骨格筋はウイルス感染によって多核になった進化の名残</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">C</div><div class="oi"></div>発生過程で多数の筋芽細胞が融合して合胞体（シンシチウム）を形成したため。これにより長い細胞全体の遺伝子発現を複数の核で効率よく制御できる</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>骨格筋は細胞の数が非常に多いため電子顕微鏡でしか観察できない</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">
+      ADHは<input class="bi" id="f15a" placeholder="____">を検知して脳下垂体後葉から分泌され、腎臓の集合管で<input class="bi" id="f15b" placeholder="____">を挿入することで水のみを再吸収し尿浸透圧を高める。
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">
+      RAS（レニン-アンジオテンシン-アルドステロン系）は<input class="bi" id="f16a" placeholder="____">の低下を検知して起動し、アルドステロンが腎臓の尿細管や集合管で<input class="bi" id="f16b" placeholder="____">の再吸収を増加させる。
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 複数器官系の連携・ホメオスタシス</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">脱水時にADHとRASが同時に働く理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>どちらも同じセンサー（視床下部の浸透圧受容器）が検知して起動するから</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>脱水は「血漿浸透圧の上昇（水の喪失）」と「循環血液量の低下（血圧の低下）」を同時に引き起こすため、浸透圧センサーがADHを、容量・圧センサーがRASを独立して起動させ、2つの異なるパラメーターを並列に補正するから</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>ADHとRASは同一のホルモンカスケードに属しており、片方が起動するともう片方が自動的に連鎖して起動するから</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>ADHが血液量を回復し、RASが浸透圧を調整するため、ADHが先に完了してからRASが起動する</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">ADHとアルドステロンの作用の違いとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>ADHはNa⁺を再吸収し、アルドステロンは水のみを再吸収する</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>ADHはアクアポリン2の挿入により水のみを再吸収（Na⁺は動かさない）/アルドステロンはNa⁺チャネルを増加させてNa⁺ごと再吸収し、浸透圧で水も追随して再吸収されることで循環血液量を回復させる</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>ADHもアルドステロンも同じくアクアポリンを使って水とNa⁺を一緒に再吸収する</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>ADHはK⁺を排泄し、アルドステロンはH⁺を排泄する</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">呼吸性アシドーシス（CO₂蓄積→血液pH低下）に対する代償機構の<em>時間軸</em>として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>即時：腎臓がH⁺を排泄 → 数分以内：呼吸促進 → 数時間以降：血液緩衝系</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>即時（秒〜分）：血液緩衝系（ヘモグロビン・炭酸水素イオンがH⁺を取り込みpH急落を防ぐ） → 数分以内：呼吸系（換気量増加→CO₂排出→pH上昇） → 数時間〜数日：腎臓（H⁺排泄増加＋HCO₃⁻再吸収増加で根本的なイオンバランスを調節）</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>即時：アルドステロン分泌増加 → 数分後：ADH増加 → 数日後：血液緩衝系</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>すべての代償機構は同時に起動し時間差はない</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">次のA〜Dの記述のうち<em>正しいもの</em>を選べ。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>骨格筋は不随意筋であり、体性神経（運動神経）によって支配される</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">B</div><div class="oi"></div>脂肪組織は上皮組織に含まれる</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>ADHはNa⁺を直接再吸収させる</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">D</div><div class="oi"></div>血液（血清と血球成分）は結合組織の一種であり、脂肪組織・骨組織・軟骨組織なども結合組織に含まれる</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--grn)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！上皮→保護・分泌・吸収、結合→指示・輸送・貯蔵、筋→収縮・運動、神経→情報伝達・処理。この4×役割セットは入試で最頻出の基本です。",ng:"❌ 不正解。<strong>上皮=保護・分泌・吸収 / 結合=指示・輸送・貯蔵 / 筋=収縮・運動 / 神経=情報伝達・処理</strong>です。"},
+  2:{ok:"✅ 正解！血液は結合組織です！多くの人が驚く入試頻出の引っかけ。血球（細胞成分）＋血漿（細胞外基質＝液体）という構造が「まばらな細胞＋細胞外基質」という結合組織の定義に一致します。",ng:"❌ 不正解。<strong>血液は結合組織</strong>です！入試最頻出の引っかけ。血球（細胞）＋血漿（細胞外基質）という構造で結合組織に分類されます。"},
+  3:{ok:"✅ 正解！3種の筋の比較は入試最頻出。骨格筋：随意・横紋あり・多核、心筋：不随意・横紋あり・単核・介在板、平滑筋：不随意・横紋なし・単核・紡錘形。この3点セットを覚えてください。",ng:"❌ 不正解。<strong>骨格筋=随意・横紋あり・多核、心筋=不随意・横紋あり・単核（介在板あり）、平滑筋=不随意・横紋なし・単核</strong>が正しい組み合わせです。"},
+  4:{ok:"✅ 正解！介在板は心筋細胞の連結部位にあるギャップ結合構造。イオンが直接隣の細胞に伝わることで心筋全体が「機能的合胞体」として電気的に同期し、一体となって収縮できます。",ng:"❌ 不正解。<strong>介在板は心筋に存在</strong>し、ギャップ結合を通じてイオンを隣の細胞に直接伝えることで心筋全体が同期収縮できます。"},
+  5:{ok:"✅ 正解！構造→機能の因果の典型例です。小腸：栄養吸収最優先→単層で物質が通過しやすい、摩擦もほぼない。皮膚：外部の摩擦・乾燥・紫外線に常にさらされる→多層で表面が剥がれても下から補充される。",ng:"❌ 不正解。<strong>小腸（単層円柱）=栄養吸収効率最優先・摩擦なし、皮膚（重層扁平）=摩擦・乾燥・紫外線対策で多層バリア</strong>という「機能が形を決める」因果を理解してください。"},
+  6:{ok:"✅ 正解！心筋はミトコンドリアが豊富で脂肪酸を主燃料とする有酸素代謝中心。骨格筋は解糖系（無酸素代謝）も多用して乳酸が蓄積→疲労します。心臓が一生動き続けられる理由はここにあります。",ng:"❌ 不正解。<strong>心筋はミトコンドリア豊富・脂肪酸主燃料・ほぼ100%有酸素代謝</strong>なので乳酸が蓄積せず疲労しません。骨格筋は解糖系も使うため乳酸が蓄積して疲労します。"},
+  7:{ok:"✅ 正解！膠原繊維（コラーゲン）=引張強度→腱・靭帯、弾性繊維=弾力性→血管壁・肺、網状繊維=細かい網状→リンパ節・脾臓。3種の繊維の性質と部位をセットで覚えてください。",ng:"❌ 不正解。<strong>膠原繊維→腱・靭帯（引張強度）、弾性繊維→血管壁・肺（弾力性）、網状繊維→リンパ節・脾臓（細かい網）</strong>が正しい対応です。"},
+  8:{ok:"✅ 正解！脂質の吸収経路は入試最頻出。胆汁による乳化→膵リパーゼで分解→小腸上皮でカイロミクロン形成→毛細リンパ管（乳糜管）→左鎖骨下静脈→血流へ。アミノ酸は毛細血管、脂質はリンパ管に入る点が重要です。",ng:"❌ 不正解。<strong>脂質はカイロミクロンとして毛細リンパ管（乳糜管）に入り左鎖骨下静脈を経て血流に合流</strong>します。アミノ酸（毛細血管直接）と混同しないように！"},
+  9:{ok:"✅ 正解！胆汁の産生は肝臓が担います。胆嚢は貯留・濃縮の役割のみ。胆嚢摘出後も胆汁は産生され続けますが、少量ずつしか流れないため食後の脂質乳化効率が低下し脂肪便の可能性があります。",ng:"❌ 不正解。<strong>胆汁産生=肝臓の役割で胆嚢摘出後も停止しない</strong>点が重要。胆嚢は貯留・濃縮のみ担当です。入試頻出の誤解です。"},
+  10:{ok:"✅ 正解！平滑筋にもアクチンとミオシンは存在しますが、骨格筋・心筋のように整然と配列していないため横紋が見えません。収縮のメカニズム（アクチン-ミオシン滑り）自体は同じです。",ng:"❌ 不正解。<strong>平滑筋にもアクチン・ミオシンは存在するが不規則に配列しているため横紋が見えない</strong>のが正しい説明です。"},
+  11:{ok:"✅ 正解！消化管（口→肛門）は一つながりで外界とつながっているため、生物学的には「体外」扱いです。上皮組織がその界面を形成し、物質の選択的な出入りを制御しています。消化管内で分泌された消化液は「体外への分泌＝外分泌」です。",ng:"❌ 不正解。<strong>消化管内腔は口から肛門まで外界とつながるため「体外」扱い</strong>です。これは入試で論述の際に「体内」と書いてしまうと減点になる重要な定義です。"},
+  12:{ok:"✅ 正解！器官は必ず複数の組織が組み合わさって機能します。胃であれば上皮・結合・筋・神経の4種類すべてが役割を担います。「上皮組織しかない器官」は存在しません。",ng:"❌ 不正解。<strong>すべての器官は複数の組織の組み合わせ</strong>で成立します。「1種類の組織だけの器官」は存在しません。"},
+  13:{ok:"✅ 正解！外分泌腺=管を通じて体外（消化管内腔等）へ分泌（汗腺・唾液腺・膵外分泌など）。内分泌腺=管を持たず血管に直接ホルモンを放出（甲状腺・下垂体・副腎皮質など）。すい臓は両方の機能を持つ点も重要です。",ng:"❌ 不正解。<strong>外分泌腺=管を通じて体外へ / 内分泌腺=管なしで血管へホルモンを直接放出</strong>です。すい臓は外分泌（膵液）と内分泌（インスリン等）の両方を持ちます。"},
+  14:{ok:"✅ 正解！骨格筋細胞は発生過程で多数の筋芽細胞が融合して合胞体（シンシチウム）を形成した結果、多核になりました。長い細胞全体の遺伝子発現を複数の核で効率よく制御できるという利点があります。",ng:"❌ 不正解。<strong>筋芽細胞の融合（合胞体形成）</strong>によって多核になりました。分裂や感染が原因ではありません。"},
+  17:{ok:"✅ 正解！ADHは浸透圧センサー（視床下部）が検知し、RASは容量・圧センサー（腎臓の傍糸球体装置）が検知します。2つの独立したセンサーが並列で機能するため、脱水時は両方同時に起動して補完し合います。",ng:"❌ 不正解。<strong>ADH=浸透圧センサー起動、RAS=容量・圧センサー起動</strong>という2つの独立したパラメーターを別々のセンサーが検知します。脱水では両者が同時に起動して相補的に働きます。"},
+  18:{ok:"✅ 正解！ADH=アクアポリン2挿入→水のみ再吸収（Na⁺は動かさない）。アルドステロン=Na⁺チャネル増加→Na⁺再吸収→浸透圧で水も追随→循環血液量回復。この2つの違いが論述問題の核心です。",ng:"❌ 不正解。<strong>ADH=アクアポリン2で水のみ / アルドステロン=Na⁺チャネルでNa⁺+水</strong>です。「ADHがNa⁺を再吸収」は入試頻出の誤りです。"},
+  19:{ok:"✅ 正解！時間軸が鍵です。即時（秒〜分）：血液緩衝系でH⁺を受け取りpH急落を防ぐ→数分以内：呼吸系で換気増加→CO₂排出→数時間〜数日：腎臓でH⁺排泄増加＋HCO₃⁻再吸収増加（根本的なイオン調節）。論述では各機関の「タイムスケール」を明記することが満点の鍵です。",ng:"❌ 不正解。<strong>即時（血液緩衝系）→数分（呼吸系）→数時間〜数日（腎臓）</strong>という時間軸が正解です。腎臓が最も遅いことと、その理由（根本的なイオンバランス調節に時間がかかる）を覚えてください。"},
+  20:{ok:"✅ 正解！Dのみ正しい。A：骨格筋は随意筋です。B：脂肪組織は結合組織に含まれます。C：ADHはアクアポリン2で水のみ再吸収（Na⁺を直接再吸収するのはアルドステロン）。",ng:"❌ 不正解。正しいのはD。A：骨格筋は<strong>随意</strong>筋。B：脂肪組織は<strong>結合組織</strong>。C：ADHは<strong>水のみ</strong>再吸収（Na⁺再吸収はアルドステロン）。"},
+};
+
+const answers={};let cnt=0;const T=20;
+
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);
+  if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');
+  opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+
+function fc(ids,corrects,qn,fid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';
+  document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].some(v=>el.value.trim()===v);if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else{el.classList.add('cf');}});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+
+function cf15(){
+  const ok=fc(['f15a','f15b'],[['血漿浸透圧','浸透圧','けっしょうしんとうあつ'],['アクアポリン2','アクアポリン','aquaporin2']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！ADH（バソプレシン）は血漿浸透圧の上昇を視床下部の浸透圧受容器が検知して脳下垂体後葉から分泌。腎臓の集合管にアクアポリン2を挿入して水のみを再吸収します。';
+  else fb.innerHTML='❌ 不正解。ADHは<strong>血漿浸透圧</strong>の上昇を検知して分泌され、腎臓の集合管に<strong>アクアポリン2</strong>を挿入することで水のみを再吸収します。Na⁺は動かしません。';
+}
+function cf16(){
+  const ok=fc(['f16a','f16b'],[['循環血液量','血圧','けつあつ'],['Na⁺','ナトリウムイオン','Na+','ナトリウム']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！RASは腎臓の傍糸球体装置が循環血液量（血圧）の低下を感知して起動。最終的にアルドステロンがNa⁺の再吸収を増加させ、浸透圧で水も追随することで循環血液量を回復させます。';
+  else fb.innerHTML='❌ 不正解。RASは<strong>循環血液量（血圧）の低下</strong>を検知して起動し、アルドステロンが<strong>Na⁺</strong>の再吸収を増加させます。ADH（浸透圧検知→水のみ）との違いが入試の核心です。';
+}
+
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>4大組織の比較から複数器官系の連携（ADH/RAS・CO₂補正の時間軸）まで完全に理解できています。次回の「植物の組織系・DNA複製」も同じ脱暗記スタイルで攻略しましょう！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#3b82f6';msg='惜しい！もう一息です。<br>間違えた問題の解説を確認し、特に①筋肉3種の比較表②ADH vs アルドステロンの作用の違い③CO₂アシドーシスの時間軸を整理し直してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎はできていますが発展問題で迷いが出ています。<br>「細胞→組織→器官→器官系→個体」という階層構造の全体像と、ホメオスタシス維持のために複数の器官系がどう連携するかを動画を見返して確認しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①4大組織の名称と役割②筋肉3種の比較表③血液が結合組織である理由を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #23</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#10b981;--acc2:#06b6d4;--grn:#10b981;--red:#ef4444;--yel:#f59e0b;--pur:#8b5cf6;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#0a1a0e,#0f2744,#1a0a2e);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🌿';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--grn);text-transform:uppercase;padding:4px 12px;border:1px solid var(--grn);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--grn)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--grn),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+  .bs{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(139,92,246,.15);color:var(--pur);border:1px solid rgba(139,92,246,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--grn);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--grn);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(16,185,129,.15);color:var(--grn);padding:1px 5px;border-radius:4px;font-weight:700}
+  .qt em2{font-style:normal;background:rgba(6,182,212,.15);color:var(--acc2);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--grn);background:rgba(16,185,129,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--grn);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--grn);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oi{background:var(--grn);border-color:var(--grn)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--grn);border-color:var(--grn)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2;margin-bottom:16px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:140px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--grn)}
+  .bi.cf{border-color:var(--grn);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--grn),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--grn),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(16,185,129,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--grn),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#23</span><br>確認テスト</h1>
+  <p>植物の組織・維管束系 ＋ DNAの半保存的複製</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC: 植物組織 -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — 植物の組織系・維管束</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">植物の3大組織系の説明として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>表皮組織系→物質輸送 / 基本組織系→保護 / 維管束組織系→光合成</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>表皮組織系→保護・物質交換・蒸散調節 / 基本組織系→光合成・貯蔵・支持・通気 / 維管束組織系→水・無機塩類・有機物の長距離輸送</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>基本組織系→気孔による蒸散調節 / 維管束組織系→根毛による吸水</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>表皮組織系が茎の大部分を占める主要組織系である</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">道管と師管の比較として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>道管は生きた細胞で構成され有機物を輸送する / 師管は死細胞で構成され水を輸送する</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>道管は死細胞（細胞質が消失した中空の管）で水・無機塩類を上向き輸送 / 師管は生きた細胞（核が消失するが細胞質が残る）で光合成産物を全方向に輸送</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>道管も師管もどちらも生きた細胞で構成される</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>師管は死細胞で構成されるため伴細胞による補助は不要である</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">道管が<em>死細胞（中空の管）</em>であることの生物学的な合理性として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>死細胞の方がリグニンを蓄積して細胞壁を硬くするためのエネルギーが節約できるから</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">B</div><div class="oi"></div>生きた細胞（核・細胞質）が存在すると水の流路を塞ぐ障害になるため、意図的に死ぬことで内部が空洞になり水が効率よく流れる管として機能できるから</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">C</div><div class="oi"></div>死細胞の方が篩板構造を形成できて有機物を輸送しやすいから</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>生きていると細胞が水を吸収してしまうため、輸送する水の量が減ってしまうから</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">双子葉類と単子葉類の比較として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">A</div><div class="oi"></div>双子葉類→維管束が輪状配列・網状脈・二次成長あり・子葉2枚 / 単子葉類→維管束が散在・平行脈・二次成長なし・子葉1枚</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">B</div><div class="oi"></div>双子葉類→維管束が散在・平行脈・二次成長なし / 単子葉類→維管束が輪状配列・網状脈・二次成長あり</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">C</div><div class="oi"></div>どちらも維管束は輪状配列だが単子葉類は形成層を持たない</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>双子葉類と単子葉類ともに平行脈で子葉の数だけが異なる</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">環状剥皮（茎の周囲の樹皮を帯状に剥ぎ取る操作）の結果として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>道管が断絶されるため水の輸送が止まり植物はすぐに枯れる</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">B</div><div class="oi"></div>師部が断絶されるため光合成産物の輸送が止まり剥皮部の上部に有機物が蓄積して膨らむ。道管は残るため水の輸送は続き植物体はすぐには枯れない</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>道管も師管も両方断絶されるため水も有機物も輸送できなくなりすぐに枯れる</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>形成層が断絶されるため二次成長が止まるが光合成産物の輸送には影響しない</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <!-- BASIC: DNA複製 -->
+  <div class="sh"><span class="bdg bb">BASIC②</span><span class="st">基礎確認 — DNA半保存的複製</span></div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">DNAの半保存的複製（semi-conservative replication）の説明として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>親DNAが完全に分解されて新しい2本鎖が2セット合成される</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>親DNAの2本鎖が解離し、それぞれの鎖を鋳型として新しい相補的な鎖が合成される。その結果、娘DNAはそれぞれ親鎖1本＋新生鎖1本のハイブリッド二本鎖になる</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>親DNAの断片が新しい鎖全体に分散して組み込まれる（分散的複製）</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>親DNAはそのまま保存され、まったく新しい2本鎖が別に合成される（保存的複製）</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">DNAポリメラーゼが5'→3'方向にしか合成できないため、<em>後続鎖（ラギング鎖）が不連続に合成される</em>理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">A</div><div class="oi"></div>ラギング鎖側の鋳型はDNAポリメラーゼが結合できない特殊な構造を持つから</button>
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">B</div><div class="oi"></div>ラギング鎖の鋳型は3'→5'方向にあり、合成（5'→3'）とフォークの進行方向が逆のため、フォークが開くたびに短い断片（岡崎フラグメント）を合成し直す必要があるから</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>ラギング鎖はRNAプライマーが多すぎるためDNAポリメラーゼが働けない区間が生じるから</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>ラギング鎖にはリガーゼが作用しないため断片が連結されずに蓄積するから</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 因果・比較・実験解釈</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">メセルソン-スタール実験について正しい記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>¹⁵N培地で培養した後に¹⁴N培地に移して1回複製させると、重い（¹⁵N/¹⁵N）のバンドと軽い（¹⁴N/¹⁴N）のバンドが等量現れる（保存的複製の証拠）</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">B</div><div class="oi"></div>¹⁵N培地で培養後に¹⁴N培地に移して1回複製させると、中間の密度（¹⁵N/¹⁴Nハイブリッド）のバンドのみが現れる。これは半保存的複製では娘DNAが必ず親鎖1本＋新生鎖1本になると予測されるためで、保存的・分散的複製では説明できない</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">C</div><div class="oi"></div>2回複製後は中間バンドのみが現れる（1回後と変化なし）</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>この実験は転写の半保存性を証明した実験である</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">メセルソン-スタール実験で¹⁵N→¹⁴N移行後に<em>2回複製</em>させた場合の遠心分離バンドとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>中間バンドのみ</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">B</div><div class="oi"></div>中間バンド（¹⁵N/¹⁴Nハイブリッド）と軽いバンド（¹⁴N/¹⁴N）が1:1の比率で現れる</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">C</div><div class="oi"></div>重いバンドと軽いバンドが1:1で現れ中間バンドは消える</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>すべてのDNAが軽い（¹⁴N/¹⁴N）バンドに移行する</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">先行鎖（リーディング鎖）と後続鎖（ラギング鎖）の比較として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>先行鎖が不連続合成・ラギング鎖が連続合成</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">B</div><div class="oi"></div>先行鎖（リーディング）：フォークの進行方向と合成方向が一致→プライマー1つで連続合成 / 後続鎖（ラギング）：方向が逆→フォークが開くたびに岡崎フラグメントを合成→DNAリガーゼで連結</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">C</div><div class="oi"></div>どちらもRNAプライマーは必要なく直接DNAポリメラーゼが合成を開始できる</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>岡崎フラグメントは先行鎖に形成される短い断片である</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">双子葉類でのみ<em>二次成長</em>が起こり単子葉類では起こらない理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>単子葉類は一年草が多いため二次成長する前に枯れてしまうから</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>双子葉類では維管束が輪状に配列しているため各維管束内の形成層が連続した輪を形成でき全方向への細胞分裂が可能。単子葉類では維管束が散在するため連続した形成層の輪が形成できず面としての一斉二次成長が困難であるから</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>単子葉類には形成層の細胞が存在しないから</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>単子葉類では表皮組織系が形成層の機能を代替しているから</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">年輪が形成される理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">A</div><div class="oi"></div>春は細胞が大きく壁が薄いため色が薄く、秋は細胞が小さく壁が厚いため色が濃い。この周期的な変化が層状に外側へ蓄積することで同心円状の年輪として観察される</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">B</div><div class="oi"></div>春に師部が形成され秋に道管が形成されるという季節ごとの違いが年輪として現れる</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>コルク形成層の細胞分裂数が春と秋で異なることが年輪の原因である</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>年輪は師部の成長の記録であり木部とは無関係である</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">気孔の開閉が<em>カリウムイオン（K⁺）の移動</em>によって制御される仕組みとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>光が当たるとK⁺が孔辺細胞から流出し浸透圧が下がって吸水し膨圧が上がり気孔が開く</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>光が当たるとK⁺が隣接細胞から孔辺細胞に流入し浸透圧が上昇→吸水→膨圧上昇→孔辺細胞が湾曲して気孔が開く。暗所ではK⁺が流出し逆の過程で気孔が閉じる</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>K⁺の移動は気孔の開閉と無関係で、ABAが直接孔辺細胞の形態を変化させる</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>K⁺が孔辺細胞の細胞壁を軟化させることで気孔が物理的に開く</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">DNAリガーゼの役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>DNAの二本鎖を解離させてフォークを形成する酵素</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">B</div><div class="oi"></div>RNAプライマーを合成するプライマーゼの別名</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">C</div><div class="oi"></div>後続鎖（ラギング鎖）で不連続に合成された岡崎フラグメント（短いDNA断片）同士のニックを共有結合で連結してつなぐ酵素</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>RNAプライマーを除去してDNAに置き換える酵素（DNAポリメラーゼⅠの機能）</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">木部の構成要素である道管は成熟時に<input class="bi" id="f15a" placeholder="____">が消失して中空の管となり、細胞壁には<input class="bi" id="f15b" placeholder="____">が沈着して硬くなる。
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">DNAポリメラーゼは<input class="bi" id="f16a" placeholder="____">方向にしか合成できないため、後続鎖では短い<input class="bi" id="f16b" placeholder="____">が不連続に合成される。
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 実験設計・複合論述</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">¹⁵N培地で培養したDNAを持つ細胞にDNAリガーゼ阻害薬を投与してS期後半で停止させた後、¹⁴N培地に移して1回の複製をさせた。アルカリ変性後に電気泳動で見られるDNA断片長の分布として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>すべて長い断片（連続した長鎖）のみが観察される</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>長い¹⁵N親鎖と、連結されていない短い¹⁴N断片（岡崎フラグメント）が混在して観察される。リガーゼ阻害により後続鎖の岡崎フラグメントが連結できないためで、先行鎖の合成は進むから長い鎖も存在する</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>すべて短い断片のみ（リガーゼ阻害でDNA合成全体が止まるから）</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>アルカリ変性後は二本鎖が保たれるため断片長は変化しない</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">上記と同じ条件（¹⁵N→¹⁴N移行・リガーゼ阻害・1回複製）で、中性塩化セシウム密度勾配遠心法を行った場合のバンドとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>リガーゼが阻害されているため複製が完全に停止し、すべて重いバンド（¹⁵N/¹⁵N）のみ</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>中間バンド（¹⁵N/¹⁴Nハイブリッド）のみ。リガーゼは連結担当で合成（鎖の伸長）は止めないため、先行鎖・後続鎖ともに¹⁴N新生鎖の合成は進む。密度は塩基組成で決まりリガーゼの活性とは無関係</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>重いバンドと中間バンドが1:1で現れる</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>軽いバンド（¹⁴N/¹⁴N）のみ</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">高知（低酸素環境）で運動した場合の生体応答を時間軸で整理した記述として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>直後→腎臓がEPOを分泌して赤血球が増加 / 数日後→換気量が増加 / 数週間後→血液緩衝系が作動</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>直後（秒〜分）→化学受容体がO₂分圧低下を感知→換気量・心拍数増加 / 数日後→腎臓がHCO₃⁻排泄を増やしてpHを補正・2,3-BPGが上昇してHbのO₂親和性低下→組織へのO₂放出促進 / 数週間後→腎臓でEPO増加→赤血球産生増加→酸素運搬の根本的改善</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>すべての反応が同時に起動し時間差はない</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>直後→アルドステロンが分泌されNa⁺再吸収が増加 / 数日後→ADHが分泌されて水のみ再吸収</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">植物の「動けないからこその体作り」という観点で、根・茎・葉の構造と役割の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>葉は表面積を小さくすることで水分の損失を防ぐために薄くなった</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">B</div><div class="oi"></div>根は根毛で表面積を拡大して吸水効率を高める / 茎は木部・師部の束で体を支えつつ輸送の中継点 / 葉は薄く広げることで光の受光面積を最大化し光合成と蒸散（水の引き上げ）を行う——各器官の形は役割から必然的に決まる</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>茎の中心は必ず死細胞（道管）で埋め尽くされており、根の中心は随（柔組織）が占める</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">D</div><div class="oi"></div>葉に基本組織系は存在せず表皮系と維管束系のみで構成される</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--grn)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！植物の3大組織系：①表皮組織系（保護・物質交換・蒸散調節）②基本組織系（光合成・貯蔵・支持・通気）③維管束組織系（水・無機塩類・有機物の長距離輸送）。この3つの役割をセットで覚えてください。",ng:"❌ 不正解。<strong>表皮系=保護・蒸散調節 / 基本系=光合成・貯蔵・支持 / 維管束系=長距離輸送</strong>です。"},
+  2:{ok:"✅ 正解！道管は死細胞（中空）で水・無機塩類を上向き輸送。師管は生きた細胞（核は失うが細胞質が残り伴細胞の補助を受ける）で光合成産物を全方向に輸送。この対比は入試超頻出です。",ng:"❌ 不正解。<strong>道管=死細胞・水・無機塩類・上向き / 師管=生きた細胞・有機物・全方向</strong>です。絶対に混同しないように！"},
+  3:{ok:"✅ 正解！道管が死細胞になる理由は機能的な必然です。生きた細胞（核・細胞質）が存在すると水の流路を塞いでしまう。空洞にすることで水が効率よく流れる管になります。「植物が意図的に細胞を死なせる」という逆説的な論理が理解できているかが問われます。",ng:"❌ 不正解。道管が死細胞なのは<strong>内容物が流路を塞がないようにするため＝水を効率よく流すための必然的な設計</strong>です。"},
+  4:{ok:"✅ 正解！双子葉類：維管束が輪状配列・網状脈・二次成長あり・子葉2枚・放射状根。単子葉類：維管束が散在・平行脈・二次成長なし・子葉1枚・ひげ根。この比較表は入試必須です。",ng:"❌ 不正解。<strong>双子葉類=輪状配列・網状脈・二次成長あり / 単子葉類=散在・平行脈・二次成長なし</strong>です。"},
+  5:{ok:"✅ 正解！樹皮＝表皮＋師部＋形成層。環状剥皮で師部が断絶→有機物の輸送が停止→剥皮部の上側に有機物が蓄積して膨らむ。道管は内側の木部に残るので水の輸送は続く。これが入試で頻出の「環状剥皮の結果」問題の核心です。",ng:"❌ 不正解。<strong>環状剥皮で断絶されるのは師部（師管）</strong>です。道管（木部）は内側にあるため残り、水の輸送は続きます。"},
+  6:{ok:"✅ 正解！半保存的複製：親鎖2本が各々鋳型となり新生鎖が合成される。娘DNA1セット＝親鎖1本＋新生鎖1本。これと対比して保存的（親DNAがそのまま）・分散的（断片が散らばる）の3モデルを整理してください。",ng:"❌ 不正解。<strong>半保存的複製＝親鎖を鋳型として各々新生鎖を合成→娘DNAは親鎖1本＋新生鎖1本のハイブリッド</strong>です。"},
+  7:{ok:"✅ 正解！DNAポリメラーゼは5'→3'方向にしか合成できないというルールがすべてを決めます。ラギング鎖の鋳型は3'→5'方向にあるのでフォークの進行と合成方向が逆→フォークが開くたびに短い断片（岡崎フラグメント）を合成し直す必然が生まれます。",ng:"❌ 不正解。<strong>5'→3'合成の制約＋ラギング鎖の鋳型方向が逆</strong>→不連続合成という因果です。"},
+  8:{ok:"✅ 正解！メセルソン-スタール実験の核心：¹⁵N→¹⁴N移行後1回複製＝中間バンドのみ（半保存的複製の証拠）。2回後＝中間バンド+軽いバンドが1:1。この「実験条件→予測→結果」の因果の流れを完璧に押さえてください。",ng:"❌ 不正解。1回複製後は<strong>中間バンド（¹⁵N/¹⁴Nハイブリッド）のみ</strong>が現れます。これが半保存的複製の決定的証拠です。"},
+  9:{ok:"✅ 正解！2回複製後：4つの娘DNAのうち¹⁵N/¹⁴N（中間）が2本・¹⁴N/¹⁴N（軽い）が2本→中間バンド:軽いバンド＝1:1。重いバンドは消えます。回数ごとのバンドパターンを因果で追える必要があります。",ng:"❌ 不正解。2回複製後は<strong>中間バンド:軽いバンド＝1:1</strong>です。最初の¹⁵N/¹⁵N（重い）バンドはもう現れません。"},
+  10:{ok:"✅ 正解！先行鎖（リーディング）：フォーク進行方向＝合成方向（5'→3'）→1つのプライマーで連続合成。後続鎖（ラギング）：方向が逆→フォークが開くたびにプライマーを付け直して短い断片（岡崎フラグメント）を合成→リガーゼで連結。",ng:"❌ 不正解。<strong>先行鎖=連続合成 / 後続鎖=岡崎フラグメントを合成しリガーゼで連結</strong>です。"},
+  11:{ok:"✅ 正解！双子葉類：維管束が輪状→各維管束の形成層が連続した輪を作れる→全方向への二次成長が可能。単子葉類：散在→連続した輪ができない→面としての二次成長が困難。これは「配置の違いが機能の差を生む」という因果の典型例です。",ng:"❌ 不正解。<strong>維管束の配置（輪状 vs 散在）が連続した形成層の輪を作れるかどうかを決め、それが二次成長の有無につながる</strong>という因果です。"},
+  12:{ok:"✅ 正解！春→細胞が大きく壁が薄い→色が薄い（早材）。秋→細胞が小さく壁が厚い→色が濃い（晩材）。この季節サイクルが外側へ蓄積することで同心円状の年輪が形成されます。年輪は二次木部の記録です。",ng:"❌ 不正解。<strong>春（大きい細胞・薄い壁・色薄い）と秋（小さい細胞・厚い壁・色濃い）の周期的な変化が年輪</strong>です。"},
+  13:{ok:"✅ 正解！光照射→K⁺が周囲細胞から孔辺細胞に流入→浸透圧上昇→吸水→膨圧上昇→孔辺細胞の形が変わり気孔が開く。暗所ではその逆。ABAはK⁺流出を促進して気孔を閉じる（ストレス応答）。",ng:"❌ 不正解。<strong>光照射→K⁺が孔辺細胞に流入→浸透圧上昇→吸水→膨圧上昇→気孔が開く</strong>という因果です。"},
+  14:{ok:"✅ 正解！DNAリガーゼは後続鎖（ラギング鎖）の岡崎フラグメント同士のニック（切れ目）をリン酸ジエステル結合で連結する酵素です。リガーゼを阻害しても合成（鎖の伸長）は進み、連結だけが止まります。",ng:"❌ 不正解。<strong>リガーゼ＝岡崎フラグメントのニックを共有結合で連結する酵素</strong>です。合成（ポリメラーゼ）とは別の役割です。"},
+  17:{ok:"✅ 正解！リガーゼ阻害→連結は止まるが合成（鎖の伸長）は進む。先行鎖：連続合成なので長い¹⁵N親鎖と長い¹⁴N新生鎖が対になる。後続鎖：岡崎フラグメントが連結されず短いまま蓄積。アルカリ変性で一本鎖にすると長い鎖と短い断片が混在します。",ng:"❌ 不正解。<strong>リガーゼ阻害＝合成は進むが連結が止まる</strong>。先行鎖の長い鎖と後続鎖の短い断片が混在します。「リガーゼ＝複製停止」という誤解に注意！"},
+  18:{ok:"✅ 正解！密度は塩基組成（¹⁵N or ¹⁴N）で決まり、リガーゼ活性は密度に無関係です。リガーゼを阻害しても合成は進むので¹⁴N新生鎖は形成される→娘DNA＝¹⁵N親鎖＋¹⁴N新生鎖→中間密度バンドのみ。「リガーゼ阻害→バンドが変わる」という誤解が頻出です。",ng:"❌ 不正解。<strong>密度は塩基組成で決まり、リガーゼ活性とは無関係</strong>です。リガーゼを阻害しても合成は進むため中間バンドが形成されます。"},
+  19:{ok:"✅ 正解！時間軸が鍵です。直後（神経系）：化学受容体→換気・心拍増加。数日後（腎臓・内分泌）：HCO₃⁻排泄増加・2,3-BPG上昇→HbO₂親和性低下。数週間後（EPO・造血）：赤血球産生増加。速い応答（神経系）→遅い応答（内分泌・造血）の順序が重要です。",ng:"❌ 不正解。<strong>直後=神経系（換気・心拍）→数日後=腎臓・内分泌（pH補正・BPG）→数週間後=EPO→造血</strong>という時間軸で整理してください。"},
+  20:{ok:"✅ 正解！植物の各器官は「動けないからこその必然的な設計」です。根＝根毛で吸水面積最大化。茎＝維管束束で支持と輸送の中継。葉＝薄く広く光を最大限受光し光合成・蒸散。「なぜその形なのか」を機能から逆算できることが脱暗記の本質です。",ng:"❌ 不正解。各器官の形は役割から必然的に決まります。<strong>根=吸水・固定、茎=支持・輸送、葉=光受容・光合成・蒸散</strong>という役割がそれぞれの構造を決定しています。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function fc(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].some(v=>el.value.trim()===v);if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf15(){
+  const ok=fc(['f15a','f15b'],[['細胞質','核と細胞質','細胞質と核'],['リグニン']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！道管は成熟時に細胞質（および核）が消失して中空になり、細胞壁にリグニンが沈着して硬い管になります。生きた細胞が邪魔になるから死ぬという逆説的な設計です。';
+  else fb.innerHTML='❌ 不正解。道管は<strong>細胞質（核）が消失</strong>して中空になり、細胞壁には<strong>リグニン</strong>が沈着します。';
+}
+function cf16(){
+  const ok=fc(['f16a','f16b'],[["5'→3'","5'から3'","5ダッシュから3ダッシュ"],['岡崎フラグメント','オカザキフラグメント']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML="✅ 正解！DNAポリメラーゼは5'→3'方向にしか合成できません。この制約から後続鎖では短い岡崎フラグメントが不連続に合成されます。このルール1つから複製の全体像が決まります。";
+  else fb.innerHTML="❌ 不正解。DNAポリメラーゼは<strong>5'→3'方向</strong>にしか合成できず、後続鎖では短い<strong>岡崎フラグメント</strong>が不連続に合成されます。";
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>植物の3大組織系・道管vs師管・メセルソン-スタール実験・岡崎フラグメントまで完全に理解できています。次回の「体細胞分裂・細胞周期」も同じ脱暗記スタイルで攻略しましょう！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#06b6d4';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①道管が死細胞である理由の因果②メセルソン-スタール実験の2回後バンドパターン③リガーゼ阻害の効果（合成は進む・連結だけ止まる）を整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「5\'→3\'方向合成の制約」という1つのルールから複製の全体像が決まるという因果の流れと、植物の各器官の形が役割から必然的に決まるという視点を動画を見返して確認しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①道管vs師管の比較（生死・輸送物質・方向）②双子葉類vs単子葉類の比較③半保存的複製の概念を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

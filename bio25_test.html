@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #25</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#06b6d4;--acc2:#10b981;--red:#ef4444;--yel:#f59e0b;--pur:#8b5cf6;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#0a1a2e,#0f2744,#0d1a0e);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🔬';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(6,182,212,.15);color:var(--acc);border:1px solid rgba(6,182,212,.3)}
+  .bs{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(16,185,129,.15);color:var(--acc2);border:1px solid rgba(16,185,129,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--acc2);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(6,182,212,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc);background:rgba(6,182,212,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--acc2);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--acc2);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oi{background:var(--acc2);border-color:var(--acc2)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--acc2);border-color:var(--acc2)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .data-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:10px 0 16px;font-size:13.5px;line-height:1.9;color:var(--dim)}
+  .data-box strong{color:var(--acc2)}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2.2;margin-bottom:14px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:80px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc)}
+  .bi.cf{border-color:var(--acc2);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(6,182,212,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#25</span><br>確認テスト</h1>
+  <p>体細胞分裂の観察実験・細胞周期時間の計算・DNA量グラフ読解</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC: 実験手順 -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — 実験手順の意味・目的</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">体細胞分裂の観察実験における「固定」の目的として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>細胞を染色液に固定するための接着剤として機能する</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>生きた細胞の活動（酵素反応・自己消化）を停止させてその瞬間の構造を保持し、観察中に形態が変化しないようにする</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>細胞壁のペクチンを分解して細胞を分散させる</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>DNAを染色液に反応しやすくするために変性させる</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">「解離（帰り）」の目的として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>DNAを選択的に染色するために行う前処理</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">B</div><div class="oi"></div>細胞を固定してその瞬間の構造を止める操作</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">C</div><div class="oi"></div>細胞間の接着を緩めて細胞を分散させ、押しつぶし時に重ならないようにする（細胞壁のペクチンをうすい塩酸やペクチナーゼで分解する）</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>細胞内の余分なタンパク質を除去して染色性を上げる</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">「押しつぶし標本（圧打標本）」を作製する目的として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>細胞壁を破壊してDNAを細胞外に出す</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">B</div><div class="oi"></div>細胞を固定して観察中に動かないようにする</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">C</div><div class="oi"></div>細胞を単層に広げて重なりをなくし、顕微鏡での観察を容易にする（厚みをなくして光が透過しやすくする）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>染色体をさらに強く染色するために物理的な圧力を加える</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">体細胞分裂の観察に<em>根端を使う理由</em>として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>根端は細胞数が少ないため観察しやすいから</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">B</div><div class="oi"></div>根端（根端分裂組織）は細胞分裂が活発に行われている頂端分裂組織であり、分裂像を持つ細胞が高い割合で集まっているため</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">C</div><div class="oi"></div>根端は細胞壁がないため解離処理が不要で操作が簡単だから</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>根端の細胞はすべてG1期にあるため染色体が常に見えやすいから</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">観察で<em>中期の細胞を最もよく観察できる</em>理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>中期が細胞周期の中で最も長い時期だから</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">B</div><div class="oi"></div>中期は染色体が最も凝縮して赤道面に整列するため視覚的に識別しやすく、染色体数の計数に適しているから。ただし「よく見える」ことと「長い時期」は別物で、中期が長いとは限らない</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>中期が細胞周期の中で最も短く、その瞬間に多くの細胞が集まるから</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>中期では核膜が再形成されるため細胞が最も安定した状態になるから</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <!-- BASIC: 基本計算 -->
+  <div class="sh"><span class="bdg bb">BASIC②</span><span class="st">基礎計算 — 細胞周期時間の推定</span></div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">細胞数の割合から時間を推定する計算の前提条件として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>分裂が活発な細胞集団（非定常状態）で細胞をカウントした場合に成立する</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>非増長で定常状態の細胞集団を無作為にカウントした場合に、各期の細胞数の割合がその期の滞在時間の割合を反映するという仮定に基づく</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>すべての細胞が同時に細胞周期を開始した場合にのみ成立する</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>細胞集団のサイズが1000個以上の場合にのみ統計的に有効である</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">ある植物の根端で細胞200個を観察した。分裂期（M期）の細胞が20個であった。細胞周期の全長が20時間のとき、M期の時間として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">A</div><div class="oi"></div>1時間</button>
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">B</div><div class="oi"></div>2時間（20/200 × 20時間 = 2時間）</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>4時間</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>10時間</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — データ解析・グラフ読解・実験考察</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">ある植物の根端で500個の細胞を観察したところ以下のデータが得られた。細胞周期の全長が25時間のとき、S期の時間として正しいものはどれか。</div></div>
+    <div class="data-box">
+      <strong>観察データ：</strong><br>
+      間期（G1+S+G2）の細胞：450個<br>
+      M期の細胞：50個<br>
+      ※別の実験でG2+M期の合計が5時間と判明
+    </div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>12.5時間</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">B</div><div class="oi"></div>17.5時間</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">C</div><div class="oi"></div>M期の時間：50/500×25＝2.5時間。G2期：5－2.5＝2.5時間。間期合計：25－2.5（M期）＝22.5時間。S期は別途情報なしでは確定できない。ただし問題の意図がM期の計算なら「2.5時間」が正解</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>5時間</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">ある細胞集団の1細胞あたりのDNA量を経時的に測定したところ以下のデータが得られた。0〜4時間の区間が対応する細胞周期の時期として正しいものはどれか。</div></div>
+    <div class="data-box">
+      <strong>0〜4時間：</strong>DNA量 2C で一定<br>
+      <strong>4〜8時間：</strong>DNA量 2C から 4C へ直線的に上昇<br>
+      <strong>8〜10時間：</strong>DNA量 4C で一定（かつ細胞数が段階的に増加）<br>
+      <strong>10時間以降：</strong>DNA量が 4C から 2C へ低下
+    </div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>S期（DNA複製中）</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">B</div><div class="oi"></div>G1期（DNA量2Cで一定＝複製前の待機期間）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">C</div><div class="oi"></div>G2期（複製完了後の待機）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>M期（細胞分裂中）</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">上のデータで「8〜10時間」の区間の特徴として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>S期：DNA量が増加中</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">B</div><div class="oi"></div>G1期：DNA量2Cで一定</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">C</div><div class="oi"></div>M期：DNA量4Cで一定かつ細胞数が段階的に増加（各細胞がM期を完了して2つに分裂するたびに細胞数が増加する）</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>G2期：DNA量4Cで一定（ただし細胞数は変化しない）</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">「10時間以降のDNA量が4Cから2Cに低下する」現象について正しい記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>DNA量の低下はDNAが分解されて消失したことを意味する</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>細胞質分裂によりDNAが2つの娘細胞に「分配」されたため1細胞あたりのDNA量が半減する。DNAは消失せず、総量は変化しない</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>DNA量の低下はS期が逆向きに起きてDNAが分解されることを意味する</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>DNA量の低下はM期の後期でセントロメアが切断されるためである</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">解離が不十分だった場合（帰り不足）の観察への影響として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>染色が濃くなりすぎて染色体の識別が困難になる</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">B</div><div class="oi"></div>細胞間の接着が残存するため押しつぶしても細胞が重なり単層化できず、個々の染色体の観察・計数が困難になる</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>固定が不十分になりDNA合成が継続して観察中に染色体形態が変化する</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>細胞が死滅してすべての細胞がG1期に集積する</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">押しつぶし圧が強すぎた場合の影響として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>細胞壁が厚くなって染色液が浸透しなくなる</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>染色体が断裂・分散して正確な染色体数の計数や各期の判定が困難になる</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>細胞が激しく重なって単層化できなくなる（解離不足と同じ現象）</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>固定が弱まって細胞の自己消化が起きる</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">固定時間が長すぎた場合（過固定）の主な問題として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>細胞の活動が停止せずDNA合成が継続する</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">B</div><div class="oi"></div>細胞壁が分解されて解離処理が不要になる</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">C</div><div class="oi"></div>細胞の構造が硬化・変性して染色液が浸透しにくくなり染色不良（過染色・染色ムラ）が生じて中期の判定が困難になる</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>染色体が強く凝縮しすぎて中期の細胞が増加し過多になる</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め計算問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">次の計算を行い、空欄を答えよ。</div></div>
+    <div class="data-box">ある植物の根端で300個の細胞を観察した。<br>
+    M期（分裂期）の細胞が30個、S期（細胞周期時間比から推定）が120個であった。<br>
+    細胞周期全体が<strong>30時間</strong>のとき、M期は何時間か？</div>
+    <div class="fr">
+      M期 ＝ ( <input class="bi" id="f15a" placeholder="?"> ÷ 300 ) × 30 ＝ <input class="bi" id="f15b" placeholder="?時間">
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">次の計算を行い、空欄を答えよ。</div></div>
+    <div class="data-box">細胞周期が24時間の細胞集団で、顕微鏡観察で各期の細胞数の割合が以下の通りだった。<br>
+    G1期：60%　S期：25%　G2期：10%　M期：5%</div>
+    <div class="fr">
+      G1期の時間：<input class="bi" id="f16a" placeholder="?時間">　　M期の時間：<input class="bi" id="f16b" placeholder="?時間">
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 複合考察・論述レベル</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">「顕微鏡観察で中期の細胞が多く見えること」と「中期が細胞周期で長い時期であること」の関係について正しい記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>中期の細胞が多く見えるのは中期が長い時期であることを意味する（両者は常に比例する）</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>細胞数の多さは滞在時間の長さを反映するが、中期は「視覚的に識別しやすい」ため発見・分類されやすく見かけの数が多くなりうる。滞在時間を正確に求めるには定常集団での無作為カウントが必要で、「見えやすさ」と「長さ」は別物である</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>中期は細胞周期で最も短い時期なので観察で多く見えるはずがない</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>観察で見えやすい時期は必ず長い時期であるため、中期が多く見えれば中期が長いと断定できる</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">実験で「中期の細胞の判定が少なすぎる」という問題が起きた。原因・改善策・期待効果の因果関係として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>原因：M期の細胞が少ない → 改善：コルヒチンを添加して中期で細胞分裂を停止させる → 効果：中期細胞の割合が増加する</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>原因：解離不足（細胞が重なり判定困難）または過固定（染色液が浸透せず染色不良）→ 改善：解離時間・温度の最適化または固定時間を短縮 → 効果：細胞の単層化・染色性の回復により中期の判定可能な細胞数が増加する</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>原因：固定時間が短すぎる → 改善：固定時間を延長する → 効果：中期の細胞数が増加する</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>原因：押しつぶし圧が弱すぎる → 改善：強く押しつぶす → 効果：染色体が鮮明になり中期が識別しやすくなる</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">1細胞あたりのDNA量（C）と細胞集団全体の総DNA量の変化について正しい記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>S期では1細胞あたりのDNA量も総DNA量も同じ割合で増加する</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>S期では1細胞あたりのDNA量（C）は2C→4Cに倍加するが、細胞数は変化しないため総DNA量も倍加する。M期では1細胞あたりのDNA量は4C→2Cに半減するが、細胞数が倍になるため集団全体の総DNA量は変化しない——この「単位が違う」ことを混同しないことが重要</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>M期では1細胞あたりのDNA量が4C→2Cに減少するとともに総DNA量も半減する</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>1細胞あたりのDNA量と総DNA量は常に同じ変化パターンを示す</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">次の実験結果の原因と因果の対応として<em>すべて正しい</em>組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>①解離不足→細胞断裂、②過圧→細胞重なり、③過固定→染色濃すぎ、④染色不良→判定困難</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">B</div><div class="oi"></div>①解離不足→細胞間接着残存→重なり→観察困難、②過圧→染色体断裂→判定困難、③過固定→細胞硬化→染色液浸透不良→染色不良→判定困難、④染色液過濃→過染色→背景とコントラスト低下→判定困難</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>①過圧→細胞重なり、②解離不足→染色体断裂、③染色液過濃→固定不良、④過固定→解離不良</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">D</div><div class="oi"></div>すべての失敗の共通原因は固定時間の不足である</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！固定の目的は「その瞬間の細胞構造を保持する」こと。生きた細胞は代謝・自己消化が進むため、酢酸カーミンや酢酸オルセインなどの固定液で活動を即座に停止させます。固定時間が長すぎると硬化して染色性が低下する（過固定）ことも覚えておきましょう。",ng:"❌ 不正解。固定は<strong>細胞の活動を停止させてその瞬間の構造を保持</strong>するために行います。接着剤でも染色処理でもありません。"},
+  2:{ok:"✅ 正解！解離（帰り）はうすい塩酸（HCl）やペクチナーゼで細胞壁のペクチンを分解し、細胞間の接着を緩める操作です。解離不足→細胞が重なって単層化不能→観察困難、という因果が入試論述のポイントです。",ng:"❌ 不正解。解離は<strong>細胞間の接着を緩める</strong>操作です。染色でも固定でもありません。解離不足→重なり→観察困難という因果を覚えてください。"},
+  3:{ok:"✅ 正解！押しつぶし（圧打標本）は細胞を単層に広げて重なりをなくし、光が透過しやすくして顕微鏡での観察を容易にするための操作です。圧が強すぎると染色体が断裂して判定不能になります。",ng:"❌ 不正解。押しつぶしは<strong>細胞を単層に広げて観察を容易にする</strong>操作です。圧が強すぎると染色体断裂が起きます。"},
+  4:{ok:"✅ 正解！根端（特に根端分裂組織・頂端分裂組織）は植物が成長するために活発に細胞分裂を繰り返している場所です。分裂像を持つ細胞の割合が高いため観察効率が良い素材です。",ng:"❌ 不正解。根端を使う理由は<strong>細胞分裂が活発で分裂像が高い割合で存在する</strong>からです。"},
+  5:{ok:"✅ 正解！中期は染色体が最も凝縮して赤道面に整列するため視覚的に見つけやすく染色体数の計数に適しています。ただし「見えやすい」と「時間が長い」は別物です。今日の授業の核心テーマです。",ng:"❌ 不正解。中期は<strong>染色体が最も凝縮して見えやすい</strong>だけで、中期が長いとは限りません。「見えやすさ」と「時間の長さ」を区別することが今日最重要のポイントです。"},
+  6:{ok:"✅ 正解！細胞数の割合を時間に変換できるのは「非増長の定常状態集団で無作為にカウントした場合に各期の細胞数割合がその期の滞在時間割合を反映する」という仮定が成立する場合のみです。この前提条件は入試で必ず問われます。",ng:"❌ 不正解。この計算が成立するには<strong>非増長の定常状態集団で無作為にカウント</strong>するという前提が必要です。"},
+  7:{ok:"✅ 正解！計算：20（M期の細胞数）÷ 200（全細胞数）× 20（全周期時間）= 2時間。この比例計算が細胞周期時間推定の基本です。必ず最後に検算する習慣をつけましょう。",ng:"❌ 不正解。M期の時間 = M期の細胞数 / 全細胞数 × 全周期時間 = <strong>20/200 × 20 = 2時間</strong>です。"},
+  8:{ok:"✅ 正解！M期の時間 = 50/500 × 25 = 2.5時間が求められます。この問題形式では「何期の時間か」を正確に読み取り、計算式を立てることが重要です。",ng:"❌ 不正解。M期の時間 = <strong>50/500 × 25 = 2.5時間</strong>が正しい計算です。"},
+  9:{ok:"✅ 正解！DNA量2Cで一定という区間は、DNA複製前の待機期間＝G1期です。上昇でS期・横ばい4CでG2期またはM期前半・減少でM期後半というグラフパターンを押さえましょう。",ng:"❌ 不正解。DNA量2Cで一定な区間は<strong>G1期</strong>です。S期は2C→4Cに上昇する区間です。"},
+  10:{ok:"✅ 正解！DNA量4Cで一定かつ細胞数が段階的に増加する区間はM期です。細胞数が段階的（階段状）に増えるのは各細胞がM期を完了して分裂するたびに1つが2つになるためです。DNA量グラフとともにこの「細胞数の階段状増加」がM期の証拠です。",ng:"❌ 不正解。<strong>DNA量4Cで一定かつ細胞数が段階的増加</strong>する区間はM期です。G2期は細胞数増加がないことで区別できます。"},
+  11:{ok:"✅ 正解！M期後半のDNA量4C→2Cの低下は「DNAの分解」ではなく「細胞質分裂による娘細胞への分配」です。2つの娘細胞が各々2Cのままになる。総DNA量は変化しません。「分解」vs「分配」は論述でも超頻出の区別です。",ng:"❌ 不正解。DNA量の低下は<strong>分解ではなく分配</strong>です。細胞質分裂で2つの娘細胞にDNAが半分ずつ分けられるため1細胞あたりが半減します。総量は変化しません。"},
+  12:{ok:"✅ 正解！解離不足→細胞間接着が残存→押しつぶしても重なりが解消されない→単層化不能→重なった細胞で染色体の観察・計数が困難、という因果の鎖です。解離の目的（接着を緩める）と失敗の現象（重なり）は必ずセットで覚えましょう。",ng:"❌ 不正解。解離不足の問題は<strong>細胞間接着が残って重なりが解消されない</strong>ことです。染色の濃さとは無関係です。"},
+  13:{ok:"✅ 正解！押しつぶし圧が強すぎると染色体が物理的に断裂・分散してしまい、各染色体の形態が壊れて染色体数の計数や各期の判定が困難になります。適度な圧で単層化を保つことが重要です。",ng:"❌ 不正解。過圧（押しつぶし強すぎ）の問題は<strong>染色体の断裂・分散→判定困難</strong>です。細胞の重なりは解離不足の問題です。"},
+  14:{ok:"✅ 正解！過固定（長すぎる固定）→細胞構造の硬化・変性→染色液が浸透しにくくなる→染色不良（染色が薄い・染色ムラ）→中期の識別・判定が困難、という因果の連鎖です。固定時間は長すぎても短すぎても問題が生じます。",ng:"❌ 不正解。過固定は<strong>細胞が硬化して染色液が浸透しにくくなり染色不良が生じる</strong>ことが主な問題です。"},
+  17:{ok:"✅ 正解！これが今日の授業の最重要テーマです。「見えやすい」＝「時間が長い」ではありません。中期は染色体が凝縮して識別しやすいため発見・分類されやすく見かけの数が多くなりうるのです。正確な時間推定には定常集団での無作為カウントが必要です。",ng:"❌ 不正解。<strong>見えやすさと時間の長さは別物</strong>です。「中期の細胞が多く観察される」からといって中期が長いとは言えません。今日の授業の核心テーマです。"},
+  18:{ok:"✅ 正解！論述問題では「原因→観察される現象→改善策→期待される効果」という4段階の因果の鎖で書くことが高得点のポイントです。改善策だけを列挙しても効果を書かないと減点されます。",ng:"❌ 不正解。コルヒチンは中期細胞を増やすことはできますが「判定が困難な状態を改善する」ことにはなりません。<strong>解離不足や過固定という根本原因の改善</strong>が正しいアプローチです。"},
+  19:{ok:"✅ 正解！S期：1細胞あたりのDNA量は2C→4C（倍加）、細胞数不変→総DNA量も倍加。M期：1細胞あたりのDNA量は4C→2C（半減）、細胞数が倍増→総DNA量は変化なし。「1細胞あたり」と「集団全体の総量」を混同しないことが入試の最頻出ポイントです。",ng:"❌ 不正解。M期では1細胞あたりのDNA量は半減しますが、<strong>細胞数が倍増するため総DNA量は変化しません</strong>。「分配」なのでDNAは消えていません。"},
+  20:{ok:"✅ 正解！各操作の失敗と因果対応：①解離不足→重なり、②過圧→断裂、③過固定→染色不良、④染色液過濃→過染色。これらはそれぞれ独立した原因・現象・結果の因果です。論述では必ず「原因→現象→結果」の順序を明確にして書きましょう。",ng:"❌ 不正解。各失敗の原因と現象の対応：<strong>解離不足→重なり、過圧→断裂、過固定→染色不良（浸透不良）、染色液過濃→過染色</strong>です。それぞれの原因を混同しないように整理してください。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function calcCheck(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].includes(el.value.trim());if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf15(){
+  const ok=calcCheck(['f15a','f15b'],[['30'],['3','3時間']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！M期の時間 = (30÷300) × 30時間 = <strong>3時間</strong>。割合計算の基本式：対象期の細胞数 ÷ 全細胞数 × 全周期時間。最後に全期の時間の合計が全周期時間になるか検算する習慣をつけましょう。';
+  else fb.innerHTML='❌ 不正解。M期の時間 = <strong>30 ÷ 300 × 30 = 3時間</strong>です。割合計算の公式：(該当期の細胞数 ÷ 全細胞数) × 全周期時間を使いましょう。';
+}
+function cf16(){
+  const ok=calcCheck(['f16a','f16b'],[['14.4','14.4時間'],['1.2','1.2時間']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！G1期：0.60 × 24 = <strong>14.4時間</strong>。M期：0.05 × 24 = <strong>1.2時間</strong>。各期の割合×全周期時間で各期の時間が求まります。4期の合計＝24時間になるか検算してください。';
+  else fb.innerHTML='❌ 不正解。G1期：<strong>0.60 × 24 = 14.4時間</strong>、M期：<strong>0.05 × 24 = 1.2時間</strong>です。割合（%）を小数に直してから計算してください。';
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>実験手順の意味・細胞数から時間への計算・グラフ読解・失敗の原因と改善策の因果まで完全に理解できています。次回のDNA抽出実験・チミジン標識実験も今日の知識を土台にして攻略しましょう！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#06b6d4';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①「見えやすさ」と「時間の長さ」の区別②M期のDNA量減少は「分解」ではなく「分配」③実験失敗の論述では「原因→現象→改善→効果」の4段階の因果で書くことを整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>実験操作の「なぜその操作が必要か」という目的・失敗した場合の現象・改善策という因果の連鎖を動画を見返して確認しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①固定・解離・染色・押しつぶしの各目的②細胞数割合→時間の計算式③DNA量グラフの各区間の対応時期の3点を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

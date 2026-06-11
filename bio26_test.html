@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #26</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#f59e0b;--acc2:#10b981;--red:#ef4444;--yel:#f59e0b;--blu:#3b82f6;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#1a1408,#1e2535,#0a1429);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🧬';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(245,158,11,.15);color:var(--acc);border:1px solid rgba(245,158,11,.3)}
+  .bs{background:rgba(59,130,246,.15);color:var(--blu);border:1px solid rgba(59,130,246,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(16,185,129,.15);color:var(--acc2);border:1px solid rgba(16,185,129,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--acc2);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(245,158,11,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc);background:rgba(245,158,11,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--acc2);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--acc2);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oi{background:var(--acc2);border-color:var(--acc2)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--acc2);border-color:var(--acc2)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .data-box{background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:10px 0 16px;font-size:13.5px;line-height:1.9;color:var(--dim)}
+  .data-box strong{color:var(--acc2)}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2.2;margin-bottom:14px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:90px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc)}
+  .bi.cf{border-color:var(--acc2);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(245,158,11,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#26</span><br>確認テスト</h1>
+  <p>DNA抽出実験の原理 ＋ チミジン標識・パルスチェイス法</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC: DNA抽出 -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — DNA抽出実験の原理</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">DNA抽出の3大ステップとして正しい順序はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>DNAを析出させる→タンパク質を除去→細胞膜を破壊</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>細胞膜を破壊して核を解放→タンパク質を除去→DNAを析出させて回収</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>タンパク質を除去→DNAを析出→細胞膜を破壊</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>3つの操作はどの順番でも結果は変わらない</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">界面活性剤（洗剤）の役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>DNAの不電荷を中和して凝集させる</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>両親媒性分子がリン脂質二重膜（細胞膜・核膜）にミセルを形成して膜を崩壊させ、DNAを細胞外に放出させる</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>DNAに結合しているヒストンタンパク質を分解する</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>DNAの溶解度を下げて析出させる</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">食塩（NaCl）の役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>細胞膜を破壊してDNAを放出させる</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">B</div><div class="oi"></div>DNA骨格のリン酸基がもつ負電荷をNa⁺が中和し、DNA分子間の反発（同種電荷の反発）を防いで凝集しやすくする</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">C</div><div class="oi"></div>DNAに結合したタンパク質を分解する</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>DNAをエタノールに溶けやすくする</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">タンパク質分解酵素（プロテアーゼ）の役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>DNAの電荷を中和して凝集を促進する</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">B</div><div class="oi"></div>DNAに結合しているヒストンなどのタンパク質を分解して除去し、純度の高いDNAを得る</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">C</div><div class="oi"></div>細胞膜にミセルを形成して膜を崩壊させる</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>DNAを溶けにくくして析出させる</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">冷エタノールの役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>細胞膜を破壊してDNAを放出させる</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">B</div><div class="oi"></div>DNAに結合したヒストンを分解する</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">C</div><div class="oi"></div>DNAの周りから水分子を奪い溶解度を急激に下げて析出させる。低温であることでDNAの溶解度をさらに下げ、かつDNAの分解を防ぐ</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>DNA分子の不電荷を中和する</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">DNA抽出実験で温かいエタノールを使ってしまった場合に起こることとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>DNAが断片化して短くなる</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>DNAの溶解度が下がりにくくなり（むしろ上がる）、析出（沈殿）しにくくなる</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>DNAの不電荷が中和されず、タンパク質が除去できなくなる</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>細胞膜が破壊されなくなる</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">DNA抽出実験で激しく撹拌（ぐるぐるかき混ぜる）した場合に起こることとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">A</div><div class="oi"></div>DNAは非常に長い分子であるため、激しい撹拌によるせん断力でDNAが物理的に断片化し、短い糸にしか巻き取れなくなる</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">B</div><div class="oi"></div>DNAの不電荷が中和されすぎて析出しなくなる</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>タンパク質が分解されすぎてDNAも一緒に分解される</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>細胞膜が壊れなくなる</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- BASIC: チミジン標識 -->
+  <div class="sh"><span class="bdg bb">BASIC②</span><span class="st">基礎確認 — チミジン標識の原理</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">チミジンを与えるとDNA合成のみを特異的に追跡できる理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>チミジンはRNA合成にもDNA合成にも同じように使われるから</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">B</div><div class="oi"></div>チミジン（チミン+デオキシリボース）はDNA合成で取り込まれるヌクレオシドであり、RNA合成では通常チミンの代わりにウラシルが使われるため、チミジンを与えればDNA合成を特異的に追跡できる</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">C</div><div class="oi"></div>チミジンは塩基単体でありDNAにもRNAにも組み込まれない物質だから</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>チミジンはタンパク質合成のみに使われる物質だから</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">チミン・チミジン・ヌクレオチドの定義の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>チミン＝チミジン＝ヌクレオチド（すべて同じもの）</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">B</div><div class="oi"></div>チミン＝塩基単体 / チミジン＝チミン＋デオキシリボース（ヌクレオシド）/ ヌクレオチド＝チミジン＋リン酸</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">C</div><div class="oi"></div>チミン＝チミジン＋リン酸 / チミジン＝塩基単体</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>ヌクレオチド＝塩基単体 / チミジン＝ヌクレオチド＋リン酸</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 対照実験・パルスチェイス法</span></div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">抽出した白い沈殿がDNAであることを証明する対照実験で、4条件（DNase処理・RNase処理・プロテアーゼ処理・加熱）のうち、<em>本体の特定に直接決定的な証拠となる</em>のはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>RNase処理（沈殿が消失すればRNAが本体だと言える）</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">B</div><div class="oi"></div>加熱処理（断片化すれば本体が確定する）</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">C</div><div class="oi"></div>プロテアーゼ処理（粘性が下がれば本体が確定する）</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">D</div><div class="oi"></div>DNase処理のみ（DNase特異的に分解する酵素を加えて沈殿が消失すれば、本体はDNAであると断定できる）</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">対照実験でRNase処理をしても沈殿が残存した場合、正しい解釈はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>沈殿の本体はRNAであると確定できる</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>沈殿の本体はRNAではないことが裏付けられる。ただしこれだけでは本体がDNAだと断定はできない（DNase処理が決め手）</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>沈殿の本体はタンパク質であると確定できる</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>この実験は失敗だったと判断する</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">プロテアーゼ処理で沈殿の粘性が低下したが沈殿は残存した場合、正しい解釈はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>沈殿の本体はタンパク質であると確定できる</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">B</div><div class="oi"></div>沈殿の本体はタンパク質ではないことが分かる（タンパク質分解で粘性は下がるがDNAは残るため）</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>この実験は意味がないので無視してよい</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>沈殿が残存したのでDNAではないと判断する</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">パルスチェイス法における「パルス」と「チェイス」の役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>パルス＝長時間標識チミジンを与え続ける操作 / チェイス＝標識を完全に除去する操作</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>パルス＝短時間だけ標識チミジンを与えてその瞬間S期にいる細胞だけに目印をつける操作 / チェイス＝洗浄して余分な標識を除去し、非標識培地で培養して標識細胞の移動・追跡を行う操作</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>パルス＝細胞を固定する操作 / チェイス＝染色する操作</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>パルスとチェイスは同じ操作で呼び方が違うだけ</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">標識が中期染色体に現れるまでの「ラグタイム」が<em>G2期の長さに近似できる</em>理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>パルス時にG1期にいた細胞が中期に到達するまでの時間がG2期の長さと一致するから</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">B</div><div class="oi"></div>パルス時にS期の終わりにいた細胞は、ほぼ直後にG2期に入りM期前期・中期へと進むため、最初に中期に標識が現れるまでの時間はほぼG2期の長さと一致するから</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">C</div><div class="oi"></div>すべての細胞は同時に中期に到達するため、ラグタイムは細胞周期全体の長さと等しいから</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>ラグタイムはM期の長さを表すから</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">玉ねぎ・イチゴ・バナナがDNA抽出実験の材料としてよく選ばれる理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(15,this,false)"><div class="ol">A</div><div class="oi"></div>これらの植物は他の植物よりDNAの構造が単純だから</button>
+      <button class="opt" onclick="a(15,this,true)"><div class="ol">B</div><div class="oi"></div>細胞密度が高く核の数（DNA量）が多い、組織が柔らかく細胞壁を破壊しやすい、不純物（色素やタンパク質）が少なく抽出しやすいなどの観点から選ばれる</button>
+      <button class="opt" onclick="a(15,this,false)"><div class="ol">C</div><div class="oi"></div>これらの植物だけがDNAを持っているから</button>
+      <button class="opt" onclick="a(15,this,false)"><div class="ol">D</div><div class="oi"></div>これらの植物は核を持たない細胞でできているから</button>
+    </div>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め計算問題</span></div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">細胞周期 t = 12時間の非同調集団でチミジンを5分間パルス標識した直後、標識細胞割合（標識率）が25%だった。</div></div>
+    <div class="data-box">公式：T<sub>S</sub> = F × T<sub>cycle</sub>（F：標識率、T<sub>cycle</sub>：細胞周期全体の時間）</div>
+    <div class="fr">
+      S期の長さ T<sub>S</sub> ＝ 0.25 × 12 ＝ <input class="bi" id="f16a" placeholder="?時間">
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">細胞周期 t = 20時間の非同調集団で、標識率が40%だった場合のS期の長さを求めよ。</div></div>
+    <div class="fr">
+      S期の長さ T<sub>S</sub> ＝ 0.40 × 20 ＝ <input class="bi" id="f17a" placeholder="?時間">
+    </div>
+    <button class="cb" id="ck17" onclick="cf17()">確認する</button>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 複合論述・前提条件</span></div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">「標識率がS期の細胞割合とほぼ等しい」という近似が成立するための前提条件として<em>誤っているもの</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>非同調（細胞が細胞周期上にランダムに分布している）集団であること</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">B</div><div class="oi"></div>定常状態（細胞増殖が安定している）であること</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>パルス（標識）時間が十分に短いこと</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">D</div><div class="oi"></div>標識時間はできるだけ長く設定し、すべての細胞に確実に標識が取り込まれるようにすること</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">標識時間（パルス時間）が長すぎた場合に起こる問題として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>標識率が低くなりすぎてS期が観察できなくなる</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>パルス開始時にM期やG1期にいた細胞も時間経過とともに新たにS期に入り標識されてしまうため、標識細胞の割合が実際のS期割合より過大に見積もられ、S期の長さを過大評価してしまう</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>標識時間が長くてもTS=F×Tcycleの計算結果には全く影響しない</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>標識時間が長いとDNAが分解されてしまい標識自体が検出できなくなる</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">DNA抽出実験とチミジン標識実験の論理構造に共通する点として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>どちらも染色体数を数える実験である</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">B</div><div class="oi"></div>どちらも「特異的に作用する物質・酵素を使って、結果が変化するかどうかを観察することで、対象（DNAやS期細胞）の正体・状態を特定する」という同一の論理構造を持つ。次回学ぶグリフィス・エイブリーの実験（DNase処理で形質転換が消える＝DNAが本体）も同じ論理である</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>どちらも放射性同位体を用いる実験である</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">D</div><div class="oi"></div>どちらも細胞周期の時間を求める実験であり、対照実験の概念は使わない</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！DNA抽出の3大ステップ：①細胞膜を破壊して核を解放→②タンパク質を除去→③DNAを析出させて回収。「膜を壊さないとDNAが出てこない→タンパク質を除かないと純粋なDNAが取れない→電荷を中和しないと析出しない」という因果が順番の根拠です。",ng:"❌ 不正解。正しい順序は<strong>①細胞膜破壊（核解放）→②タンパク質除去→③DNA析出・回収</strong>です。各ステップは前段階が完了しないと次に進めない因果関係にあります。"},
+  2:{ok:"✅ 正解！界面活性剤（洗剤）は両親媒性分子で、リン脂質二重膜にミセルを形成して膜を崩壊させます。これによりDNAが核外・細胞外に放出されます。「膜を壊す」がこの試薬の役割の本質です。",ng:"❌ 不正解。界面活性剤の役割は<strong>両親媒性分子としてミセルを形成し細胞膜・核膜（リン脂質二重膜）を崩壊させる</strong>ことです。"},
+  3:{ok:"✅ 正解！DNAの骨格はリン酸でできており、水中でH⁺を放出して負電荷を帯びています。同じ負電荷同士は反発するため通常は凝集しません。NaClのNa⁺がこの負電荷を中和することで反発が消え、凝集（析出）しやすくなります。",ng:"❌ 不正解。食塩の役割は<strong>DNAのリン酸基がもつ負電荷をNa⁺が中和し、DNA同士の反発を防いで凝集を促進する</strong>ことです。"},
+  4:{ok:"✅ 正解！DNAは細胞内でヒストンタンパク質に巻き付いたヌクレオソーム構造をとっています。プロテアーゼがこのヒストンなどを分解することで、純度の高いDNAが得られます。タンパク質が混ざっていると「結果がDNA由来かタンパク質由来か」が判別できなくなります。",ng:"❌ 不正解。プロテアーゼの役割は<strong>DNAに結合したヒストンなどのタンパク質を分解して除去し、純度の高いDNAを得る</strong>ことです。"},
+  5:{ok:"✅ 正解！冷エタノールはDNAの周りの水分子を奪って溶解度を急激に下げ析出させます。「冷たい」ことが重要で、温かいエタノールではDNAの溶解度が上がってしまい析出しにくくなります。低温はさらにDNAの分解を防ぐ効果もあります。",ng:"❌ 不正解。冷エタノールの役割は<strong>DNAから水分子を奪い溶解度を下げて析出させる</strong>ことです。「冷たい」ことが必須条件です。"},
+  6:{ok:"✅ 正解！温かいエタノールではDNAの溶解度が下がりにくく（むしろ上がる）、析出（沈殿）が起きにくくなります。「冷」エタノールという名前の意味（低温であることが本質）を理解することが重要です。",ng:"❌ 不正解。温かいエタノールでは<strong>DNAの溶解度が上がってしまい析出しにくくなります</strong>。膜の破壊・電荷中和・タンパク質除去には影響しません。"},
+  7:{ok:"✅ 正解！DNAは非常に長い分子のため、激しい撹拌（特にぐるぐる回す）によるせん断力で物理的に断片化してしまいます。対策はゆっくり上下に撹拌することです。手順を丸暗記するのではなく「何をするとどうなるか→どう改善するか」という因果で考えることが重要です。",ng:"❌ 不正解。激しい撹拌は<strong>せん断力によりDNAを物理的に断片化</strong>させます。電荷中和やタンパク質分解とは無関係です。"},
+  8:{ok:"✅ 正解！チミジン（チミン+デオキシリボース）はDNA合成で使われるヌクレオシドです。RNA合成では通常チミンの代わりにウラシルが使われるため、チミジンを与えればDNA合成（S期）のみを特異的に追跡できます。",ng:"❌ 不正解。<strong>RNA合成では通常チミンではなくウラシルが使われる</strong>ため、チミジンを与えればDNA合成のみを特異的に追跡できます。"},
+  9:{ok:"✅ 正解！チミン＝塩基単体（ATGCの1つ）。チミジン＝チミン+デオキシリボース（ヌクレオシド）。ヌクレオチド＝チミジン+リン酸（ヌクレオシド+リン酸）。「チミジン＝塩基」という誤解は最頻出のミスです。",ng:"❌ 不正解。<strong>チミン＝塩基単体 / チミジン＝塩基+糖（ヌクレオシド）/ ヌクレオチド＝ヌクレオシド+リン酸</strong>です。「チミジン＝塩基」は誤りです。"},
+  10:{ok:"✅ 正解！DNase処理のみが「DNAを特異的に分解する酵素」であり、これで沈殿が消失すれば本体はDNAであると断定できます。RNase・プロテアーゼ・加熱はそれぞれ「○○ではない」ことを裏付けたり性質を確認するための補助的な実験です。",ng:"❌ 不正解。本体を特定する決定的な証拠は<strong>DNase処理のみ</strong>です。これにより沈殿が消失すればDNAが本体だと断定できます。"},
+  11:{ok:"✅ 正解！RNase処理で沈殿が残存する＝沈殿はRNAではないことが分かります。ただしこれだけでは「DNAである」とは確定できません（タンパク質や他の物質である可能性も残る）。本体を確定させるのはDNase処理のみです。",ng:"❌ 不正解。RNase処理で沈殿が残存しても<strong>「RNAではない」ことが分かるだけで「DNAである」とは断定できません</strong>。複数の対照実験を組み合わせて特異性を担保することが重要です。"},
+  12:{ok:"✅ 正解！プロテアーゼ処理で粘性が下がっても沈殿が残存する＝タンパク質分解により粘性は下がるが本体（DNA）は残る、という意味です。「沈殿の本体はタンパク質ではない」ことが分かりますが、これだけでDNAと確定はできません。",ng:"❌ 不正解。<strong>粘性低下＋沈殿残存＝沈殿の本体はタンパク質ではない</strong>ことが分かります。本体の確定にはDNase処理が必要です。"},
+  13:{ok:"✅ 正解！パルス＝短時間だけ標識チミジンを与えその瞬間S期にいる細胞のみに目印をつける操作。チェイス＝洗浄して余分な標識を除去後、非標識培地で培養し標識細胞の移動・追跡を行う操作。メセルソン-スタール実験と同じ「標識→非標識培地で追跡」の構造です。",ng:"❌ 不正解。<strong>パルス＝短時間の標識付与（S期細胞のみ標識）/ チェイス＝洗浄後に非標識培地で追跡</strong>です。"},
+  14:{ok:"✅ 正解！パルス時にS期の終わりにいた細胞は、パルス直後にほぼG2期に入りM期前期・中期へと進みます。そのため最初に中期に標識が現れるまでの時間（ラグタイム）はほぼG2期の長さと一致します。S期初期の細胞だとSの残り時間が混ざるため近似が悪くなります。",ng:"❌ 不正解。<strong>パルス時にS期終わりにいた細胞が最初に中期に到達するまでの時間≒G2期の長さ</strong>という近似です。"},
+  15:{ok:"✅ 正解！①細胞密度が高く核の数（DNA量）が多い、②組織が柔らかく破砕しやすい、③不純物（色素・タンパク質）が少なく抽出効率が高い、という複数の観点から選ばれます。「なぜその材料か」を因果で説明できることが重要です。",ng:"❌ 不正解。材料選定の理由は<strong>細胞密度（DNA量）・破砕のしやすさ・不純物の少なさ</strong>などの複数の観点からの評価です。"},
+  18:{ok:"✅ 正解！Dが誤り。標識時間は「十分に短い」ことが前提条件です。標識時間が長すぎると、パルス開始時にS期になかった細胞も時間経過とともにS期に入り標識されてしまい、標識率がS期割合より過大評価されてしまいます。",ng:"❌ 不正解。誤っているのはD。<strong>標識時間は「十分短い」</strong>ことが前提条件であり、「長く設定する」のは誤りです。A・B・Cはすべて正しい前提条件です。"},
+  19:{ok:"✅ 正解！パルス時間が長すぎると、開始時にS期になかった細胞（M期・G1期等）も時間経過で新たにS期に入り標識されてしまいます。これにより標識細胞の割合が実際のS期割合より過大になり、TS=F×Tcycleで計算したS期の長さも過大評価されます。",ng:"❌ 不正解。標識時間が長すぎると<strong>パルス開始時にS期外だった細胞も標識されてしまい、S期割合（標識率）が過大評価され、結果としてS期の長さも過大評価</strong>されます。"},
+  20:{ok:"✅ 正解！両実験とも「特異的に作用する物質・酵素を使い、結果（沈殿の消失や標識の出現）が変化するかどうかを観察することで対象の正体・状態を特定する」という共通の論理構造を持ちます。次回のグリフィス・エイブリーの実験（DNase処理で形質転換が消える）も全く同じ論理です。",ng:"❌ 不正解。両実験に共通するのは<strong>「特異的な処理で結果が変化するかどうかを見て対象の正体・状態を特定する」</strong>という論理構造です。次回のエイブリーの実験にもこの論理がそのまま使われます。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function calcCheck(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].includes(el.value.trim());if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf16(){
+  const ok=calcCheck(['f16a'],[['3','3時間']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！TS = F × Tcycle = 0.25 × 12 = <strong>3時間</strong>。標識率＝S期にいた細胞の割合と見なせるため、これは前回学んだ「細胞数の割合×全周期時間」と全く同じ計算です。';
+  else fb.innerHTML='❌ 不正解。TS = 0.25 × 12 = <strong>3時間</strong>です。公式 TS = F × Tcycle に数値を代入するだけです。';
+}
+function cf17(){
+  const ok=calcCheck(['f17a'],[['8','8時間']],17,'fb17','ck17');
+  const fb=document.getElementById('fb17');
+  if(ok)fb.innerHTML='✅ 正解！TS = 0.40 × 20 = <strong>8時間</strong>。標識率（パーセント）は必ず小数に直してから計算する習慣をつけましょう。';
+  else fb.innerHTML='❌ 不正解。TS = 0.40 × 20 = <strong>8時間</strong>です。40%は0.40に変換してから計算してください。';
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>DNA抽出の4試薬の役割・対照実験の論理・パルスチェイス法・S期長さの計算まで完全に理解できています。次回の遺伝子の本体（グリフィス・エイブリー・ハーシーチェイス）は今日学んだ論理がそのまま使えます！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#f59e0b';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①4試薬それぞれの「狙う対象と作用」②対照実験で「DNase処理のみが決定的証拠」である理由③パルス時間が長すぎた場合の影響を整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#3b82f6';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「壊して消える＝本体の証拠」という対照実験の論理と、「標識率＝S期割合」という近似が成立する前提条件を動画を見返して整理しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①DNA抽出3段階と4試薬の対応②チミン・チミジン・ヌクレオチドの定義の違い③TS=F×Tcycleの計算式の3点を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

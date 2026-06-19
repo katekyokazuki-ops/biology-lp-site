@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #27</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#dc2626;--acc2:#f59e0b;--grn:#10b981;--red:#ef4444;--yel:#f59e0b;--blu:#3b82f6;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#1a0a0a,#1e2535,#1a1408);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🔬';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(220,38,38,.15);color:var(--acc);border:1px solid rgba(220,38,38,.3)}
+  .bs{background:rgba(59,130,246,.15);color:var(--blu);border:1px solid rgba(59,130,246,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--grn);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(220,38,38,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc);background:rgba(220,38,38,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--grn);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--grn);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+  .opt.sc .oi{background:var(--grn);border-color:var(--grn)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--grn);border-color:var(--grn)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2.2;margin-bottom:14px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:130px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc)}
+  .bi.cf{border-color:var(--grn);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(220,38,38,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾 ・ シリーズ完結</div>
+  <h1>ゼロからわかる高校生物 <span>#27</span><br>確認テスト</h1>
+  <p>遺伝子の本体を調べた実験（グリフィス・エイブリー・ハーシー&チェイス）</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — 3つの実験の基本</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">グリフィスの実験（1928年）で証明されたこととして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>遺伝子の本体がDNAであること</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>形質転換という現象が起きること（転換因子の正体はまだ特定されていない）</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>遺伝子の本体がタンパク質であること</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>DNAが細胞内に入ること</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">グリフィスの実験で「生きたR型菌＋加熱死滅S型菌」を混合注射した結果として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>マウスは生存し、菌は回収されなかった</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>マウスは死亡し、生きたS型菌が回収された</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>マウスは死亡したが、回収されたのはR型菌のみだった</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>マウスは生存し、R型とS型が半々に回収された</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">エイブリーの実験（1944年）の対照実験4条件のうち、転換因子の本体を決定づける<em>決定的証拠</em>となったのはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>RNase処理（転換あり）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">B</div><div class="oi"></div>Protease処理（転換あり）</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">C</div><div class="oi"></div>DNase処理のみ（転換なし）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>無処理（対照、転換あり）</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">ハーシー&チェイスの実験（1952年）でT2ファージのDNA・タンパク質をそれぞれ標識した同位体として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>DNA＝³⁵S（硫黄）、タンパク質＝³²P（リン）</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">B</div><div class="oi"></div>DNA＝³²P（リン）、タンパク質＝³⁵S（硫黄）</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">C</div><div class="oi"></div>DNA＝¹⁴C（炭素）、タンパク質＝¹⁵N（窒素）</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>DNAとタンパク質はどちらも同じ同位体で標識する</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">ブレンダー処理（ミキサーで激しく撹拌する操作）の目的として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>ファージのDNAを分解するため</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">B</div><div class="oi"></div>感染後に細菌表面に付着したままのファージ外殻を物理的に振り落とし、細菌本体と分離できる状態にするため</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>大腸菌の細胞壁を破壊するため</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>放射性同位体を活性化するため</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">遠心分離後の「上清」と「沈殿」の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>上清＝大腸菌本体、沈殿＝ファージ外殻</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>上清＝軽いファージ外殻（タンパク質）、沈殿＝重い大腸菌本体（DNAを含む）</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>上清と沈殿はどちらも同じ成分を含む</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>上清＝DNA、沈殿＝RNA</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">形質転換の正確な定義として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">A</div><div class="oi"></div>2種類の細菌が単に混ざり合うこと</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">B</div><div class="oi"></div>加熱で死滅した菌が生き返ること</button>
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">C</div><div class="oi"></div>外来のDNAが細胞に取り込まれ、そのDNAの遺伝情報によって細胞の形質が安定して変化し、分裂後もその形質が次世代に引き継がれる現象</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>一時的に細胞の見た目が変わるだけで遺伝はしない現象</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 因果・比較・対照実験の論理</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">エイブリーの実験で「RNase処理でも転換が起きた」という結果が必要な理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>RNAが転換因子であることを証明するため</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">B</div><div class="oi"></div>RNAが転換因子ではないことを示す対照実験として、DNase処理の結果に特異性という説得力を与えるため</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">C</div><div class="oi"></div>RNaseがDNAも分解することを確認するため</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>実験の手順を増やして信頼性を下げるため</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">なぜ³⁵Sと³²Pが選ばれ、¹⁴C（炭素）や¹⁵N（窒素）が使われなかったのか、その理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>炭素と窒素は放射性同位体が存在しないから</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">B</div><div class="oi"></div>炭素・水素・酸素・窒素はDNAとタンパク質の両方に共通して存在するため標識すると両方が光ってしまい区別できない。硫黄とリンはどちらか一方にしか存在しないため特異的に追跡できる</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">C</div><div class="oi"></div>炭素と窒素は毒性が強くファージを死滅させてしまうから</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>炭素と窒素は検出機器で測定できないから</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">エイブリーの実験の「限界」として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>マウスを使った実験ができなかったこと</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">B</div><div class="oi"></div>当時の精製技術では微量のタンパク質混入を完全には排除できず、「混入したタンパク質が転換を引き起こしたのでは」という批判を完全には払拭できなかったこと</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">C</div><div class="oi"></div>形質転換という現象自体を発見できなかったこと</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>DNase処理をする技術がなかったこと</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">グリフィスの実験における条件①〜③（生S型・生R型・加熱死滅S型をそれぞれ単独で注射）が必要な理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>マウスの個体差を平均化するため</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>条件④（混合注射）の「異常な結果」が偶然や別の原因ではなく確かに形質転換によるものだと確認するための対照実験</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>注射の手技を練習するため</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>S型とR型のどちらが強い菌か単純に比較するため</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">当時の科学者がDNAではなくタンパク質を遺伝子の本体だと考えた理由として<em>正しくないもの</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>タンパク質は20種類のアミノ酸の配列で構成され多様性が高いと考えられたから</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">B</div><div class="oi"></div>DNAは4種類の塩基の繰り返しに過ぎず構造が単純だと過小評価されていたから</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">C</div><div class="oi"></div>DNAは紫外線を全く吸収しないことが実験で確認されていたから</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>精製技術が未熟で常に微量のタンパク質が混入していたため「微量タンパクが本体」と疑われ続けたから</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">ブレンダー処理が不完全だった場合、³⁵Sが沈殿にも少し検出されることがある。その理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>³⁵SがDNAにも少し取り込まれるから</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>一部のファージ外殻が細菌表面から完全に剥がれずに残ったため</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>遠心分離の速度が速すぎたから</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>放射性同位体が自然に分子間を移動するから</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">3つの実験（グリフィス・エイブリー・ハーシー&チェイス）に共通する証明の方法として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div">すべて同じ細菌（肺炎球菌）を使っている</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">B</div><div class="oi"></div">対照実験を使って、特異的な条件だけで結果が変わることを示す</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">C</div><div class="oi"></div">すべて放射性同位体を使用している</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div">すべてマウスを使った動物実験である</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">
+      ³⁵S（硫黄）は<input class="bi" id="f15a" placeholder="____">に多く含まれ、感染後ファージの<input class="bi" id="f15b" placeholder="____">として外に残る。
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">次の文章の空欄を埋めよ。</div></div>
+    <div class="fr">
+      エイブリーの実験では<input class="bi" id="f16a" placeholder="____">処理のみで形質転換が消失したことから、転換因子は<input class="bi" id="f16b" placeholder="____">であると結論づけられた。
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 医学部レベルの複合論述</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">もし「遺伝物質＝タンパク質」が正しければ、ハーシー&チェイスの実験ではどんな結果が予測されるか。最も適切な記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>³⁵Sも³²Pも両方とも上清に多く検出されるはず</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>タンパク質（³⁵S）が細菌内に入るはずなので³⁵Sが沈殿に多く、³²P（DNA）は細菌内に入らないので上清に多く検出されるはず。これは実際の結果（³⁵S→上清、³²P→沈殿）と逆であり、タンパク質説は棄却される</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>放射能は全く検出されないはず</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>タンパク質説でも実際の結果と全く同じ分布になるはず</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">エイブリーの実験の弱点（タンパク質微量混入の可能性）を排除するため「熱失活DNase対照群」を設定する実験設計の論理として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>熱失活DNaseと活性のあるDNaseの両方で転換が消失すれば、DNaseの活性が原因だと言える</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>活性のあるDNase群でのみ転換が消失し、熱失活（活性を失わせた）DNase群では転換が維持されるなら、転換の抑制はDNaseの分解活性そのものによるものであり、混入したタンパク質の影響ではないと確認できる</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>熱失活DNase群でのみ転換が消失すれば、DNAが本体であると証明できる</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>この対照群を設定しても交絡因子の影響は排除できない</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">2n=6の細胞をS期後にコルヒチンで処理し、紡錘体形成を阻害して中期で停止させた。この時点の1細胞の「染色体数」「DNA分子数」「DNA量」として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>染色体数12本／DNA分子数12個／DNA量4C</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>染色体数6本／DNA分子数12個／DNA量4C</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>染色体数6本／DNA分子数6個／DNA量2C</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>染色体数12本／DNA分子数6個／DNA量2C</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">非同調集団（細胞周期12h）でチミジンを5分パルス標識した直後、標識細胞割合が24%だった。S期の長さTsとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>24時間（標識率をそのまま時間とした）</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">B</div><div class="oi"></div>約2.88時間（Ts = F × Tcycle = 0.24 × 12h = 2.88h）</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>12時間（細胞周期全体と同じ）</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">D</div><div class="oi"></div>0.24時間（標識率をそのままかけ算しなかった）</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！グリフィスが証明したのは「形質転換という現象が起きる」ことのみです。転換因子の正体（DNAかタンパクか）はまだ不明でした。これを特定したのが次のエイブリーの実験です。",ng:"❌ 不正解。グリフィスが証明したのは<strong>「形質転換という現象が起きること」のみ</strong>です。転換因子の正体（DNA）まではまだ特定されていません。"},
+  2:{ok:"✅ 正解！生R型＋加熱死滅S型の混合注射でマウスは死亡し、生きたS型菌が回収されました。死んだS型から放出された「何か」が生きたR型に移り、R型がS型の性質を獲得した（形質転換）と解釈されます。",ng:"❌ 不正解。正しくは<strong>マウスは死亡し、生きたS型菌が回収された</strong>です。これが形質転換の発見です。"},
+  3:{ok:"✅ 正解！DNase処理のみで形質転換が消失したことが決定的証拠です。RNase・Protease処理では転換が維持される（＝RNAやタンパク質は転換因子ではない）という対照があるからこそ、DNase処理の結果に説得力が生まれます。",ng:"❌ 不正解。決定的証拠は<strong>DNase処理のみで転換が消失したこと</strong>です。他の処理は「○○ではない」ことを示す対照実験の役割です。"},
+  4:{ok:"✅ 正解！³²P（リン）はDNAのリン酸骨格に入るためDNAの標識に、³⁵S（硫黄）はタンパク質の含硫アミノ酸（メチオニン・システイン）に入るためタンパク質の標識に使われます。「P＝DNA、S＝タンパク質」という対応を固定してください。",ng:"❌ 不正解。正しくは<strong>DNA＝³²P（リン）、タンパク質＝³⁵S（硫黄）</strong>です。逆に覚える誤りが入試で頻出します。"},
+  5:{ok:"✅ 正解！感染後もファージの外殻は細菌表面に「くっついた」状態です。ブレンダーで激しく撹拌することで外殻を物理的に振り落とし、細菌本体と分離できる状態にしてから遠心分離を行います。",ng:"❌ 不正解。ブレンダー処理の目的は<strong>感染後に細菌表面に残ったファージ外殻を物理的に振り落とすこと</strong>です。DNAの分解とは無関係です。"},
+  6:{ok:"✅ 正解！遠心分離では重さの違いを利用します。上清＝軽いファージ外殻（タンパク質）、沈殿＝重い大腸菌本体（DNAを含む）。この対応を最初に固定してから放射能データを読むことが鍵です。",ng:"❌ 不正解。正しくは<strong>上清＝ファージ外殻（タンパク質）、沈殿＝大腸菌本体（DNA含む）</strong>です。"},
+  7:{ok:"✅ 正解！形質転換は単なる「混ざる」ことではありません。外来DNAが細胞に取り込まれ、その遺伝情報によって形質が安定的に変化し、分裂後も次世代に引き継がれることが定義の核心です。",ng:"❌ 不正解。形質転換とは<strong>外来DNAの取り込みによる形質の安定した変化が次世代にも引き継がれる現象</strong>です。「混ざっただけ」「生き返った」は誤りです。"},
+  8:{ok:"✅ 正解！RNase処理でも転換が起きるという結果は「RNAは転換因子ではない」ことを示す対照実験です。これがあることで「DNase処理だけで転換が消える」という結果に特異性という説得力が生まれます。",ng:"❌ 不正解。RNase処理の結果は<strong>対照実験としてDNase処理の結果に特異性を与える</strong>ためのものです。「何を壊しても消える」のではなく「DNAだけが特異的に必要」だと示すことが重要です。"},
+  9:{ok:"✅ 正解！C・H・O・NはDNAとタンパク質の両方に共通する元素のため、これらを標識すると両方が光ってしまい区別できません。SとPはそれぞれ一方にしか存在しないため特異的に追跡できます。",ng:"❌ 不正解。<strong>C・H・O・Nは両方の分子に共通して存在</strong>するため区別できません。「どちらかにしかない元素」を選ぶことが標識実験の鍵です。"},
+  10:{ok:"✅ 正解！当時の精製技術では微量のタンパク質混入を完全には排除できませんでした。そのため「実は混入したタンパク質が転換を引き起こしているのでは」という批判が残りました。この弱点を完全に解消したのがハーシー&チェイスの実験です。",ng:"❌ 不正解。エイブリーの実験の限界は<strong>タンパク質の微量混入説を完全には排除できなかったこと</strong>です。"},
+  11:{ok:"✅ 正解！条件①〜③は対照実験です。条件④の「異常な結果」（死んだS型と生きたR型を混ぜるとマウスが死ぬ）が偶然や別の原因ではなく、確かに形質転換によるものだと確認するために、まず「正常な場合はどうなるか」を確かめています。",ng:"❌ 不正解。条件①〜③は<strong>条件④の結果が形質転換によるものだと確認するための対照実験</strong>です。"},
+  12:{ok:"✅ 正解！Cが誤り。当時はむしろ「DNAは構造が単純で遺伝情報を担うには不十分」と過小評価されていました。紫外線吸収（260nm）の一致はむしろDNA有力説の手がかりとして観察されていた事実です。",ng:"❌ 不正解。誤っているのはC。<strong>DNAは260nmの紫外線を強く吸収することが分かっており</strong>、これはむしろDNA有力説の手がかりでした。「紫外線を全く吸収しない」は誤りです。"},
+  13:{ok:"✅ 正解！ブレンダー処理が不完全だと、一部のファージ外殻が細菌表面から完全に剥がれずに残ってしまい、遠心分離時に細菌（沈殿）と一緒に沈んでしまいます。「100%分離できるわけではない」ため、データは「優位な方」で判断します。",ng:"❌ 不正解。³⁵Sが沈殿に少し検出されるのは<strong>ブレンダー処理が不完全で外殻が剥がれ切らなかったため</strong>です。「³⁵SがDNAに入る」は誤りです。"},
+  14:{ok:"✅ 正解！3つの実験はすべて「対照実験を使って、特異的な条件だけで結果が変わることを示す」という共通の証明方法を持ちます。グリフィスの条件1〜3、エイブリーのRNase/Protease処理、ハーシー&チェイスの³⁵S/³²P二系統がそれぞれの対照です。",ng:"❌ 不正解。3つの実験に共通するのは<strong>対照実験を用いて特異的な条件だけで結果が変わることを示す</strong>方法です。"},
+  17:{ok:"✅ 正解！タンパク質説が正しければ、感染時にタンパク質（外殻）が細菌内に入るはずなので³⁵Sが沈殿に多く、³²Pが上清に多くなるはずです。これは実際の結果（³⁵S→上清、³²P→沈殿）と逆であるため、予想と実際が矛盾し、タンパク質説は棄却されます。",ng:"❌ 不正解。タンパク質説が正しければ<strong>³⁵Sが沈殿に、³²Pが上清に多くなるはず</strong>ですが、実際の結果はその逆でした。この矛盾がタンパク質説を棄却する根拠です。"},
+  18:{ok:"✅ 正解！活性のあるDNase群でのみ転換が消失し、熱失活DNase群（活性を失わせたもの）では転換が維持されるなら、転換の抑制はDNaseの分解活性そのものによるものであり、混入していたかもしれないタンパク質の影響ではないと確認できます。これが交絡因子を排除する二重対照の論理です。",ng:"❌ 不正解。正しい論理は<strong>活性ありDNase群のみで転換消失・熱失活DNase群では転換維持→DNase活性そのものが原因と確認できる</strong>というものです。"},
+  19:{ok:"✅ 正解！染色体数はセントロメア基準で6本のまま（コルヒチンは紡錘体形成のみ阻害し分配を止める。複製はS期で既に完了）。DNA分子数は複製後の姉妹染色分体2本×6＝12個。DNA量は複製完了済みなので4Cです。",ng:"❌ 不正解。正しくは<strong>染色体数6本（セントロメア基準）・DNA分子数12個・DNA量4C</strong>です。コルヒチンが止めるのは「分配」であり「複製」ではありません。"},
+  20:{ok:"✅ 正解！Ts = F × Tcycle = 0.24 × 12h = 2.88h（約3時間）。標識率（24%＝0.24）は「S期にいた細胞の割合」であり、これに細胞周期全体の時間をかけることでS期の長さが求まります。「24%＝24時間」とするのは入試最頻出の誤りです。",ng:"❌ 不正解。正しい計算は<strong>Ts = 0.24 × 12h = 2.88h（約3時間）</strong>です。標識率（割合）と時間を混同しないように注意してください。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function calcCheck(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].includes(el.value.trim());if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf15(){
+  const ok=calcCheck(['f15a','f15b'],[['タンパク質'],['外殻']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！³⁵S（硫黄）はタンパク質の含硫アミノ酸（メチオニン・システイン）に多く含まれ、DNAには硫黄原子が存在しません。感染時もタンパク質の外殻は細菌内に入らず外に残ります。';
+  else fb.innerHTML='❌ 不正解。³⁵Sは<strong>タンパク質</strong>に多く含まれ、ファージの<strong>外殻</strong>として外に残ります。';
+}
+function cf16(){
+  const ok=calcCheck(['f16a','f16b'],[['DNase','ディーエヌエース'],['DNA']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！DNase処理のみで形質転換が消失したことから、転換因子はDNAであると結論づけられました。「壊して消えた＝本体の証拠」という対照実験の論理の典型例です。';
+  else fb.innerHTML='❌ 不正解。<strong>DNase</strong>処理のみで転換が消失し、転換因子は<strong>DNA</strong>であると結論づけられました。';
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>グリフィス・エイブリー・ハーシー&チェイスの3つの実験の論理を完全に理解できています。これで「ゼロからわかる高校生物」シリーズ全27回コンプリートです！次回からは新シリーズ「タンパク質合成（セントラルドグマ）」が始まります！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#dc2626';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①各実験で「何が証明され何が証明されていないか」②S＝タンパク質・P＝DNAの対応③対照実験の「目的」を整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「壊して消える＝本体の証拠」という対照実験の論理を3つの実験すべてに当てはめて整理し、動画を見返してみましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①グリフィス＝現象発見②エイブリー＝因子特定（DNase処理）③ハーシー&チェイス＝決定打（³²P/³⁵S）という3段階の役割分担から整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

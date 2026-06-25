@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #28</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#06b6d4;--acc2:#8b5cf6;--grn:#10b981;--red:#ef4444;--yel:#f59e0b;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#0a1a2e,#1a0a2e,#0a1a0e);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🧬';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(6,182,212,.15);color:var(--acc);border:1px solid rgba(6,182,212,.3)}
+  .bs{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--grn);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(6,182,212,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc);background:rgba(6,182,212,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--grn);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--grn);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .opt.sc .oi{background:var(--grn);border-color:var(--grn)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--grn);border-color:var(--grn)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2.2;margin-bottom:14px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:130px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc)}
+  .bi.cf{border-color:var(--grn);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(6,182,212,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#28</span><br>確認テスト</h1>
+  <p>セントラルドグマ・転写・翻訳・tRNA・ペプチド結合・逆転写（HIV）</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — セントラルドグマ・転写・翻訳</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">セントラルドグマで「絶対に存在しない」情報の流れとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>RNA → DNA（逆転写）</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>タンパク質 → DNA（タンパク質を出発点とした逆流）</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>DNA → RNA（転写）</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>RNA → RNA（RNA依存性RNAポリメラーゼ）</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">転写（DNA→mRNA）はどこで何を使って行われるか。正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>細胞質でDNAポリメラーゼを使う</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>核内でRNAポリメラーゼを使う</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>細胞質でリボソームを使う</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>核内でリボソームを使う</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">センス鎖とアンチセンス鎖の定義として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>センス鎖が鋳型になり、アンチセンス鎖がmRNAと同じ配列を持つ</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">B</div><div class="oi"></div>アンチセンス鎖が鋳型になり（3'→5'方向に読まれる）、センス鎖はmRNAと同じ配列を持つ（TがUに変わるだけ）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">C</div><div class="oi"></div>センス鎖もアンチセンス鎖もどちらも鋳型として使われる</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>センス鎖は3'→5'方向、アンチセンス鎖は5'→3'方向に転写される</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">転写の「まとめ式」として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>センス鎖（5'→3'）をそのまま読みTをUに変えると mRNA になる</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">B</div><div class="oi"></div>鋳型鎖（アンチセンス鎖）を3'→5'方向に読み、相補塩基に変換（T→U）し、向きを反転するとmRNA（5'→3'）が得られる</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">C</div><div class="oi"></div>鋳型鎖（センス鎖）を5'→3'方向に読み相補塩基に変換するとmRNAになる</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>アンチセンス鎖を5'→3'方向にそのまま読むとmRNAになる</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">mRNAの「キャップ構造」と「ポリAテール」の役割として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>キャップ→翻訳の終了シグナル / ポリAテール→リボソームへの結合目印</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">B</div><div class="oi"></div>キャップ（5'末端）→リボソームへの結合目印＋5'末端の分解保護 / ポリAテール（3'末端）→mRNAの安定性維持と寿命決定（短くなると分解の合図）</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>キャップ→DNA複製の開始シグナル / ポリAテール→ペプチド結合の終了シグナル</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">D</div><div class="oi"></div>キャップもポリAテールも原核生物と真核生物の両方に存在する</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">tRNAの「2つの働く端」として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>5'末端にアミノ酸が結合し、3'末端にアンチコドンがある</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>3'末端のCCA配列にアミノ酸が共有結合し、アンチコドンループ（下端）の3塩基がmRNAコドンと相補的に対合する</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>5'末端にアンチコドンがあり、3'末端にCCA配列が存在するが機能しない</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>tRNAにはアンチコドンはなく、コドンと直接結合する</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">なぜコドンは3塩基（トリプレット）で1アミノ酸を指定するのか。正しい説明はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">A</div><div class="oi"></div>2塩基の場合4²＝16通りで20種類のアミノ酸を指定できるから</button>
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">B</div><div class="oi"></div>1塩基では4通り・2塩基では16通りで20種類のアミノ酸に足りないが、3塩基では4³＝64通りとなり20種類のアミノ酸＋3つの終止コドンを指定するのに十分な組み合わせが得られるから</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>tRNAの長さが3塩基分しかないから</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>リボソームが一度に読める塩基が3個に限られているという物理的制約から</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 配列計算・コドン・逆転写</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">DNA鋳型鎖の配列が 3'-TACGGA-5' のとき、転写されるmRNAの配列（5'→3'方向）として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>5'-TAUGGU-3'</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">B</div><div class="oi"></div>5'-UACGGA-3'</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">C</div><div class="oi"></div>5'-AUGCCU-3'</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>5'-ATGCCT-3'</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">コドン 5'-AUG-3' に対するtRNAのアンチコドンを5'→3'方向で書いたとき正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>5'-AUG-3'（同じ配列）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">B</div><div class="oi"></div>5'-UAC-3'（相補のみで向きを反転しない）</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">C</div><div class="oi"></div>5'-CAU-3'（相補3'-UAC-5'を5'→3'方向に書き直した）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>5'-GUA-3'（相補のみ、RNAのTをUに変換していない）</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">ペプチド結合について正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>ペプチド結合はアミノ基（-NH₂）どうしが結合する反応である</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">B</div><div class="oi"></div>一方のアミノ酸のカルボキシ基（-COOH）と他方のアミノ基（-NH₂）から水1分子が取れる脱水縮合で形成される。触媒はタンパク質ではなくリボザイム（23S rRNA）である</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">C</div><div class="oi"></div>ペプチド結合はタンパク質分解酵素（プロテアーゼ）によって形成される</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>ペプチド結合の触媒はDNAポリメラーゼである</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">翻訳の終結（終止コドンでの終了）について正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>終止コドンに対応するtRNAがやってきてペプチド鎖を切り離す</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>終止コドン（UAA・UAG・UGA）には対応するtRNAが存在せず、RF（リリース因子/解離因子）というタンパク質が来てペプチド鎖をリボソームから解放する</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>終止コドンはUAAのみであり、UAG・UGAは他のアミノ酸を指定する</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>終止コドンに対応するアミノ酸（終止アミノ酸）が最後に付加される</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">逆転写（RNA→DNA）について正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>逆転写は生物界に存在しないセントラルドグマの絶対的な例外である</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">B</div><div class="oi"></div>HIVなどのレトロウイルスが持つ逆転写酵素（RT）によりRNA→DNAが実現する。これはセントラルドグマの「例外」であり、1970年にテミン・ボルチモアがノーベル賞を受賞した発見</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>逆転写はすべての真核生物の細胞で日常的に起きている</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>逆転写酵素のエラー率は通常のDNAポリメラーゼより低い</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">転写はなぜプライマーが不要か。正しい説明はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>転写の速度がDNA複製より遅いから</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>RNAポリメラーゼはゼロから新しい鎖を開始できる（既存の3'-OH末端がなくても合成を始められる）。DNAポリメラーゼは既存の鎖の3'-OH末端にしか付加できないためプライマーが必要だった</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>転写では鋳型が一本鎖だからプライマーが不要になる</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>プロモーターがプライマーの代わりをするから</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">遺伝子の発現とは何か。正しい説明はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>DNAが複製されること</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">B</div><div class="oi"></div>mRNAに転写されること（転写が起きた時点で発現したと言える）</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">C</div><div class="oi"></div>DNA上の遺伝情報が転写→mRNA→翻訳→タンパク質として機能する状態になること（4段階すべてを含む。「転写されただけ」では不十分）</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>細胞が分裂して遺伝情報が娘細胞に受け継がれること</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め計算問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">次の計算をせよ。</div></div>
+    <div style="background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:10px 0 16px;font-size:13.5px;line-height:1.9;color:var(--dim)">
+      <strong style="color:var(--acc)">ペプチドのデータ：</strong><br>
+      あるペプチドが合成された。アミノ酸の数は8個。<br>
+      このペプチドをコードするmRNA領域（開始コドンAUGから終止コドンまで）の塩基数と、ペプチド結合の数を求めよ。
+    </div>
+    <div class="fr">
+      mRNA塩基数：<input class="bi" id="f15a" placeholder="?ヌクレオチド">　　ペプチド結合数：<input class="bi" id="f15b" placeholder="?個">
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">次の逆転写の配列問題に答えよ。</div></div>
+    <div style="background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:10px 0 16px;font-size:13.5px;line-height:1.9;color:var(--dim)">
+      <strong style="color:var(--acc)">HIV由来mRNA：</strong> 5'-AUGCCU-3'<br>
+      逆転写酵素がこのmRNAを鋳型にして合成するDNA鎖の配列を3'→5'方向で答えよ。
+    </div>
+    <div class="fr">
+      DNA鎖（3'→5'）：3'-<input class="bi" id="f16a" placeholder="?">-5'
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 医学部レベルの複合論述</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">鎖X：5'-ATGGCAAGCTAA-3' から転写されるmRNAが 5'-AUGGUAAAGCUAA-3' だった。鎖Xはセンス鎖かアンチセンス鎖か。また、このmRNAから合成されるペプチドのアミノ酸数はいくつか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>センス鎖 / アミノ酸4個</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>センス鎖（mRNAと同じ配列でTがUに変わっているだけ）/ アミノ酸3個（AUG|GCA|AGC|UAA → Met-Ala-Ser-終止、終止コドンはアミノ酸を指定しない）</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>アンチセンス鎖 / アミノ酸3個</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>センス鎖 / アミノ酸12個（塩基数と混同）</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">逆転写酵素のエラー率が通常のDNAポリメラーゼの約10⁴倍高いことが、HIV治療を困難にする理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>エラー率が高いと逆転写酵素自体が作られなくなるため、HIVが増殖できなくなるから</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>高いエラー率により多様な変異株が短期間で生じ、薬剤耐性ウイルスが容易に出現するため、単剤治療では早期に効かなくなる（→だからHAARTという3剤以上の多剤併用療法が必要）</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>エラー率が高いとHIVのDNAが宿主染色体に組み込めなくなるから</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>高エラー率によりウイルスが自滅するため、治療の必要がなくなるから</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">「ペプチド結合を作る触媒はタンパク質（酵素）ではない」という記述について正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>誤り。ペプチジル転移酵素はタンパク質（プロテアーゼ）である</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>正しい。リボソームの大サブユニット内の23S rRNA（リボザイム）がペプチジル基転移反応を触媒する。RNAが酵素として機能する例であり、「すべての酵素はタンパク質」という考えに反する重要な事実</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>誤り。ペプチド結合はDNAポリメラーゼが触媒する</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>誤り。ペプチド結合の触媒は5S rRNAである</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">次の記述のうち<em>正しいもの</em>を選べ。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>プリオン病はタンパク質→DNAという情報の逆流の例である</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">B</div><div class="oi"></div>AZT（抗HIV薬）は宿主のDNA複製を阻害することでHIVを抑制する</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>翻訳は N末端→C末端の方向に進み、mRNAの3'側がN末端に対応する</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">D</div><div class="oi"></div>tRNAにアミノ酸を正しく結合させるアミノアシルtRNA合成酵素は20種類あり（各アミノ酸に1つ）、これが遺伝暗号の正確性を支えている</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！「タンパク質→DNA」「タンパク質→RNA」は生物界に絶対に存在しません。RNA→DNAは逆転写酵素で可能、RNA→RNAもRNA依存性RNAポリメラーゼで可能。「逆転写はあり得ない」は誤りです。",ng:"❌ 不正解。絶対に存在しないのは<strong>タンパク質を出発点とした逆流</strong>です。RNA→DNAは逆転写酵素（HIV等）で可能なので「絶対にない」とは言えません。"},
+  2:{ok:"✅ 正解！転写は<strong>核内でRNAポリメラーゼ</strong>を使って行われます。翻訳は細胞質でリボソームを使います。「場所・道具・方向」の3点をセットで覚えてください。",ng:"❌ 不正解。転写は<strong>核内でRNAポリメラーゼ</strong>を使います。翻訳（細胞質・リボソーム）と混同しないようにしましょう。"},
+  3:{ok:"✅ 正解！アンチセンス鎖が鋳型（3'→5'方向に読まれる）で、センス鎖はmRNAと同じ配列（TがUに変わるだけ）を持ちます。「センス鎖が鋳型」は入試最頻出の誤答です。",ng:"❌ 不正解。<strong>アンチセンス鎖が鋳型</strong>で、センス鎖はmRNAと同じ配列です。「センスだから意味がある＝鋳型」という誤解に注意！"},
+  4:{ok:"✅ 正解！まとめ式：鋳型鎖（アンチセンス鎖）を3'→5'方向に読み→相補塩基に変換（T→U）→向きを反転→mRNA（5'→3'）。この3段手順を演習問題で繰り返し練習してください。",ng:"❌ 不正解。正しいまとめ式は<strong>鋳型鎖（アンチセンス鎖）を3'→5'方向に読み、相補塩基（T→U）に変換し、向きを反転してmRNA（5'→3'）</strong>を得ます。"},
+  5:{ok:"✅ 正解！キャップ（5'末端）：リボソームへの結合目印＋分解保護。ポリAテール（3'末端）：mRNAの安定性と寿命の決定。mRNAワクチン（COVID-19）でもこの構造を工夫して安定性を高めました。",ng:"❌ 不正解。<strong>キャップ＝5'末端（リボソーム結合目印＋保護）、ポリAテール＝3'末端（安定性と寿命決定）</strong>です。"},
+  6:{ok:"✅ 正解！tRNAの3'末端CCA配列にアミノ酸が共有結合し、アンチコドンループの3塩基がmRNAコドンと対合します。この「両端の対応」が塩基配列→アミノ酸配列の翻訳を実現しています。",ng:"❌ 不正解。<strong>3'末端のCCA配列にアミノ酸が結合し、アンチコドンループがmRNAコドンと対合</strong>します。"},
+  7:{ok:"✅ 正解！4¹＝4（不足）→4²＝16（不足）→4³＝64（十分！）という数学的必然です。64通りのうち終止コドン3つを引くと61コドンで20種類のアミノ酸を指定できます。",ng:"❌ 不正解。<strong>4²＝16通りでは20種類のアミノ酸に不足するため、4³＝64通りが必要</strong>です。「2塩基で16通り＝足りる」は誤りです。"},
+  8:{ok:"✅ 正解！3段ルール：①鋳型（3'-TACGGA-5'）を3'→5'方向に読む→TACGGA ②相補塩基に変換（T→A, A→U, C→G, G→C）＋TはU→AUGCCU ③向きを5'→3'に→5'-AUGCCU-3'。",ng:"❌ 不正解。正しくは<strong>5'-AUGCCU-3'</strong>です。3段ルール（鋳型を3'→5'読み→相補変換（T→U）→向き反転）を確認してください。"},
+  9:{ok:"✅ 正解！コドン5'-AUG-3'に相補・反平行でアンチコドン3'-UAC-5'。5'→3'方向で書くと5'-CAU-3'。「2段書き」で方向ミスを防ぎましょう：コドン5'-AUG-3' / アンチコドン3'-UAC-5'（→5'→3'で書くと5'-CAU-3'）。",ng:"❌ 不正解。<strong>5'-CAU-3'</strong>が正解です。「相補だけ（UAC）」で向き反転を忘れる誤答が最多です。2段書きで確認する習慣をつけましょう。"},
+  10:{ok:"✅ 正解！-COOH＋H₂N-→-CO-NH-＋H₂O（脱水縮合）がペプチド結合です。触媒は23S rRNA（リボザイム）であり、タンパク質（酵素）ではありません。「全ての酵素はタンパク質」は誤りです。",ng:"❌ 不正解。ペプチド結合は<strong>脱水縮合で形成され、触媒はリボザイム（23S rRNA）</strong>です。プロテアーゼはペプチド結合を切断する酵素であり、形成する酵素ではありません。"},
+  11:{ok:"✅ 正解！終止コドン（UAA・UAG・UGA）には対応するアミノ酸が存在しないため、対応するtRNAもありません。代わりにRF（リリース因子）がコドンを認識してペプチド鎖を解放します。",ng:"❌ 不正解。<strong>終止コドンにはtRNAが来ず、RF（リリース因子）</strong>が翻訳を終了させます。「終止コドンにtRNAが来る」は誤りです。"},
+  12:{ok:"✅ 正解！逆転写酵素はHIV等のレトロウイルスが持ち、RNA→DNAを可能にします。「RNA→DNAはあり得ない」という記述は誤りです。1970年のテミン・ボルチモアの発見でノーベル賞を受賞しました。",ng:"❌ 不正解。逆転写（RNA→DNA）は<strong>レトロウイルス（HIV等）の逆転写酵素</strong>によって実現します。「絶対に存在しない」は誤りです。"},
+  13:{ok:"✅ 正解！RNAポリメラーゼは既存の3'-OH末端なしにゼロから合成を開始できます。DNAポリメラーゼは3'-OH末端にしか付加できないためプライマーが必要でした。この性質の違いが因果で理解できれば二度と迷いません。",ng:"❌ 不正解。転写でプライマーが不要な理由は<strong>RNAポリメラーゼがゼロから鎖を開始できる</strong>性質を持つからです。DNAポリメラーゼは既存の3'-OH末端が必須のため、プライマーが必要でした。"},
+  14:{ok:"✅ 正解！遺伝子の発現は4段階（転写→mRNA→翻訳→タンパク質が機能）を含みます。「転写されただけで発現した」は不十分です。「持っているが転写されていない遺伝子」は発現していない遺伝子です。",ng:"❌ 不正解。遺伝子の発現は<strong>転写・翻訳を経てタンパク質が実際に機能するまでの4段階すべて</strong>を指します。「転写されただけ」では発現したとは言えません。"},
+  17:{ok:"✅ 正解！鎖XとmRNAを比較すると「T→U」以外が同じ配列→センス鎖（鋳型ではない）。mRNAを3塩基ずつ区切るとAUG|GCA|AGC|UAA→Met-Ala-Ser-終止→アミノ酸3個（終止コドンはアミノ酸を指定しない）。",ng:"❌ 不正解。鎖XはmRNAとT→Uの違いだけで同じ配列→<strong>センス鎖</strong>。コドン区切りはAUG|GCA|AGC|UAA→<strong>アミノ酸3個</strong>（終止コドンは数えない）。"},
+  18:{ok:"✅ 正解！逆転写酵校のエラー率が高い→多様な変異株が短期間で出現→薬剤耐性株が生まれやすい→単剤では治療できなくなる→HAART（多剤併用療法）が必要。3薬同時耐性の確率は10⁻¹⁸と事実上ゼロになります。",ng:"❌ 不正解。<strong>高エラー率→変異株の多様性→耐性株出現→単剤治療の失敗</strong>という因果の連鎖がHIV治療困難の理由です。"},
+  19:{ok:"✅ 正解！リボソームのペプチジル基転移反応の触媒は23S rRNA（リボザイム）であり、タンパク質ではありません。これは「RNAが酵素として機能する」リボザイムの代表例であり、「全ての酵素はタンパク質」という命題が誤りであることを示します。",ng:"❌ 不正解。<strong>ペプチド結合の触媒は23S rRNA（リボザイム）</strong>であり、タンパク質ではありません。これが医学部入試で「全ての酵素はタンパク質——この記述は誤りか？」という問いへの答えになります。"},
+  20:{ok:"✅ 正解！D「アミノアシルtRNA合成酵素は20種類（アミノ酸ごとに1つ）」が正しい。A：プリオン病は形（構造）の伝達であり、情報の逆流ではない。B：AZTは逆転写酵素を阻害する（宿主DNAポリメラーゼを阻害するわけではない）。C：mRNAの5'側がN末端に対応する（3'側ではない）。",ng:"❌ 不正解。正しいのはD。A：プリオン病は<strong>構造伝達であり情報逆流ではない</strong>。B：AZTは<strong>逆転写酵素阻害</strong>（宿主DNAポリメラーゼ阻害ではない）。C：mRNAの<strong>5'側</strong>がN末端に対応（3'側ではない）。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function calcCheck(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].includes(el.value.trim());if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf15(){
+  const ok=calcCheck(['f15a','f15b'],[['27','27ヌクレオチド'],['7','7個']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！mRNA塩基数 = (アミノ酸数 × 3) + 終止コドン3 = (8 × 3) + 3 = <strong>27ヌクレオチド</strong>。ペプチド結合数 = アミノ酸数 − 1 = 8 − 1 = <strong>7個</strong>。「終止コドンを忘れる」と26になる入試最頻出ミスに注意！';
+  else fb.innerHTML='❌ 不正解。mRNA塩基数 = (8×3) + 3(終止コドン) = <strong>27</strong>。ペプチド結合数 = 8 − 1 = <strong>7個</strong>。「終止コドンを足し忘れる」が最頻出ミスです。';
+}
+function cf16(){
+  const ok=calcCheck(['f16a'],[['TACGGA','T-A-C-G-G-A']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！mRNA 5\'-AUGCCU-3\' に相補・反平行のDNA：3\'-<strong>TACGGA</strong>-5\'。RNA→DNA変換ではA→T、U→A、G→C、C→Gに変換（RNAのUはDNAではA、RNAのAはDNAではT）。';
+  else fb.innerHTML='❌ 不正解。mRNA 5\'-AUGCCU-3\' の相補・反平行DNA は 3\'-<strong>TACGGA</strong>-5\' です。RNAのU→DNAのA、RNAのA→DNAのT という変換を確認してください。';
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>セントラルドグマ・転写・翻訳・tRNA・ペプチド結合・逆転写（HIV）まで完全に理解できています。次回は真核 vs 原核の転写翻訳の違い（スプライシング・イントロン・エキソン）です！今日の知識がそのままつながります！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#06b6d4';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①センス鎖とアンチセンス鎖の定義②アンチコドンの方向（2段書き）③ペプチド結合の触媒（リボザイム）を整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「鋳型(3\'→5\')＋相補塩基(T→U)＋向き反転＝mRNA(5\'→3\')」のまとめ式と「アンチコドンは2段書きで方向ミスを防ぐ」という2つの技術を動画を見返して確認しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①セントラルドグマの矢印（絶対にないのはタンパク質出発点の逆流）②センス鎖＝mRNAと同じ配列③ペプチド結合数＝アミノ酸数−1 の3点を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

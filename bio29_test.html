@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜ゼロからわかる高校生物 #29</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+  :root{--bg:#0d1117;--sur:#161b25;--sur2:#1e2535;--bdr:#2a3347;--acc:#10b981;--acc2:#06b6d4;--red:#ef4444;--yel:#f59e0b;--pur:#8b5cf6;--txt:#e2e8f0;--muted:#64748b;--dim:#94a3b8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:60px}
+  .hero{background:linear-gradient(135deg,#0a1a0e,#0a1429,#1a0a2e);border-bottom:1px solid var(--bdr);padding:40px 20px 32px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'🧬';position:absolute;font-size:180px;opacity:0.05;top:-20px;right:-10px;pointer-events:none}
+  .lbl{display:inline-block;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--acc);text-transform:uppercase;padding:4px 12px;border:1px solid var(--acc);border-radius:20px;margin-bottom:12px}
+  .hero h1{font-size:clamp(20px,5vw,32px);font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+  .hero h1 span{color:var(--acc2)}
+  .hero p{color:var(--dim);font-size:14px;margin-bottom:24px}
+  .stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap}
+  .stat .n{font-size:26px;font-weight:900;color:var(--acc)}
+  .stat .l{font-size:11px;color:var(--muted)}
+  .pw{max-width:720px;margin:20px auto 0;padding:0 20px}
+  .ph{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .pb{height:6px;background:var(--bdr);border-radius:3px;overflow:hidden}
+  .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px;transition:width .4s ease;width:0}
+  .con{max-width:720px;margin:0 auto;padding:0 20px}
+  .sh{display:flex;align-items:center;gap:12px;margin:32px 0 16px}
+  .bdg{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .bb{background:rgba(16,185,129,.15);color:var(--acc);border:1px solid rgba(16,185,129,.3)}
+  .bs{background:rgba(245,158,11,.15);color:var(--yel);border:1px solid rgba(245,158,11,.3)}
+  .ba{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+  .bf{background:rgba(139,92,246,.15);color:var(--pur);border:1px solid rgba(139,92,246,.3)}
+  .st{font-size:15px;font-weight:700;color:var(--dim)}
+  .card{background:var(--sur);border:1px solid var(--bdr);border-radius:14px;padding:24px;margin-bottom:14px;transition:border-color .2s}
+  .card:hover{border-color:#3a4a60}
+  .card.correct{border-color:var(--acc);background:rgba(16,185,129,.05)}
+  .card.wrong{border-color:var(--red);background:rgba(239,68,68,.05)}
+  .qh{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .qn{min-width:32px;height:32px;background:var(--sur2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--acc);flex-shrink:0}
+  .qt{font-size:15px;font-weight:500;line-height:1.7;flex:1}
+  .qt em{font-style:normal;background:rgba(16,185,129,.15);color:var(--acc);padding:1px 5px;border-radius:4px;font-weight:700}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:all .15s;text-align:left;font-family:'Noto Sans JP',sans-serif;color:var(--txt);font-size:14px;line-height:1.5;width:100%}
+  .opt:hover:not(:disabled){border-color:var(--acc);background:rgba(16,185,129,.08)}
+  .opt:disabled{cursor:default}
+  .opt.sc{border-color:var(--acc);background:rgba(16,185,129,.1);color:#6ee7b7}
+  .opt.sw{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+  .opt.rc{border-color:var(--acc);background:rgba(16,185,129,.06);color:#6ee7b7}
+  .ol{font-weight:700;font-size:12px;color:var(--muted);min-width:16px;flex-shrink:0}
+  .oi{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .opt.sc .oi{background:var(--acc);border-color:var(--acc)}
+  .opt.sw .oi{background:var(--red);border-color:var(--red)}
+  .opt.rc .oi{background:var(--acc);border-color:var(--acc)}
+  .fb{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:13.5px;line-height:1.7}
+  .fb.show{display:block}
+  .fb.ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+  .fb.ng{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+  .dbox{background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin:10px 0 16px;font-size:13.5px;line-height:1.9;color:var(--dim)}
+  .dbox strong{color:var(--acc2)}
+  .fr{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:15px;line-height:2.2;margin-bottom:14px}
+  .bi{background:var(--sur2);border:2px solid var(--bdr);border-radius:8px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:4px 10px;width:90px;text-align:center;transition:border-color .2s;outline:none}
+  .bi:focus{border-color:var(--acc)}
+  .bi.cf{border-color:var(--acc);background:rgba(16,185,129,.08);color:#6ee7b7}
+  .bi.wf{border-color:var(--red);background:rgba(239,68,68,.08);color:#fca5a5}
+  .cb{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:13px;font-weight:700;padding:8px 18px;transition:opacity .2s}
+  .cb:hover{opacity:.85}
+  .cb:disabled{opacity:.4;cursor:default}
+  .sw-wrap{text-align:center;margin-top:32px}
+  .sw-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;padding:16px 48px;box-shadow:0 4px 20px rgba(16,185,129,.3);transition:opacity .2s}
+  .sw-btn:hover{opacity:.85}
+  #result{display:none;margin-top:32px;background:var(--sur);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center}
+  .re{font-size:56px;margin-bottom:12px}
+  .rs{font-size:48px;font-weight:900;line-height:1;margin-bottom:8px}
+  .rl{color:var(--dim);font-size:15px;margin-bottom:20px}
+  .rm{font-size:15px;line-height:1.8;color:var(--txt);background:var(--sur2);border-radius:10px;padding:16px 20px;margin-bottom:20px;text-align:left}
+  .rty{background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;border-radius:10px;color:#fff;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;padding:14px 36px;transition:opacity .2s}
+  .rty:hover{opacity:.85}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="lbl">偏差値爆上げ学習塾</div>
+  <h1>ゼロからわかる高校生物 <span>#29</span><br>確認テスト</h1>
+  <p>真核 vs 原核の転写・翻訳の違い｜スプライシング・選択的スプライシング・アーキア・抗生物質</p>
+  <div class="stats">
+    <div class="stat"><div class="n">20</div><div class="l">問</div></div>
+    <div class="stat"><div class="n">3</div><div class="l">難易度レベル</div></div>
+    <div class="stat"><div class="n">全問正解</div><div class="l">目標</div></div>
+  </div>
+</div>
+<div class="pw">
+  <div class="ph"><span id="pt">0 / 20 回答済み</span><span id="pp">0%</span></div>
+  <div class="pb"><div class="pf" id="pf"></div></div>
+</div>
+<div class="con" id="quiz">
+
+  <!-- BASIC -->
+  <div class="sh"><span class="bdg bb">BASIC</span><span class="st">基礎確認 — 5つの分岐点・エキソン・スプライシング</span></div>
+
+  <div class="card" id="c1">
+    <div class="qh"><div class="qn">Q1</div><div class="qt">「真核生物と原核生物の転写・翻訳の違いをすべて生み出す根本原因」として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">A</div><div class="oi"></div>ゲノムの大きさの違い</button>
+      <button class="opt" onclick="a(1,this,true)"><div class="ol">B</div><div class="oi"></div>核膜の有無——核膜があると転写の場所（核内）と翻訳の場所（細胞質）が物理的に分離され、mRNAの加工・核外輸送が必要になる</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">C</div><div class="oi"></div>リボソームの有無</button>
+      <button class="opt" onclick="a(1,this,false)"><div class="ol">D</div><div class="oi"></div>RNAポリメラーゼの長さの違い</button>
+    </div>
+    <div class="fb" id="fb1"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <div class="qh"><div class="qn">Q2</div><div class="qt">エキソンとイントロンの定義として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">A</div><div class="oi"></div>エキソン＝スプライシングで除去される部分 / イントロン＝最終的にタンパク質のアミノ酸配列をコードする部分</button>
+      <button class="opt" onclick="a(2,this,true)"><div class="ol">B</div><div class="oi"></div>エキソン（exon＝exit・発現する領域）：成熟mRNAに残りタンパク質をコードする部分 / イントロン（intron＝intragenic・遺伝子内領域）：スプライシングで除去される非コード配列</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">C</div><div class="oi"></div>エキソンもイントロンも原核生物に存在する</button>
+      <button class="opt" onclick="a(2,this,false)"><div class="ol">D</div><div class="oi"></div>イントロンはタンパク質のシグナル配列をコードする部分</button>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <div class="qh"><div class="qn">Q3</div><div class="qt">スプライソソームの構成と認識配列として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">A</div><div class="oi"></div>スプライソソーム＝DNAとタンパク質の複合体 / 認識配列：AU…UA</button>
+      <button class="opt" onclick="a(3,this,true)"><div class="ol">B</div><div class="oi"></div>スプライソソーム＝snRNA（核内低分子RNA）とタンパク質からなるsnRNPが集合した複合体 / 認識配列：イントロン両端のGU（5'側）とAG（3'側）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">C</div><div class="oi"></div>スプライソソーム＝リボソームの別名 / 認識配列：AUG（開始コドン）</button>
+      <button class="opt" onclick="a(3,this,false)"><div class="ol">D</div><div class="oi"></div>スプライソソーム＝タンパク質のみで構成 / 認識配列：GU（5'側）のみ</button>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <div class="qh"><div class="qn">Q4</div><div class="qt">スプライシングの触媒の本体として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">A</div><div class="oi"></div>スプライシングに関わるタンパク質酵素（プロテアーゼ）</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">B</div><div class="oi"></div>DNAポリメラーゼ</button>
+      <button class="opt" onclick="a(4,this,true)"><div class="ol">C</div><div class="oi"></div>snRNA（リボザイム）——「すべての酵素はタンパク質」は誤りで、RNAが酵素として機能する実例（#28のペプチド結合触媒＝23S rRNAと同じ論理）</button>
+      <button class="opt" onclick="a(4,this,false)"><div class="ol">D</div><div class="oi"></div>mRNA自身</button>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <div class="card" id="c5">
+    <div class="qh"><div class="qn">Q5</div><div class="qt">5'キャップの役割として<em>含まれないもの</em>はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">A</div><div class="oi"></div>リボソーム（小サブユニット）への結合目印として翻訳開始を促す</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">B</div><div class="oi"></div>5'エキソヌクレアーゼによるmRNAの分解を防ぐ蓋の役割</button>
+      <button class="opt" onclick="a(5,this,false)"><div class="ol">C</div><div class="oi"></div>核膜孔の通行証として核外輸送の合図になる</button>
+      <button class="opt" onclick="a(5,this,true)"><div class="ol">D</div><div class="oi"></div>mRNAの3'末端から分解するエキソヌクレアーゼを阻害する</button>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <div class="card" id="c6">
+    <div class="qh"><div class="qn">Q6</div><div class="qt">3'ポリAテールがmRNAの「寿命タイマー」として機能する仕組みとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">A</div><div class="oi"></div>ポリAテールが短くなるとキャップが外れてリボソームが結合できなくなる</button>
+      <button class="opt" onclick="a(6,this,true)"><div class="ol">B</div><div class="oi"></div>ポリAテールのAが少しずつ除去されていき、規定値を下回ると細胞質内の分解酵素によってmRNAが急速に分解される（砂時計の砂がなくなれば分解の合図）</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">C</div><div class="oi"></div>ポリAテールの長さはmRNAの安定性に関係なく、翻訳効率だけを決める</button>
+      <button class="opt" onclick="a(6,this,false)"><div class="ol">D</div><div class="oi"></div>ポリAテールが短くなるとスプライシングが再起動して新しいmRNAが生成される</button>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+
+  <div class="card" id="c7">
+    <div class="qh"><div class="qn">Q7</div><div class="qt">選択的スプライシングが「1遺伝子→複数タンパク質」を可能にする仕組みとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">A</div><div class="oi"></div>1つの遺伝子が細胞分裂ごとに複製されてコピーが増えることで多くのタンパク質が作られる</button>
+      <button class="opt" onclick="a(7,this,true)"><div class="ol">B</div><div class="oi"></div>スプライシングで「どのエキソンを組み合わせるか」を変えることで同じ遺伝子から異なる成熟mRNAが生成される。それぞれが異なるアミノ酸配列のタンパク質に翻訳され、多様性が実現する</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">C</div><div class="oi"></div>遺伝子のDNA配列が体細胞ごとに改変されてタンパク質の多様性が生じる</button>
+      <button class="opt" onclick="a(7,this,false)"><div class="ol">D</div><div class="oi"></div>翻訳の際にリボソームがコドンを読み飛ばすことでアミノ酸の組み合わせが変わる</button>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- STANDARD -->
+  <div class="sh"><span class="bdg bs">STANDARD</span><span class="st">標準問題 — 計算・アーキア・カップリング</span></div>
+
+  <div class="card" id="c8">
+    <div class="qh"><div class="qn">Q8</div><div class="qt">ある真核生物の遺伝子は4個のエキソン（E1=120塩基、E2=90塩基、E3=150塩基、E4=120塩基）と3個のイントロン（合計1020塩基）からなる。この遺伝子から転写された前駆体mRNAの長さとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">A</div><div class="oi"></div>480塩基（エキソンのみ合計）</button>
+      <button class="opt" onclick="a(8,this,true)"><div class="ol">B</div><div class="oi"></div>1500塩基（エキソン合計480＋イントロン合計1020）</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">C</div><div class="oi"></div>1020塩基（イントロンのみ）</button>
+      <button class="opt" onclick="a(8,this,false)"><div class="ol">D</div><div class="oi"></div>4080塩基（エキソン合計×イントロン数）</button>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <div class="card" id="c9">
+    <div class="qh"><div class="qn">Q9</div><div class="qt">上の遺伝子から合成される成熟mRNAからのタンパク質のアミノ酸数（開始コドンを含み終止コドンはアミノ酸を指定しないとする）として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">A</div><div class="oi"></div>160個（480÷3）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">B</div><div class="oi"></div>161個（480÷3＋1）</button>
+      <button class="opt" onclick="a(9,this,true)"><div class="ol">C</div><div class="oi"></div>159個（成熟mRNA＝エキソン合計480塩基、480÷3＝160コドン、終止コドン1つを除いて160−1＝159アミノ酸）</button>
+      <button class="opt" onclick="a(9,this,false)"><div class="ol">D</div><div class="oi"></div>500個（前駆体mRNA1500÷3）</button>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <div class="card" id="c10">
+    <div class="qh"><div class="qn">Q10</div><div class="qt">アーキア（古細菌）の「ハイブリッドな」特徴として正しい組み合わせはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">A</div><div class="oi"></div>核膜あり（真核と同じ）＋RNAポリメラーゼが原核と同じ1種類</button>
+      <button class="opt" onclick="a(10,this,true)"><div class="ol">B</div><div class="oi"></div>原核と同じ点：核膜なし・DNAは環状・カップリング（転写・翻訳が同時進行）/ 真核に近い点：RNAポリメラーゼ・転写因子（TBP等）・ヒストン様タンパク質が真核と類似</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">C</div><div class="oi"></div>真核と完全に同じ構造を持つが、極限環境（高温・高塩）に適応した変異体</button>
+      <button class="opt" onclick="a(10,this,false)"><div class="ol">D</div><div class="oi"></div>核膜なし・RNAポリメラーゼ3種類・α-アマニチンに感受性あり</button>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+
+  <div class="card" id="c11">
+    <div class="qh"><div class="qn">Q11</div><div class="qt">原核生物でカップリング（転写と翻訳の同時進行）が可能な理由として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">A</div><div class="oi"></div>原核生物は小さいためmRNAが短時間で細胞の端から端まで移動できるから</button>
+      <button class="opt" onclick="a(11,this,true)"><div class="ol">B</div><div class="oi"></div>核膜がないためDNA（転写の場所）と細胞質（翻訳の場所）が同一空間にあり、RNAポリメラーゼがDNAを読みながらmRNAを合成する直後（数塩基分で足りる）からリボソームが結合して翻訳を開始できる</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">C</div><div class="oi"></div>原核生物のmRNAはキャップとポリAテールで核外輸送が不要だから</button>
+      <button class="opt" onclick="a(11,this,false)"><div class="ol">D</div><div class="oi"></div>原核生物のリボソームが真核より大きいため高速に翻訳できるから</button>
+    </div>
+    <div class="fb" id="fb11"></div>
+  </div>
+
+  <div class="card" id="c12">
+    <div class="qh"><div class="qn">Q12</div><div class="qt">リファンピシンが「結核菌に効いてヒトには副作用が少ない」選択毒性の原理として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">A</div><div class="oi"></div>リファンピシンがヒト体内で代謝されて無毒化されるから</button>
+      <button class="opt" onclick="a(12,this,true)"><div class="ol">B</div><div class="oi"></div>リファンピシンは細菌のRNAポリメラーゼのβサブユニットに特異的に結合して転写を阻害するが、ヒト（真核生物）のRNAポリメラーゼは構造が大きく異なるため結合できない（選択毒性）</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">C</div><div class="oi"></div>ヒト細胞の細胞膜はリファンピシンを通過させない構造になっているから</button>
+      <button class="opt" onclick="a(12,this,false)"><div class="ol">D</div><div class="oi"></div>リファンピシンはDNAを直接分解するため細菌のDNAだけが壊れる</button>
+    </div>
+    <div class="fb" id="fb12"></div>
+  </div>
+
+  <div class="card" id="c13">
+    <div class="qh"><div class="qn">Q13</div><div class="qt">真核生物のRNAポリメラーゼⅠ・Ⅱ・Ⅲの合成産物の対応として正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">A</div><div class="oi"></div>Ⅰ＝mRNA / Ⅱ＝tRNA / Ⅲ＝rRNA</button>
+      <button class="opt" onclick="a(13,this,true)"><div class="ol">B</div><div class="oi"></div>Ⅰ＝rRNA（核小体で合成）/ Ⅱ＝mRNA（α-アマニチンで阻害される）/ Ⅲ＝tRNA・5SrRNAなど小さいRNA</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">C</div><div class="oi"></div>Ⅰ＝tRNA / Ⅱ＝rRNA / Ⅲ＝mRNA</button>
+      <button class="opt" onclick="a(13,this,false)"><div class="ol">D</div><div class="oi"></div>Ⅰ・Ⅱ・Ⅲはすべて同じ産物を合成するが核内の異なる場所で働く</button>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+
+  <div class="card" id="c14">
+    <div class="qh"><div class="qn">Q14</div><div class="qt">ポリAテールが翻訳効率を高める「環状化」のメカニズムとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">A</div><div class="oi"></div>ポリAテールがmRNAを輪にすることでリボソームがmRNAから外れなくなり、同じmRNAを永遠に翻訳し続ける</button>
+      <button class="opt" onclick="a(14,this,true)"><div class="ol">B</div><div class="oi"></div>PABP（ポリA結合タンパク質）がポリAに結合し、mRNAの5'末端（キャップ側）のeIF4Gと相互作用することでmRNAが環状になる。翻訳を終えたリボソームがmRNAの5'末端に素早く戻れる「再利用ループ」が成立し翻訳効率が上がる</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">C</div><div class="oi"></div>ポリAテールがスプライシングを再起動することで新しいエキソンが取り込まれる</button>
+      <button class="opt" onclick="a(14,this,false)"><div class="ol">D</div><div class="oi"></div>ポリAテールの環状化はmRNAの分解抑制にのみ機能し翻訳効率とは無関係</button>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- FILL -->
+  <div class="sh"><span class="bdg bf">FILL</span><span class="st">穴埋め計算問題</span></div>
+
+  <div class="card" id="c15">
+    <div class="qh"><div class="qn">Q15</div><div class="qt">エキソンとイントロンの計算問題に答えよ。</div></div>
+    <div class="dbox"><strong>データ：</strong>5個のエキソン（E1=120、E2=150、E3=90、E4=180、E5=150塩基）と4個のイントロン（合計2010塩基）からなる遺伝子X。</div>
+    <div class="fr">
+      前駆体mRNA：<input class="bi" id="f15a" placeholder="?">塩基　　成熟mRNA：<input class="bi" id="f15b" placeholder="?">塩基
+    </div>
+    <button class="cb" id="ck15" onclick="cf15()">確認する</button>
+    <div class="fb" id="fb15"></div>
+  </div>
+
+  <div class="card" id="c16">
+    <div class="qh"><div class="qn">Q16</div><div class="qt">上のデータで、E3が選択的スプライシングで除去された成熟mRNAのアミノ酸数を求めよ（終止コドンはアミノ酸を指定しない）。</div></div>
+    <div class="fr">
+      E3除去後の成熟mRNA：<input class="bi" id="f16a" placeholder="?">塩基　→　アミノ酸数：<input class="bi" id="f16b" placeholder="?">個
+    </div>
+    <button class="cb" id="ck16" onclick="cf16()">確認する</button>
+    <div class="fb" id="fb16"></div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="sh"><span class="bdg ba">ADVANCED</span><span class="st">発展問題 — 医学部レベルの複合考察</span></div>
+
+  <div class="card" id="c17">
+    <div class="qh"><div class="qn">Q17</div><div class="qt">「ヒトの遺伝子は約2万個だが、タンパク質は10万種以上存在する」という事実を選択的スプライシングと関連づけた説明として最も適切なものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">A</div><div class="oi"></div>ヒトの細胞では遺伝子数が多いほどタンパク質も多く作られるため、2万個でも10万種を超えられる</button>
+      <button class="opt" onclick="a(17,this,true)"><div class="ol">B</div><div class="oi"></div>1つの遺伝子から選択的スプライシングによってエキソンの組み合わせを変えた複数の成熟mRNAが生成され、それぞれが異なるアミノ酸配列のタンパク質に翻訳されるため、2万遺伝子から理論上は数倍以上のタンパク質の多様性が生まれる</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">C</div><div class="oi"></div>翻訳後修飾（リン酸化・糖鎖付加）だけで10万種以上の多様性が生じており、スプライシングは無関係</button>
+      <button class="opt" onclick="a(17,this,false)"><div class="ol">D</div><div class="oi"></div>遺伝子の数は実は10万個あるが、ゲノム解析の技術が追いついていないだけ</button>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <div class="card" id="c18">
+    <div class="qh"><div class="qn">Q18</div><div class="qt">脊髄性筋萎縮症（SMA）の治療薬ヌシネルセンがスプライシングを修正することで機能する仕組みとして正しいものはどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">A</div><div class="oi"></div>ヌシネルセンはSMN1遺伝子のDNA配列を修正して正常なSMNタンパク質を直接産生させる</button>
+      <button class="opt" onclick="a(18,this,true)"><div class="ol">B</div><div class="oi"></div>SMN1遺伝子が欠失したSMA患者でも「バックアップ遺伝子」SMN2が存在するが、SMN2ではエキソン7が選択的スプライシングで通常は除去される。ヌシネルセン（アンチセンスオリゴヌクレオチド）がエキソン7の除去を阻害することで正常なSMNタンパク質の産生を回復させる</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">C</div><div class="oi"></div>ヌシネルセンは70Sリボソームに結合してSMNタンパク質の翻訳効率を上げる抗生物質</button>
+      <button class="opt" onclick="a(18,this,false)"><div class="ol">D</div><div class="oi"></div>ヌシネルセンはスプライソソームのGU-AG認識配列を変異させてイントロンを除去できなくする</button>
+    </div>
+    <div class="fb" id="fb18"></div>
+  </div>
+
+  <div class="card" id="c19">
+    <div class="qh"><div class="qn">Q19</div><div class="qt">エオサイト説について正しい記述はどれか。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">A</div><div class="oi"></div>細菌から直接真核生物が進化したという説</button>
+      <button class="opt" onclick="a(19,this,true)"><div class="ol">B</div><div class="oi"></div>真核生物はアーキア（古細菌）の一群（クレン古細菌／エオサイト）から進化したという説。アーキアのRNAポリメラーゼ・転写因子・ヒストン様タンパク質が真核と類似しているという分子証拠が支持根拠であり、現在の系統解析の主流</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">C</div><div class="oi"></div>アーキアが真核生物から進化したという説</button>
+      <button class="opt" onclick="a(19,this,false)"><div class="ol">D</div><div class="oi"></div>すべての生物（原核・アーキア・真核）が同一の祖先から並列に進化したという説（3ドメイン説そのもの）</button>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <div class="card" id="c20">
+    <div class="qh"><div class="qn">Q20</div><div class="qt">次のA〜Dのうち<em>正しいもの</em>を選べ。</div></div>
+    <div class="opts">
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">A</div><div class="oi"></div>ヒストンmRNAはポリAテールを持ち、その長さはS期（DNA複製期）に長くなって大量のヒストンが産生される</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">B</div><div class="oi"></div>α-アマニチンは原核生物のRNAポリメラーゼを阻害する抗生物質である</button>
+      <button class="opt" onclick="a(20,this,false)"><div class="ol">C</div><div class="oi"></div>ストレプトマイシンは真核生物の80Sリボソームを阻害することで抗菌作用を発揮する</button>
+      <button class="opt" onclick="a(20,this,true)"><div class="ol">D</div><div class="oi"></div>mRNAワクチンではポリAテールを長く設計することでmRNAの安定性を高め、より長期間にわたって抗原タンパク質を産生させることができる</button>
+    </div>
+    <div class="fb" id="fb20"></div>
+  </div>
+
+  <div class="sw-wrap"><button class="sw-btn" onclick="showResult()">採点する</button></div>
+  <div id="result">
+    <div class="re" id="re">🎉</div>
+    <div class="rs" id="rs" style="color:var(--acc)">0 / 20</div>
+    <div class="rl" id="rl">正解</div>
+    <div class="rm" id="rm"></div>
+    <button class="rty" onclick="location.reload()">もう一度挑戦する</button>
+  </div>
+</div>
+
+<script>
+const FB={
+  1:{ok:"✅ 正解！核膜の有無がすべての違いを生む根本原因です。核膜がある→転写（核内）と翻訳（細胞質）が分離→mRNAが旅をする必要→キャップ・ポリA・スプライシングが必要になる。この一本の因果の流れが今日の全テーマをつなぎます。",ng:"❌ 不正解。すべての違いの根本原因は<strong>核膜の有無</strong>です。核膜があると転写と翻訳が空間的に分離され、mRNAへの加工が必要になります。"},
+  2:{ok:"✅ 正解！エキソン（exit＝外に出る）：タンパク質をコードする。イントロン（intragenic＝遺伝子内）：スプライシングで除去される。語源から定義を導けば丸暗記から解放されます。",ng:"❌ 不正解。<strong>エキソン＝タンパク質をコード（外に出る）/ イントロン＝スプライシングで除去（遺伝子内に挟まる）</strong>です。定義が逆になっています。"},
+  3:{ok:"✅ 正解！スプライソソーム＝snRNP（snRNA＋タンパク質）の集合体。認識配列：イントロン両端のGU（5'側）とAG（3'側）。「GU-AGルール」として覚えましょう。",ng:"❌ 不正解。スプライソソームは<strong>snRNA＋タンパク質のsnRNP複合体</strong>です。認識配列は<strong>GU（5'側）とAG（3'側）</strong>です。"},
+  4:{ok:"✅ 正解！スプライシングの触媒はsnRNA（リボザイム）です。#28でペプチド結合の触媒が23S rRNAだったのと同じ「RNAが酵素として働く」例です。「全ての酵素はタンパク質」は誤りだと証明する2つ目の例です。",ng:"❌ 不正解。スプライシングの触媒は<strong>snRNA（リボザイム）</strong>です。タンパク質ではありません。"},
+  5:{ok:"✅ 正解！Dが含まれない役割です。5'キャップが守るのは5'末端（エキソヌクレアーゼから）です。3'末端を守るのはポリAテールの役割です。各修飾が担当する末端（5'or3'）と機能を混同しないようにしましょう。",ng:"❌ 不正解。<strong>5'キャップが守るのは5'末端（5'エキソヌクレアーゼを防ぐ）</strong>です。3'末端を守るのはポリAテールの役割です。"},
+  6:{ok:"✅ 正解！ポリAテール＝砂時計の砂。少しずつAが削られていき、規定値を下回ると分解の合図が出ます。ポリAを長くすれば（mRNAワクチンがこれを利用）mRNAの寿命が延びます。",ng:"❌ 不正解。ポリAテールのAが少しずつ除去されて<strong>規定値以下になるとmRNAが分解</strong>される「砂時計」のメカニズムです。"},
+  7:{ok:"✅ 正解！「どのエキソンを使うか」の組み合わせを変えることで同じ遺伝子から異なるmRNA→異なるタンパク質が作られます。これが「2万遺伝子→10万種タンパク質」という謎の答えです。",ng:"❌ 不正解。選択的スプライシングは<strong>エキソンの組み合わせを変えることで同じ遺伝子から複数の成熟mRNAを生成</strong>する仕組みです。"},
+  8:{ok:"✅ 正解！前駆体mRNA＝エキソン合計＋イントロン合計。エキソン合計＝120＋90＋150＋120＝480塩基。前駆体mRNA＝480＋1020＝1500塩基。「前駆体はイントロンを含む」という定義から導けます。",ng:"❌ 不正解。前駆体mRNA＝<strong>エキソン合計480＋イントロン合計1020＝1500塩基</strong>です。「前駆体はエキソンのみ」は誤りです。"},
+  9:{ok:"✅ 正解！成熟mRNA＝エキソン合計480塩基。480÷3＝160コドン。終止コドン1つを除いて160−1＝159アミノ酸。「割って→引く」の2ステップを機械的に実行しましょう。終止コドンを忘れて160と答えることが最頻出ミスです。",ng:"❌ 不正解。成熟mRNA＝480塩基、480÷3＝160コドン、終止コドン1つを引いて<strong>159アミノ酸</strong>です。終止コドンを忘れる誤りに注意！"},
+  10:{ok:"✅ 正解！アーキアのハイブリッドな特徴：核膜なし・DNAは環状・カップリング（原核と同じ）＋RNAポリメラーゼ・転写因子・ヒストン様タンパク質が真核と類似（エオサイト説の証拠）。「原核に分類されるが転写機構は真核寄り」です。",ng:"❌ 不正解。アーキアの正しい特徴：<strong>核膜なし・カップリングあり（原核と同じ）＋RNAポリメラーゼ・転写因子が真核と類似</strong>です。"},
+  11:{ok:"✅ 正解！核膜がないため転写の場所と翻訳の場所が同一空間です。mRNAが「移動する距離」がなく、RNAポリメラーゼがDNAを読みながらmRNAを合成する直後からリボソームが結合して翻訳が始まります。これにより環境変化に数分で応答できます。",ng:"❌ 不正解。カップリングが可能な理由は<strong>核膜がなく転写と翻訳が同じ空間で行われる</strong>からです。mRNAが移動する必要がありません。"},
+  12:{ok:"✅ 正解！リファンピシンは細菌RNAポリメラーゼのβサブユニットに特異的に結合します。ヒトのRNAポリメラーゼは構造が異なるため結合できず（選択毒性）、副作用が限定的になります。「進化的起源の違いが薬の選択性を生む」という創薬の根本原理です。",ng:"❌ 不正解。<strong>細菌とヒトのRNAポリメラーゼは構造が異なる（選択毒性）</strong>ことがリファンピシンの作用の根拠です。"},
+  13:{ok:"✅ 正解！「PolyⅠ＝rRNA / PolyⅡ＝mRNA / PolyⅢ＝tRNA」——この対応は入試の知識問題の定番です。α-アマニチンはPolyⅡのみを阻害するためmRNA合成が特異的に停止します。",ng:"❌ 不正解。正しい対応は<strong>Ⅰ＝rRNA / Ⅱ＝mRNA / Ⅲ＝tRNA</strong>です。「Ⅱ＝mRNA＝α-アマニチンで阻害」という接続も重要です。"},
+  14:{ok:"✅ 正解！PABP（ポリA結合タンパク質）がポリAに結合→5'末端のeIF4Gと相互作用→mRNAが環状化→翻訳を終えたリボソームがすぐに5'末端に戻れる再利用ループ→翻訳効率が上がります。",ng:"❌ 不正解。<strong>PABP介在の環状化→リボソームの再利用ループ→翻訳効率向上</strong>という因果がポリAテールの翻訳効率向上の仕組みです。"},
+  17:{ok:"✅ 正解！選択的スプライシングにより「1遺伝子→複数のmRNA→複数のタンパク質」が可能になります。これが2万遺伝子から10万種以上のタンパク質多様性を生む「掛け算の魔法」の本体です。医学部記述問題の典型例です。",ng:"❌ 不正解。<strong>選択的スプライシングによるエキソンの組み合わせ変化→複数のmRNA→複数のタンパク質</strong>が「遺伝子数＜タンパク質種類数」の答えです。"},
+  18:{ok:"✅ 正解！SMAの治療薬ヌシネルセンの作用機序は「SMN2のエキソン7のスプライシングを修正してエキソン7を取り込ませる」という選択的スプライシング修正です。「スプライシングの修正が治療になる」という医学応用の最先端です。",ng:"❌ 不正解。ヌシネルセンは<strong>SMN2遺伝子のエキソン7の選択的スプライシングを修正</strong>してエキソン7を取り込ませます。DNA配列は修正しません。"},
+  19:{ok:"✅ 正解！エオサイト説：真核生物はアーキアの一群（クレン古細菌／エオサイト）から進化したという説。根拠：RNAポリメラーゼ・転写因子（TBP・TFIIB類似）・ヒストン様タンパク質の類似性。現在の分子系統解析の主流です。",ng:"❌ 不正解。エオサイト説は<strong>真核生物がアーキア（古細菌）から派生したという進化の説</strong>です。細菌からではありません。"},
+  20:{ok:"✅ 正解！D「mRNAワクチンでポリAを長く設計→mRNAの安定性向上→より長期の抗原産生」が正しい。A：ヒストンmRNAはポリAテールを持たない例外的mRNA。B：α-アマニチンは真核Pol Ⅱを阻害（原核ではない）。C：ストレプトマイシンは細菌の70Sリボソームを阻害（80Sではない）。",ng:"❌ 不正解。正しいのはD。A：ヒストンmRNAは<strong>ポリAテールを持たない</strong>例外。B：α-アマニチンは<strong>真核Pol Ⅱ</strong>を阻害。C：ストレプトマイシンは<strong>細菌70S</strong>リボソームを阻害します。"},
+};
+
+const answers={};let cnt=0;const T=20;
+function a(n,btn,ok){
+  const c=document.getElementById('c'+n);if(c.dataset.answered)return;
+  c.dataset.answered='1';
+  const opts=c.querySelectorAll('.opt');opts.forEach(o=>o.disabled=true);
+  const fb=document.getElementById('fb'+n);
+  if(ok){btn.classList.add('sc');btn.querySelector('.oi').innerHTML='✓';c.classList.add('correct');fb.className='fb show ok';fb.innerHTML=FB[n].ok;answers[n]=true;}
+  else{btn.classList.add('sw');btn.querySelector('.oi').innerHTML='✗';c.classList.add('wrong');opts.forEach(o=>{if((o.getAttribute('onclick')||'').includes(',true)')){o.classList.add('rc');o.querySelector('.oi').innerHTML='✓';}});fb.className='fb show ng';fb.innerHTML=FB[n].ng;answers[n]=false;}
+  cnt++;upd();
+}
+function calcCheck(ids,corrects,qn,fbid,ckid){
+  const card=document.getElementById('c'+qn);if(card.dataset.answered)return;
+  card.dataset.answered='1';document.getElementById(ckid).disabled=true;
+  let allOk=true;
+  ids.forEach((id,i)=>{const el=document.getElementById(id);el.disabled=true;const ok=corrects[i].includes(el.value.trim());if(!ok){el.classList.add('wf');el.value=corrects[i][0];allOk=false;}else el.classList.add('cf');});
+  const fb=document.getElementById('fb'+qn);
+  if(allOk){card.classList.add('correct');fb.className='fb show ok';answers[qn]=true;}
+  else{card.classList.add('wrong');fb.className='fb show ng';answers[qn]=false;}
+  cnt++;upd();return allOk;
+}
+function cf15(){
+  const ok=calcCheck(['f15a','f15b'],[['2700'],['690']],15,'fb15','ck15');
+  const fb=document.getElementById('fb15');
+  if(ok)fb.innerHTML='✅ 正解！エキソン合計＝120＋150＋90＋180＋150＝<strong>690</strong>塩基。前駆体mRNA＝690＋2010＝<strong>2700</strong>塩基。成熟mRNA＝エキソンのみ＝<strong>690</strong>塩基。前駆体はイントロン込み・成熟mRNAはエキソンのみという定義を常に確認しましょう。';
+  else fb.innerHTML='❌ 不正解。前駆体mRNA＝エキソン計690＋イントロン計2010＝<strong>2700塩基</strong>。成熟mRNA＝エキソンのみ＝<strong>690塩基</strong>です。';
+}
+function cf16(){
+  const ok=calcCheck(['f16a','f16b'],[['600'],['199']],16,'fb16','ck16');
+  const fb=document.getElementById('fb16');
+  if(ok)fb.innerHTML='✅ 正解！E3除去後の成熟mRNA＝690−90（E3）＝<strong>600塩基</strong>。600÷3＝200コドン、終止コドン1つを引いて<strong>199アミノ酸</strong>。「割って→引く」の2ステップを忘れずに。';
+  else fb.innerHTML='❌ 不正解。E3除去後の成熟mRNA＝690−90＝<strong>600塩基</strong>、600÷3−1＝<strong>199アミノ酸</strong>です。「終止コドンを引く」を忘れないように。';
+}
+function upd(){const p=Math.round(cnt/T*100);document.getElementById('pf').style.width=p+'%';document.getElementById('pt').textContent=cnt+' / '+T+' 回答済み';document.getElementById('pp').textContent=p+'%';}
+function showResult(){
+  const cor=Object.values(answers).filter(Boolean).length;const p=Math.round(cor/T*100);
+  document.getElementById('rs').textContent=cor+' / '+T;document.getElementById('rl').textContent='問正解（'+p+'%）';
+  let em,msg;
+  if(cor===T){em='🏆';document.getElementById('rs').style.color='#10b981';msg='完璧です！全問正解おめでとうございます🎉<br>核膜の有無→5つの分岐点→スプライシング・選択的スプライシング・アーキア・カップリング・抗生物質まで完全に理解できています。次回は「遺伝暗号——ニーレンバーグの実験でどうやって遺伝暗号表が解読されたか」です！';}
+  else if(cor>=16){em='🌟';document.getElementById('rs').style.color='#06b6d4';msg='惜しい！あと少しで満点です。<br>間違えた問題の解説を確認し、特に①RNAポリメラーゼⅠ・Ⅱ・Ⅲの対応②ポリAテールの「環状化→翻訳効率向上」のメカニズム③エオサイト説の証拠を整理してください。';}
+  else if(cor>=12){em='📖';document.getElementById('rs').style.color='#f59e0b';msg='基礎は固まっていますが発展問題で迷いが出ています。<br>「核膜の有無→転写と翻訳の分離→mRNAの加工が必要」という一本の因果の流れと、各加工（スプライシング・キャップ・ポリA）の「なぜ必要か」を動画を見返して整理しましょう。';}
+  else{em='💪';document.getElementById('rs').style.color='#ef4444';msg='動画をもう一度見返してから再挑戦しましょう！<br>まず①核膜の有無が生む5つの分岐点②エキソン（タンパク質をコード）とイントロン（除去される）の語源から来る定義③計算の「割って→引く」の2ステップの3点を整理することから始めてください。';}
+  document.getElementById('re').textContent=em;document.getElementById('rm').innerHTML=msg;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>

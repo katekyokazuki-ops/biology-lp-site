@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. RNAの塩基は4種類、指定したいアミノ酸は20種類。ガモフが「1塩基や2塩基では足りない」と判断した根拠として正しいのはどれか？",
+      choices: [
+        "1塩基=4通り、2塩基=16通りで、どちらも20種類に届かないから",
+        "1塩基=4通り、2塩基=8通りで、どちらも20種類に届かないから",
+        "3塩基でないと化学的に結合できないという実験結果があったから",
+        "20種類のアミノ酸のうち16種類しか合成できないという制約があったから"
+      ],
+      correct: 0,
+      explain: "4¹=4通り、4²=16通りではどちらも20種類のアミノ酸を指定しきれません。4³=64通りで初めて必要数を十分にカバーできます。これは実験ではなく組み合わせ論（数学）による予言でした。"
+    },
+    {
+      q: "Q2. ニーレンバーグのポリU実験を成立させるために不可欠だった、オチョアの発見は何か？",
+      choices: [
+        "DNAを合成する酵素（DNAポリメラーゼ）",
+        "鋳型なしでRNAを合成できる酵素（ポリヌクレオチドホスホリラーゼ／PNPase）",
+        "tRNAの立体構造を解明する技術",
+        "コドンとアンチコドンを対合させる酵素"
+      ],
+      correct: 1,
+      explain: "オチョアが発見したPNPaseは鋳型なしでRNAを合成できる酵素で、これにより「ポリU」のような単一塩基だけのRNAが作製可能になりました。これがニーレンバーグの実験の前提です。「ガモフ」と混同する誤答が多いので注意（ガモフは理論、オチョアは実験道具）。"
+    },
+    {
+      q: "Q3. ポリU（UUUUU...）を試験管内翻訳系に入れるとPheだけのポリペプチドができた。この結果から「UUU=Phe」と結論できる理由は？",
+      choices: [
+        "Pheは分子量が最も軽いアミノ酸だから",
+        "ポリUは3塩基ずつ区切ると必ずUUUにしかならないため、対応するアミノ酸はUUU=Pheと確定できるから",
+        "ニーレンバーグが事前にUUU=Pheと予想して実験を組んだから",
+        "UUUはすべてのコドンの中で最も安定しているため優先的に翻訳されるから"
+      ],
+      correct: 1,
+      explain: "遺伝暗号の「連続性・非重複性」により、ポリUは3塩基ずつ区切ると必ずUUU｜UUU｜UUU…としか読めません。できたペプチドがPheだけだったことから、UUU＝Pheと論理的に導かれます。"
+    },
+    {
+      q: "Q4. コラナが「UCUCUCUC...」という反復配列を翻訳させたところ、Ser-Leu-Ser-Leu…と交互のペプチドが得られた。「UCUとCUCのどちらがSerか」がこの実験単独では決まらない理由は？",
+      choices: [
+        "SerとLeuは構造が似すぎていて区別できないから",
+        "どちらの対応関係を仮定しても「交互に並ぶ」という観測結果と矛盾しないから",
+        "反復配列は不安定ですぐに分解されてしまうから",
+        "翻訳装置がSerとLeuをランダムに選んで合成するから"
+      ],
+      correct: 1,
+      explain: "「UCUがSerでCUCがLeu」でも「UCUがLeuでCUCがSer」でも、どちらの仮説でも「交互に並ぶ」という結果と矛盾しません。読み枠（どこから区切り始めるか）を確定する別の実験（UUCの3回反復など）が必要になります。"
+    },
+    {
+      q: "Q5. 1968年、遺伝暗号解読の功績でノーベル生理学・医学賞を共同受賞した3人の組み合わせとして正しいのは？",
+      choices: [
+        "ガモフ・オチョア・ワトソン",
+        "ニーレンバーグ・コラナ・ホリー",
+        "ワトソン・クリック・オチョア",
+        "ガモフ・ニーレンバーグ・クリック"
+      ],
+      correct: 1,
+      explain: "ニーレンバーグ（ポリU実験）、コラナ（合成RNAで全64コドン完成）、ホリー（tRNAのクローバー型構造解明）の3人です。ガモフ（理論予言）とオチョア（PNPase発見）はこの回の受賞者ではない点に注意。ホリーを忘れる誤答が非常に多いポイントです。"
+    },
+    {
+      q: "Q6. 遺伝暗号表で「UCU・UCC・UCA・UCG」がすべてSer（セリン）を指定するという現象を何と呼ぶか？",
+      choices: [
+        "普遍性",
+        "連続性",
+        "縮重性（degeneracy）",
+        "非重複性"
+      ],
+      correct: 2,
+      explain: "複数のコドンが同じアミノ酸を指定する性質を「縮重性」と呼びます。特に3番目の塩基が変わってもアミノ酸が変わらないことが多く、これを「ゆらぎ（ワブル）」と呼びます。"
+    },
+    {
+      q: "Q7. コドンの3番目の塩基とアンチコドンの1番目の対合が厳密でない「ゆらぎ（ワブル）」がもたらす利点として正しいものは？",
+      choices: [
+        "翻訳の速度が2倍になる",
+        "1種類のtRNAが複数のコドンに対応できるため、tRNAの種類が少なくて済み、変異への耐性も生まれる",
+        "終止コドンが完全になくなる",
+        "開始コドンが複数種類使えるようになる"
+      ],
+      correct: 1,
+      explain: "ゆらぎにより1個のtRNAが複数のコドン（3番目の塩基違い）に対応できます。これによりtRNAの種類を減らせるうえ、3番目の塩基の変異（同義置換）がアミノ酸変化を起こしにくくなり、変異への耐性が生まれます。"
+    },
+    {
+      q: "Q8. 「翻訳開始時のN末端は必ずMet」という文と「完成したタンパク質のN末端は必ずMet」という文について、正しい説明はどれか？",
+      choices: [
+        "両方とも正しい",
+        "両方とも誤り",
+        "前者は正しいが、後者は誤り（翻訳後にMetが切除されることがあるため）",
+        "前者は誤りだが、後者は正しい"
+      ],
+      correct: 2,
+      explain: "翻訳開始時のN末端は必ずMet（原核ではfMet）ですが、翻訳後にメチオニンアミノペプチダーゼによってN末端のMetが切除されることが多く、完成タンパク質のN末端が必ずしもMetとは限りません。医学部入試頻出のひっかけです。"
+    },
+    {
+      q: "Q9. 終止コドン(UAA・UAG・UGA)に対応するtRNAが存在しないとき、代わりにリボソームのA部位に結合してペプチドを切り離すものは何か？",
+      choices: [
+        "解離因子（RF：Release Factor）",
+        "開始因子（IF）",
+        "RNAポリメラーゼ",
+        "アミノアシルtRNA合成酵素"
+      ],
+      correct: 0,
+      explain: "解離因子(RF)は「tRNAそっくりだがアミノ酸を持たない」タンパク質で、tRNAの立体構造に似ていることでA部位に結合できます（分子擬態）。これによりペプチドが切り離され翻訳が終結します。"
+    },
+    {
+      q: "Q10. mRNAのコード領域の途中の塩基が1つ欠失し、それより下流のコドンの区切り位置がすべて1塩基分ズレてしまう変異を何と呼ぶか？",
+      choices: [
+        "サイレント変異",
+        "ミスセンス変異",
+        "ナンセンス変異",
+        "フレームシフト変異"
+      ],
+      correct: 3,
+      explain: "挿入・欠失（3の倍数以外）によって下流すべての読み枠がズレる変異をフレームシフト変異と呼びます。下流のアミノ酸配列が根本的に変わり、途中に偶発的な終止コドンが出現することも多く、4分類の中で最も重篤になりやすい変異です。"
+    },
+    {
+      q: "Q11. ある塩基置換によってコドンがGGC（Gly）→UGC（Cys）に変化した。この変異の分類として正しいものは？",
+      choices: [
+        "サイレント変異",
+        "ミスセンス変異",
+        "ナンセンス変異",
+        "フレームシフト変異"
+      ],
+      correct: 1,
+      explain: "指定するアミノ酸が別のアミノ酸（Gly→Cys）に置き換わる変異はミスセンス変異です。性質が大きく異なるアミノ酸への置換（Gly→Cysなど）は、性質の近いアミノ酸間の置換（保存的置換）より機能への影響が大きくなる傾向があります。"
+    },
+    {
+      q: "Q12. 3の倍数の塩基が欠失・挿入した場合にフレームシフトが起きない理由として正しいものは？",
+      choices: [
+        "3塩基は化学的に分解されにくいから",
+        "3塩基（の倍数）が変化しても、それより下流の3塩基区切りの位置自体はズレないため、1〜数アミノ酸の増減にとどまるから",
+        "コドンの3番目の塩基は常にゆらぐため影響が出ないから",
+        "3の倍数の変異は必ず終止コドン付近でのみ起こるから"
+      ],
+      correct: 1,
+      explain: "コドンは3塩基が1単位のため、3塩基（またはその倍数）の増減では下流の区切り位置自体はズレず、1コドン分（＝1アミノ酸分）が丸ごと増減するだけです（インフレーム変異）。デュシェンヌ型（フレームシフト・重症）とベッカー型（インフレーム・軽症）の筋ジストロフィーの重症度の差はこの原理によります。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#30 確認テスト「遺伝暗号」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！理解できた君はとても優秀です。あとは用語や計算に慣れるだけ。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。1回で全て理解するのは難しいもの。動画を見返して少しずつ理解を深めましょう。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、間違えた部分を中心に復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#30 確認テスト「遺伝暗号」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

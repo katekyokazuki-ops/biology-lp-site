@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 細胞が持っている遺伝子を常時オン(発現)にせず、必要なときだけ発現させる理由として最も適切なものは？",
+      choices: [
+        "DNAが壊れやすくなるのを防ぐため",
+        "タンパク質合成には莫大なエネルギー(ATP・GTP)がかかり、使わない酵素を作り続けるのは無駄だから",
+        "遺伝子は一度発現すると二度と使えなくなるから",
+        "細胞分裂の回数を減らすため"
+      ],
+      correct: 1,
+      explain: "タンパク質合成には転写・翻訳の各段階で莫大なエネルギーが消費されます。使わない酵素を作り続けることは無駄なコストであり、環境に応じて発現を切り替えられる細菌の方が自然選択で生き残りやすくなります。"
+    },
+    {
+      q: "Q2. ジャコブとモノーが提唱した「オペロン」とは何か？",
+      choices: [
+        "1つの遺伝子だけからなる転写単位",
+        "関連する複数の構造遺伝子が、1つのプロモーターとオペレーターのもとで一括して転写制御される単位",
+        "真核生物特有のスプライシング装置",
+        "DNA複製の起点となる配列"
+      ],
+      correct: 1,
+      explain: "オペロンは、ラクトースの取り込み(lacY)・分解(lacZ)・解毒(lacA)のように関連する複数の構造遺伝子が、1つのプロモーターとオペレーターの下でまとめて制御される単位です。「関連する仕事は同時にON/OFFする」という効率的な発想が根底にあります。"
+    },
+    {
+      q: "Q3. ラクトースオペロンの4つの構成要素のうち、「タンパク質を作らず、オペロンの中(構造遺伝子の直前)に位置し、リプレッサーが結合する」のはどれか？",
+      choices: [
+        "調節遺伝子(lacI)",
+        "プロモーター",
+        "オペレーター",
+        "構造遺伝子(lacZ/lacY/lacA)"
+      ],
+      correct: 2,
+      explain: "4要素の判定は「①タンパク質を作るか」→作らない場合「②誰が結合するか」で分類します。オペレーターはタンパク質を作らないDNA配列で、リプレッサーが結合する場所です。プロモーターのすぐ下流に位置し、ふさがれるとRNAポリメラーゼが進めなくなります。"
+    },
+    {
+      q: "Q4. プロモーターに変異が起きてRNAポリメラーゼが結合できなくなった場合、構造遺伝子はどうなるか？",
+      choices: [
+        "ラクトースの有無にかかわらず常時ON",
+        "ラクトースの有無にかかわらず常時OFF",
+        "ラクトースがあるときだけON",
+        "変化しない"
+      ],
+      correct: 1,
+      explain: "プロモーターはRNAポリメラーゼの結合台です。ここが壊れるとそもそも転写がスタートしないため、ラクトースの有無に関係なく構造遺伝子は常時OFFになります。"
+    },
+    {
+      q: "Q5. オペレーターに変異が起きてリプレッサーが結合できなくなった場合、構造遺伝子はどうなるか？",
+      choices: [
+        "ラクトースの有無にかかわらず常時OFF",
+        "ラクトースの有無にかかわらず常時ON(恒常的発現)",
+        "何も変化しない",
+        "酵素は作られるが活性を持たない"
+      ],
+      correct: 1,
+      explain: "オペレーターが壊れるとリプレッサー(ブレーキ役)が結合できなくなり、抑制が機能しなくなります。「結合できない=何も起きない」ではなく「結合できない=抑制されない=ONのまま」という常時ON(恒常的発現)になります。プロモーター変異と表現型が真逆になる点が最頻出のひっかけです。"
+    },
+    {
+      q: "Q6. ラクトースが存在しないとき、ラクトースオペロンがOFFになる仕組みとして正しい説明はどれか？",
+      choices: [
+        "誘導物質(アロラクトース)が存在しないため、リプレッサーが活性型のままオペレーターに結合し続け、RNAポリメラーゼの進行をブロックするから",
+        "プロモーターが自動的に閉じてしまうから",
+        "構造遺伝子そのものが分解されてしまうから",
+        "調節遺伝子lacIの発現が止まってしまうから"
+      ],
+      correct: 0,
+      explain: "①ラクトースがないので誘導物質(アロラクトース)も存在しない→②リプレッサーは活性型のまま維持され、オペレーターに結合し続ける→③RNAポリメラーゼがプロモーターに結合できてもオペレーターより先に進めない、という3段階の因果でOFF状態が説明できます。"
+    },
+    {
+      q: "Q7. 「ラクトースが誘導物質としてリプレッサーに結合する」という説明が厳密には不正確とされる理由は？",
+      choices: [
+        "誘導物質はラクトースではなく、β-ガラクトシダーゼの副反応で生成される「アロラクトース」であるため",
+        "ラクトースは細胞膜を通過できないため",
+        "リプレッサーはそもそもDNAに結合しないため",
+        "誘導物質は常にIPTGでなければならないため"
+      ],
+      correct: 0,
+      explain: "真の誘導物質はラクトースそのものではなく、ラクトースが細胞内でβ-ガラクトシダーゼの副反応によって変換された「アロラクトース」です。この主語のすり替えを正せるかが、入試での重要な得点ポイントです。"
+    },
+    {
+      q: "Q8. 実験室で天然のラクトースの代わりにIPTGが誘導物質として好まれる理由は？",
+      choices: [
+        "IPTGの方が安価だから",
+        "IPTGはβ-ガラクトシダーゼで分解されないため、濃度を一定に保ったまま安定してオペロンをONにし続けられるから",
+        "IPTGはリプレッサーと結合しないため安全だから",
+        "IPTGは大腸菌の外で自然に作られる物質だから"
+      ],
+      correct: 1,
+      explain: "ラクトースやアロラクトースはβ-ガラクトシダーゼによってどんどん分解されてしまいます。IPTG(イソプロピルチオガラクトシド)は構造が似ているためリプレッサーに結合できますが、分解されないため実験で安定して使うことができます。"
+    },
+    {
+      q: "Q9. lacI⁻(リプレッサー欠損)変異株とlacIˢ(超抑制型)変異株の表現型の組み合わせとして正しいものは？",
+      choices: [
+        "lacI⁻=常時OFF／lacIˢ=常時ON",
+        "lacI⁻=常時ON／lacIˢ=常時OFF",
+        "両方とも常時ON",
+        "両方とも常時OFF"
+      ],
+      correct: 1,
+      explain: "lacI⁻はリプレッサーが作られない(または機能しない)ためブレーキ役が不在となり常時ON。lacIˢはリプレッサーは作られるが誘導物質に反応せずオペレーターに結合し続けるため常時OFFになります。同じlacI遺伝子の変異でも、壊れた機能によって正反対の表現型になる点が重要です。"
+    },
+    {
+      q: "Q10. DNA配列(プロモーター・オペレーター)の変異による「シス効果」の説明として正しいものは？",
+      choices: [
+        "細胞内のすべてのDNA分子上のオペロンに影響する",
+        "その変異が起きた同一のDNA分子(染色体)上にあるオペロンにしか影響しない",
+        "変異の影響は次世代には遺伝しない",
+        "常にタンパク質の機能を変化させる"
+      ],
+      correct: 1,
+      explain: "プロモーターやオペレーターはDNA配列そのものなので、その変異は変異が起きたまさにそのDNA分子上のオペロンにしか影響しません(シス効果)。一方リプレッサーのようなタンパク質は細胞内を拡散するため、どのDNA分子から作られたかに関係なく作用します(トランス効果)。この違いは部分二倍体実験で見分けられます。"
+    },
+    {
+      q: "Q11. 原核生物のlacZ・lacY・lacAが1本のmRNAとして一括転写される仕組みを何と呼ぶか？",
+      choices: [
+        "モノシストロニックmRNA",
+        "ポリシストロニックmRNA",
+        "スプライソソームmRNA",
+        "キャップ依存mRNA"
+      ],
+      correct: 1,
+      explain: "原核生物では1本のmRNAから複数のタンパク質が作られる仕組み(ポリシストロニックmRNA)を持てるため、オペロン構造が成立します。真核生物のmRNAは原則1つのmRNAから1つのタンパク質しか作らないモノシストロニックであるため、オペロン構造がほとんど見られません。"
+    },
+    {
+      q: "Q12. lacZ遺伝子が作るβ-ガラクトシダーゼの「本業」と「副業」の組み合わせとして正しいものは？",
+      choices: [
+        "本業=ラクトースの膜輸送／副業=毒性物質の解毒",
+        "本業=ラクトースの分解／副業=ラクトースをアロラクトースに変換すること",
+        "本業=DNAへの結合／副業=RNAポリメラーゼの活性化",
+        "本業=誘導物質の分解／副業=構造遺伝子の転写"
+      ],
+      correct: 1,
+      explain: "β-ガラクトシダーゼ(lacZ)の本業はラクトースをグルコース＋ガラクトースに分解することですが、副反応として一部のラクトースを誘導物質であるアロラクトースに変換します。この副業が、ON状態への切り替えの鍵になります。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#31前編 確認テスト「ラクトースオペロン」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！オペロンの仕組みが完璧に理解できています。後編の演習2・3、総合難問演習FINALも自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にプロモーター/オペレーターの違いと、誘導物質の正体(アロラクトース)は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、4つの構成要素の判定フローから復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#31前編 確認テスト「ラクトースオペロン」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

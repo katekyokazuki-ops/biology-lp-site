@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 野生型大腸菌を「グルコース不在・ラクトース不在」「グルコース不在・ラクトース存在」「グルコース存在・ラクトース存在」の3条件で培養したとき、β-ガラクトシダーゼ活性が最も高くなるのはどれか？",
+      choices: [
+        "グルコース存在・ラクトース存在",
+        "グルコース不在・ラクトース存在",
+        "グルコース不在・ラクトース不在",
+        "3条件とも活性は同じ"
+      ],
+      correct: 1,
+      explain: "グルコースがあるとCAP-cAMP複合体が形成されず転写促進が弱まる(カタボライト抑制)。「グルコース不在+ラクトース存在」では、リプレッサー解除(誘導)とCAP-cAMPによる転写促進が同時に働くため最大活性になる。「ラクトースさえあれば最大」という誤答が非常に多いポイント。"
+    },
+    {
+      q: "Q2. カタボライト抑制の仕組みとして正しい説明はどれか？",
+      choices: [
+        "グルコースが直接オペレーターに結合してリプレッサーを追い出す",
+        "グルコースがあるとCAP(カタボライト活性化タンパク質)が働けなくなり、プロモーターへのRNAポリメラーゼの結合が弱まる",
+        "グルコースはリプレッサーの発現量を増加させる",
+        "グルコースはlacZ遺伝子そのものを分解する"
+      ],
+      correct: 1,
+      explain: "大腸菌にとって最優先の栄養源であるグルコースが豊富な時は、CAP(カタボライト活性化タンパク質)が働けなくなり、プロモーターへのRNAポリメラーゼ結合を後押しする力が弱まります。これによりラクトースオペロンの転写効率が下がります。"
+    },
+    {
+      q: "Q3. 「リプレッサータンパク質をコードし、オペロンの外側にある」という説明文はラクトースオペロンのどの構成要素に該当するか？",
+      choices: [
+        "プロモーター",
+        "オペレーター",
+        "調節遺伝子(lacI)",
+        "構造遺伝子(lacZ)"
+      ],
+      correct: 2,
+      explain: "「タンパク質を作るか？」でYES、さらに「オペロンの外か中か？」で外、という2段階の判定フローに当てはめると調節遺伝子(lacI)と判定できます。構造遺伝子もタンパク質を作りますが、オペロンの内側にある点が違います。"
+    },
+    {
+      q: "Q4. 部分二倍体実験で「lacI⁺ Oᶜ Z⁺／lacI⁺ O⁺ Z⁻」(C)ではラクトース不在でも酵素活性が出るのに、「lacI⁺ Oᶜ Z⁻／lacI⁺ O⁺ Z⁺」(D)では出ない。この違いを生む原理は？",
+      choices: [
+        "トランス効果：リプレッサーが細胞内を拡散するため",
+        "シス効果：オペレーター変異(Oᶜ)は同じ染色体上にある構造遺伝子にしか影響しないため",
+        "CとDでは細胞の種類が異なるため",
+        "Dではリプレッサーの量が2倍になるため"
+      ],
+      correct: 1,
+      explain: "Cでは常時ONにするOᶜが正常な酵素遺伝子Z⁺と同じ染色体上にあるため、そのZ⁺が常時発現し活性が出ます。Dでは Oᶜが壊れた酵素遺伝子Z⁻と同じ染色体上にあり、正常なZ⁺はもう一方の正常なO⁺側にあってリプレッサーで通常通り制御されるため活性が出ません。「変異したオペレーターの効果は、同じ染色体上の構造遺伝子にしか及ばない」というシス効果の本質です。"
+    },
+    {
+      q: "Q5. lacI⁺(正常)とlacI⁻(欠損)を部分二倍体で組み合わせると、どちらが優性になるか？",
+      choices: [
+        "lacI⁻が優性(常時ONになる)",
+        "lacI⁺が優性(正常な調節が再現される)",
+        "どちらも発現せず常時OFFになる",
+        "優劣は決まらずランダムになる"
+      ],
+      correct: 1,
+      explain: "lacI⁺から作られる正常なリプレッサーは細胞内を自由に拡散するトランスに働くタンパク質なので、染色体側・プラスミド側どちらのオペレーターにも結合できます。片方が正常なリプレッサーを作れれば細胞全体として正常な調節が再現されるため、lacI⁺はlacI⁻に対して優性になります。"
+    },
+    {
+      q: "Q6. lacIˢ(超抑制型・誘導物質に無反応)とlacI⁺(正常)を部分二倍体で組み合わせると、どちらが優性になるか？またその理由は？",
+      choices: [
+        "lacI⁺が優性。正常なリプレッサーの量が多いから",
+        "lacIˢが優性。離れないリプレッサーがオペレーターを占領し続け、正常なリプレッサーが共存しても抑制が解除されないから",
+        "両方とも劣性で表現型は野生型になる",
+        "lacIˢは単独でしか働かないため優劣は関係ない"
+      ],
+      correct: 1,
+      explain: "lacIˢ由来の「誘導物質が結合しても離れないリプレッサー」はトランスに拡散し、たとえlacI⁺由来の正常なリプレッサーが供給されていても、lacIˢのリプレッサーがオペレーターに居座り続けるため常時OFFになります。「変異タンパク質が正常タンパク質の働きを妨害する」タイプの変異で、ヒトの遺伝性疾患ではドミナントネガティブ変異と呼ばれる重要な概念です。"
+    },
+    {
+      q: "Q7. 240bpのエキソンE3が選択的スプライシングで除去された場合、下流の読み枠(フレーム)はどうなるか？",
+      choices: [
+        "240は3の倍数なので読み枠は維持され、80アミノ酸分がまるごと欠失するだけ",
+        "240は3の倍数でないのでフレームシフトが起こる",
+        "エキソンが除去されると必ずフレームシフトが起こる",
+        "読み枠への影響はエキソンの長さに関係しない"
+      ],
+      correct: 0,
+      explain: "除去されるエキソンの長さが3の倍数かどうかが判定の鍵です。240÷3=80なので3の倍数であり、下流の読み枠はズレません。ちょうど80個分のアミノ酸がまるごと抜け落ちるだけで済みます。3の倍数でない場合はフレームシフトが起き、下流のコドンの区切りが総崩れになります。"
+    },
+    {
+      q: "Q8. 鎌状赤血球症の原因となるGlu(GAA)→Val(GUA)への変異は、何塩基の置換で起こるか？",
+      choices: [
+        "1塩基置換(2番目のAがUに変化)",
+        "2塩基置換",
+        "3塩基すべてが置換",
+        "塩基の置換ではなく1塩基の欠失"
+      ],
+      correct: 0,
+      explain: "GAAの2番目の塩基AをUに変えるだけでGUAになり、これはValのコドンの1つと一致します。たった1塩基の変化で重篤な病気が起きるという事実は、遺伝暗号の精密さと脆さの両方を象徴する例です。"
+    },
+    {
+      q: "Q9. 1塩基の挿入変異が起きた後、下流の別の位置で1塩基の欠失が偶然起こり、その間の区間だけアミノ酸配列が変化し、それ以降は正常に戻る現象を何と呼ぶか？",
+      choices: [
+        "ミスセンス変異",
+        "サイレント変異",
+        "サプレッサー変異(相補的フレームシフト)",
+        "ナンセンス変異"
+      ],
+      correct: 2,
+      explain: "1塩基挿入で読み枠が+1ずれますが、下流で1塩基欠失が起こると-1ずれ、合計で読み枠が元に戻ります。挿入と欠失に挟まれた区間だけアミノ酸配列がおかしくなりますが、その先は正常に戻ります。この現象はサプレッサー変異と呼ばれ、フランシス・クリックがT4ファージの実験で「遺伝暗号は3塩基1組である」ことを実証する際に利用しました。"
+    },
+    {
+      q: "Q10. ゆらぎ仮説(コドンの3番目の塩基が変異してもアミノ酸が変わらないことが多い)の適応的意義として正しい説明は？",
+      choices: [
+        "そもそも3番目の塩基には変異が起こりにくくなる",
+        "変異が起きても、その多くがアミノ酸配列に影響を与えない(サイレントになる)ことで、有害変異の影響を緩衝する",
+        "3番目の塩基が変異すると必ず終止コドンになる",
+        "リプレッサーの結合を助ける働きがある"
+      ],
+      correct: 1,
+      explain: "ゆらぎ仮説は「変異という現象自体が起こりにくくなる」わけではありません。DNAの複製ミスなどによる塩基変異の起こりやすさ自体はゆらぎの有無に関係なく同じです。意味しているのは「変異が起きても、その多くがアミノ酸配列に影響を与えない」という影響の緩衝作用です。「起こりにくい」と「起きても平気」を混同しないことが重要です。"
+    },
+    {
+      q: "Q11. lacオペロン(異化系)とtrpオペロン(同化系)の制御方式の違いとして正しい組み合わせは？",
+      choices: [
+        "lac=抑制型(基質があるとOFF)／trp=誘導型(産物があるとON)",
+        "lac=誘導型(基質があるとON)／trp=抑制型(産物があるとOFF)",
+        "両方とも誘導型で、産物の有無では変化しない",
+        "両方とも抑制型で、基質の有無では変化しない"
+      ],
+      correct: 1,
+      explain: "lacオペロンは「材料(基質=ラクトース)があるから、それを分解する道具(酵素)を用意する」誘導型です。trpオペロンは「完成品(産物=トリプトファン)が十分あるからもう作らなくていい」と判断する抑制型です。同じ「低分子がリプレッサーに結合する」現象でも、lacでは結合するとリプレッサーが外れ(不活性化)、trpでは結合するとリプレッサーがくっつく(活性化)という真逆の作用方向になります。"
+    },
+    {
+      q: "Q12. 抗生物質リファンピシン(RNAポリメラーゼ阻害剤)をlacオペロン誘導後の大腸菌に投与すると、β-ガラクトシダーゼの合成はどうなるか？",
+      choices: [
+        "投与直後に完全に停止する",
+        "新規mRNA合成は止まるが、すでに存在するmRNAからはしばらく翻訳が続き、その後急速に低下する",
+        "既存のmRNAは即座に分解され、酵素合成も即座に止まる",
+        "リファンピシンは翻訳を阻害するため、転写には影響しない"
+      ],
+      correct: 1,
+      explain: "リファンピシンはRNAポリメラーゼ(転写を行う酵素)だけを狙い撃ちするため、新しいmRNAは作られなくなりますが、すでに作られていたmRNAは細胞内に残っており翻訳は続けられます。ただし原核生物のmRNAの寿命は数分と短いため、その効果はすぐに先細りしていきます。「転写の停止」と「翻訳の停止」は必ずしも同時に起きない、という点がポイントです。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#31後編 確認テスト「ラクトースオペロン演習+総合難問演習」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！シリーズ完走、本当にお疲れ様でした。医学部最難関レベルの内容も完璧に理解できています。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。シリーズ完走まであと一息です。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に部分二倍体(シス/トランス効果)とFINAL演習の計算パターンは要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは前編の4要素とON/OFFロジックから復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#31後編 確認テスト「ラクトースオペロン演習+総合難問演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

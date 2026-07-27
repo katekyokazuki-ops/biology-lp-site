@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. オペロンの定義に含まれる要素として正しい組み合わせはどれか？",
+      choices: [
+        "調節遺伝子＋プロモーター＋オペレーター＋構造遺伝子",
+        "プロモーター＋オペレーター＋複数の構造遺伝子(調節遺伝子は含まない)",
+        "プロモーターと構造遺伝子のみ",
+        "調節遺伝子と構造遺伝子のみ"
+      ],
+      correct: 1,
+      explain: "オペロンとは「プロモーター＋オペレーター＋複数の構造遺伝子」が並び、まとめて1本のmRNAに転写される単位です。調節遺伝子(lacIやtrpR)はオペロンの外側にある独立した遺伝子であり、オペロンの定義そのものには含まれません。この区別を間違えると記述問題で減点対象になります。"
+    },
+    {
+      q: "Q2. トリプトファン合成経路が5段階の反応からなり、それぞれに専用の酵素(trpE・trpD・trpC・trpB・trpA)が必要である。これら5つの遺伝子が1つのオペロンにまとめられている生物学的合理性は？",
+      choices: [
+        "5つの酵素はそれぞれ独立して働くため、まとめる必要はないが偶然そうなっている",
+        "5つの酵素は同時に必要で同時に不要になるため、まとめて一斉にON/OFFする方が経済的だから",
+        "5つの酵素は互いに反応しあうため、物理的に近くに配置する必要があるから",
+        "trpE〜trpAは同じアミノ酸配列を持つため、1つの遺伝子として扱われているから"
+      ],
+      correct: 1,
+      explain: "5段階の逐次反応は、どれか1つの酵素が欠けても最終産物(トリプトファン)ができません。5つの酵素は「同時に必要・同時に不要」という共通の運命を持つため、1つのプロモーター・オペレーターの下でまとめて発現制御する方が、個別に制御するよりエネルギー効率がよいのです。"
+    },
+    {
+      q: "Q3. 「アポリプレッサー」「(活性型)リプレッサー」「コリプレッサー」の関係として正しいものは？",
+      choices: [
+        "アポリプレッサー(不活性)＋コリプレッサー(Trp)→結合→活性型リプレッサー→オペレーターに結合→転写OFF",
+        "コリプレッサーがリプレッサーに変化し、その後アポリプレッサーになる",
+        "アポリプレッサーとリプレッサーは全く別のタンパク質であり、互いに変換されない",
+        "コリプレッサーはDNAに直接結合し、リプレッサーは不要になる"
+      ],
+      correct: 0,
+      explain: "apo(〜が無い)+リプレッサー=コリプレッサー(Trp)が結合していない不活性型。これにTrp(コリプレッサー)が結合すると立体構造が変化し、活性型のリプレッサーになってオペレーターに結合、転写をOFFにします。「apo=無い」「co=共に」という語源から論理的に整理できます。"
+    },
+    {
+      q: "Q4. trpR遺伝子(調節遺伝子)から作られるアポリプレッサーの発現量は、Trpの有無によってどう変化するか？",
+      choices: [
+        "Trpがあるとアポリプレッサーの発現量が増える",
+        "Trpがないとアポリプレッサーは全く作られなくなる",
+        "trpRは常に一定量発現しており、Trpの有無で変わるのは作られたタンパク質が活性型か不活性型かという\"状態\"である",
+        "アポリプレッサーはTrpそのものから直接作られる"
+      ],
+      correct: 2,
+      explain: "多くの受験生が「TrpがあるとtrpRの発現も増える」と誤答しがちですが、正しくはtrpRは常に一定量発現しており(常時発現)、Trpの有無によって変わるのはアポリプレッサーというタンパク質の立体構造(活性の有無)です。「量」の話と「状態」の話を混同しないことが重要です。"
+    },
+    {
+      q: "Q5. Trpが培地から完全に除去された場合のトリプトファンオペロンの状態として正しい説明は？",
+      choices: [
+        "コリプレッサーが無い→アポリプレッサーは不活性のまま→オペレーターは空席→RNAポリメラーゼが通過→構造遺伝子が転写される(ON)",
+        "アポリプレッサーが作られなくなる→オペレーターが消滅する→転写が完全に止まる",
+        "コリプレッサーが無くてもリプレッサーは活性化し、転写はOFFのまま",
+        "Trpが無いと調節遺伝子trpR自体が働かなくなる"
+      ],
+      correct: 0,
+      explain: "Trp非存在⇒アポリプレッサーがコリプレッサー(Trp)と結合できない⇒立体構造は「Oに結合できない形」のまま⇒オペレーターは空席⇒RNAポリメラーゼがプロモーターに結合してオペレーターを通過⇒trpE〜trpAが転写される、という1本の因果の鎖で説明できます。「アポリプレッサーが作られない」「オペレーターが消える」という表現はどちらも誤りです。"
+    },
+    {
+      q: "Q6. 「負の調節(抑制型調節)」の説明として正しいものはどれか？",
+      choices: [
+        "アクチベーターがDNAに結合することで転写が活性化される。基本状態はOFF",
+        "リプレッサーというタンパク質がDNA(オペレーター)に結合することで転写を抑制する。基本状態はON",
+        "調節タンパク質が全く存在しない状態を指す",
+        "常に転写がOFFになっている状態を指す"
+      ],
+      correct: 1,
+      explain: "負の調節とは、リプレッサーがDNAに結合することで転写を「抑える」調節方式です。何も邪魔しなければ転写は自然に進むため「基本状態はON」であり、リプレッサーが結合したときだけ特別にOFFになる、という構図です。"
+    },
+    {
+      q: "Q7. 「正の調節(活性化型調節)」の代表例として、lacオペロンで登場するタンパク質は何か？",
+      choices: [
+        "trpR",
+        "CAP(カタボライト活性化タンパク質)",
+        "lacI",
+        "アポリプレッサー"
+      ],
+      correct: 1,
+      explain: "正の調節はアクチベーター(活性化因子)がDNAに結合して初めて転写が進む方式で、基本状態はOFFです。lacオペロンでは、グルコース不足時にCAP-cAMP複合体がCAP座に結合し、RNAポリメラーゼの結合を後押しして転写を強く活性化します。"
+    },
+    {
+      q: "Q8. lacオペロンとtrpオペロンの調節方式の違いとして正しい説明は？",
+      choices: [
+        "lac=負の調節のみ／trp=負の調節+正の調節も併用",
+        "lac=負の調節+CAPによる正の調節も併用／trp=負の調節のみ",
+        "両方とも正の調節のみで制御される",
+        "両方とも負の調節と正の調節を同程度併用する"
+      ],
+      correct: 1,
+      explain: "lacオペロンはリプレッサーによる抑制の解除(負の調節)に加え、グルコース不足時にはCAPによる正の調節も併用して転写を強めます。一方trpオペロンは負の調節(リプレッサーによる抑制)のみで制御されます。「lacは二重、trpは単一」という対比が重要です。"
+    },
+    {
+      q: "Q9. トリプトファンオペロンが「抑制型」になりやすい生物学的理由として最も適切な説明は？",
+      choices: [
+        "Trpは化学的に不安定なため、常に新しく作り続ける必要があるから",
+        "Trpは大腸菌にとって環境から常時ある程度供給されるため、\"無いとき\"だけ特別に合成を動かす方が経済的だから",
+        "Trpの合成経路はエネルギーをほとんど消費しないから",
+        "trpオペロンには構造遺伝子が存在しないから"
+      ],
+      correct: 1,
+      explain: "Trpは大腸菌にとって普段からある程度存在する物質です。合成にはエネルギーとアミノ酸を大量に消費するため、既に十分あるのに作り続けるのは無駄です。「無いときだけ動く」という抑制型が経済的に合理的というわけです。対照的にラクトースは「たまにしか出会わない」ため誘導型が合理的になります。"
+    },
+    {
+      q: "Q10. 「誘導・抑制」と「阻害」の違いとして正しい説明は？",
+      choices: [
+        "誘導・抑制も阻害も、どちらも既存の酵素タンパク質の働きを止める現象を指す",
+        "誘導・抑制は遺伝子発現(転写)レベルで\"新たに酵素を作るかどうか\"を制御し、阻害は既存の酵素タンパク質の活性(働き)を直接制御する",
+        "誘導・抑制は酵素の活性レベルの話で、阻害は遺伝子発現レベルの話である",
+        "誘導・抑制と阻害は全く同じ現象を指す同義語である"
+      ],
+      correct: 1,
+      explain: "誘導・抑制は「新たに酵素を作るかどうか」という遺伝子発現(転写)レベルの制御です。一方、阻害(フィードバック阻害)はすでに存在する酵素タンパク質の働きを直接止める、別のレベルの現象です。阻害の方が新しいタンパク質合成を待たないため即効性があります。"
+    },
+    {
+      q: "Q11. trpR遺伝子(調節遺伝子)を欠損させた変異株を、トリプトファンを豊富に添加した培地で培養した場合、野生株と比べてtrpE〜trpAの転写量はどうなるか？",
+      choices: [
+        "野生株と同様に転写OFFになる",
+        "変異株ではアポリプレッサー自体が作られないため活性型リプレッサーが生じず、野生株より高発現(常時ON)になる",
+        "野生株・変異株ともに転写量に変化はない",
+        "変異株では構造遺伝子自体が失われるため転写量はゼロになる"
+      ],
+      correct: 1,
+      explain: "trpR欠損によりアポリプレッサーというタンパク質自体が作られなくなります。Trpと結合する相手(アポリプレッサー)が存在しないため、活性型リプレッサーが生じず、オペレーターは常に空席のままになり、野生株なら本来OFFになるはずの条件でも転写がONのままになります。これを構成的発現(constitutive expression)と呼びます。"
+    },
+    {
+      q: "Q12. ある未知のオペロンXについて、調節遺伝子xを欠損させたところ、物質Yの有無に関わらず発現がほぼゼロになった。このオペロンXの調節様式は？",
+      choices: [
+        "負の調節(リプレッサーによる抑制)",
+        "正の調節(アクチベーターによる活性化)",
+        "調節を受けない構成的発現のみのオペロン",
+        "この実験結果だけでは判別できない"
+      ],
+      correct: 1,
+      explain: "もし負の調節(リプレッサー)なら、調節遺伝子を欠損させると「邪魔者不在」で発現量は上がるはずです。しかし実際には発現がゼロになった、つまり調節タンパク質が無いと転写が起こらない=そのタンパク質は転写を後押しする役割(アクチベーター)だったと判断できます。「欠損させて発現が上がれば負の調節、下がれば(消えれば)正の調節」という4パターン分類法で機械的に判定できます。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#32 確認テスト「トリプトファンオペロン」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！トリプトファンオペロンと『負の調節・正の調節』が完璧に理解できています。次回の真核生物編もスムーズに理解できるはずです。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に3語(アポリプレッサー/リプレッサー/コリプレッサー)の整理と、負の調節/正の調節の対比は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはオペロンの定義とON/OFFのロジックから復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#32 確認テスト「トリプトファンオペロン」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

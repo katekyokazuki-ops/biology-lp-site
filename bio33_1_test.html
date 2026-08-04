@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 真核生物の遺伝子発現調節が原核生物より複雑になる理由として、スライドが挙げていない(=誤りの)ものはどれか？",
+      choices: [
+        "巨大なDNA(約30億塩基対)を直径10μmの核に収納する必要があるから",
+        "同じゲノムから200種以上の分化細胞を作り分ける必要があるから",
+        "発生において何日目の何細胞で発現するかという時空間の精度が必要だから",
+        "真核生物のDNAは原核生物よりリン酸骨格の電荷が弱いから"
+      ],
+      correct: 3,
+      explain: "スライドが挙げる3つの理由は、①巨大なDNAの収納(クロマチン構造)②細胞分化の維持③発生における時空間の精度、です。DNAのリン酸骨格の電荷は原核・真核で変わらず負電荷であり、これは複雑さの理由として挙げられていません。"
+    },
+    {
+      q: "Q2. なぜ真核生物では、転写因子が働く前に「染色体レベルの調節」という、さらに上流の調節階層が必要なのか？",
+      choices: [
+        "真核生物のDNAはヒストンに巻きついてクロマチン構造として収納されており、その凝集状態によって転写因子がDNAに物理的に近づけるかどうかが決まるから",
+        "真核生物には転写因子そのものが存在しないから",
+        "真核生物のプロモーターは常にRNAポリメラーゼで塞がれているから",
+        "真核生物のDNAは常に一本鎖で存在するから"
+      ],
+      correct: 0,
+      explain: "真核生物のDNAはクロマチン構造として折りたたまれて核内に収納されています。折りたたまれて「隠れて」しまうと、転写因子がDNA配列に近づくことすらできません。そのため「そもそも近づける状態(開いている)か」というアクセスの可否を決める調節が、転写因子による調節よりも上流に存在するのです。"
+    },
+    {
+      q: "Q3. ヒストンが正電荷を帯びており、負電荷のDNAと結合できる理由は何か？",
+      choices: [
+        "ヒストンはリシン・アルギニンなどの塩基性アミノ酸を多く含み、生理的pH下で正電荷を帯びるため、静電引力でDNAと結合する",
+        "ヒストンはDNAと共有結合で直接つながっているため",
+        "ヒストンは酸性アミノ酸を多く含み負電荷を帯びるため、DNAと反発しながら巻きつく",
+        "ヒストンの電荷はDNAの塩基配列によって決まる"
+      ],
+      correct: 0,
+      explain: "ヒストンはリシン・アルギニンといった塩基性アミノ酸を多く含むため、生理的pH下で正電荷(プラス)を帯びます。DNAはリン酸骨格により負電荷(マイナス)を帯びているため、両者はクーロン力(静電引力)によってイオン結合します。"
+    },
+    {
+      q: "Q4. ヌクレオソームの定義として正しい組み合わせはどれか？",
+      choices: [
+        "DNA約147塩基対が、ヒストン8量体に約1.65回巻きついた構造",
+        "DNA約1.65塩基対が、ヒストン147量体に巻きついた構造",
+        "ヒストン8量体だけで構成され、DNAは含まれない構造",
+        "DNA30億塩基対がヒストン1個に巻きついた構造"
+      ],
+      correct: 0,
+      explain: "ヌクレオソームは「ヒストン8量体(H2A・H2B・H3・H4が各2分子ずつ)に、DNA約147塩基対が約1.65回巻きついた」構造で、クロマチンを構成する最小の基本単位です。数字(147bp・8量体・1.65回)をセットで覚えておくことが重要です。"
+    },
+    {
+      q: "Q5. ユークロマチンとヘテロクロマチンの違いとして正しい説明はどれか？",
+      choices: [
+        "ユークロマチンは凝集度が高く発現OFF、ヘテロクロマチンは凝集度が低く発現ON",
+        "ユークロマチンは凝集度が低くDNAが露出し発現ON寄り、ヘテロクロマチンは凝集度が高くDNAが隠れ発現OFF",
+        "両者は凝集度に違いはなく、染まる色だけが異なる",
+        "ユークロマチンは原核生物だけに存在し、ヘテロクロマチンは真核生物だけに存在する"
+      ],
+      correct: 1,
+      explain: "ユークロマチン(開いた本)は凝集度が低くDNAが露出しているため転写因子が結合可能で発現ON寄りになります。ヘテロクロマチン(閉じた本)は凝集度が高くDNAが折り込まれて隠れているため転写因子が結合できず発現OFFになります。"
+    },
+    {
+      q: "Q6. 神経細胞と肝細胞が全く同じDNA配列(ゲノム)を持ちながら、働く遺伝子が全く違う理由を説明する概念は何か？",
+      choices: [
+        "突然変異によりDNA配列そのものが細胞ごとに変化しているから",
+        "DNA配列は同じだが、クロマチンの状態(凝集度)が細胞ごとに異なるから(エピジェネティクス)",
+        "神経細胞と肝細胞では遺伝暗号表そのものが異なるから",
+        "神経細胞にはRNAポリメラーゼが存在しないから"
+      ],
+      correct: 1,
+      explain: "DNA配列そのものは変わりません。細胞ごとに異なるのは、クロマチンの状態(緩んでいるか締まっているか)です。この「配列でない情報」による遺伝子発現の違いをエピジェネティクスと呼び、その状態は細胞分裂を通じて次世代の細胞にも受け継がれます。"
+    },
+    {
+      q: "Q7. 真核生物のRNAポリメラーゼIIがプロモーターに結合するために必要な、複数のタンパク質群の総称は何か？",
+      choices: [
+        "シグマ因子",
+        "アポリプレッサー",
+        "基本転写因子(TFIIA〜TFIIHなど)",
+        "CAP(カタボライト活性化タンパク質)"
+      ],
+      correct: 2,
+      explain: "原核生物のRNAポリメラーゼはシグマ因子の補助を受けつつ単独でプロモーターに結合できましたが、真核生物のRNAポリメラーゼIIは単独では結合できません。基本転写因子(TFIIA〜TFIIHなど)が先に集まって足場を作り、転写開始前複合体(PIC)を完成させて初めて結合・転写開始が可能になります。"
+    },
+    {
+      q: "Q8. TFIIHの機能として正しいものはどれか？",
+      choices: [
+        "TATAボックスを最初に認識してドッキングする",
+        "DNA二重らせんを開裂させ(ヘリカーゼ活性)、RNAポリメラーゼIIをリン酸化して転写開始の合図を出す",
+        "エンハンサーに結合して転写を活性化する",
+        "リプレッサーとしてオペレーターに結合し転写を抑制する"
+      ],
+      correct: 1,
+      explain: "TFIIHはPIC形成の最後に働き、DNAヘリカーゼ活性によって二重らせんを開いてRNAポリメラーゼIIが鋳型鎖を読めるようにし、さらにRNAポリメラーゼIIをリン酸化して「動き出せ」という最終的な合図を送ります。この機能に関わる遺伝子の変異は色素性乾皮症などの疾患にもつながります。"
+    },
+    {
+      q: "Q9. エンハンサーとサイレンサーの共通点として正しいものはどれか？",
+      choices: [
+        "どちらもプロモーターのすぐ隣にしか存在できない",
+        "どちらもプロモーターから離れた位置にあることが多く、DNAループの形成を介してプロモーターに作用する",
+        "どちらも転写を必ず促進する働きしか持たない",
+        "どちらも基本転写因子そのものである"
+      ],
+      correct: 1,
+      explain: "エンハンサーとサイレンサーは働く方向(促進/抑制)こそ逆ですが、どちらもプロモーターから離れた位置にあることが多く、DNAループという仕組みを介してプロモーターに影響を与えるという点は共通しています。"
+    },
+    {
+      q: "Q10. 「基本転写因子」と「転写調節因子」の違いを説明する比喩として、スライドで使われているものは？",
+      choices: [
+        "基本転写因子=ブレーキ、転写調節因子=アクセル",
+        "基本転写因子=電源スイッチ(必須・共通)、転写調節因子=調光ダイヤル(可変・遺伝子ごとに違う)",
+        "基本転写因子=ハンドル、転写調節因子=タイヤ",
+        "両者は全く同じ機能を持つため比喩による区別はできない"
+      ],
+      correct: 1,
+      explain: "基本転写因子は「転写を開始できるかどうか(ON/OFFの土台)」に関わる、すべての遺伝子に共通する必須の土台チームです。一方、転写調節因子(アクチベーターやリプレッサー)は「その転写をどれくらい強く/弱くするか」という量の微調整を行う、遺伝子ごとに異なるオプションチームです。「電源スイッチ(必須・共通)」と「調光ダイヤル(可変・遺伝子ごと)」という対比で整理します。"
+    },
+    {
+      q: "Q11. エンハンサーがプロモーターから数万塩基も離れていても機能できる理由は？",
+      choices: [
+        "エンハンサーから出た化学物質がプロモーターまで拡散して届くから",
+        "DNAが柔軟な鎖状分子であり、アクチベーターが結合した部分からDNAが輪状に湾曲(DNAループ)することで、物理的にプロモーター周辺に近づけるから",
+        "エンハンサーとプロモーターの間の塩基配列が瞬時に削除されるから",
+        "RNAポリメラーゼがエンハンサーとプロモーターの間を往復移動するから"
+      ],
+      correct: 1,
+      explain: "DNAは紐のように柔軟性を持つ分子です。アクチベーターがエンハンサーに結合すると、その部分からDNAが輪っか状に湾曲し(DNAループ)、遠く離れていたはずのエンハンサー領域が物理的にプロモーター周辺まで手繰り寄せられます。「距離が遠いのに効く」のではなく「折れ曲がることで実は近づいている」というのが正確な理解です。"
+    },
+    {
+      q: "Q12. 真核生物のリプレッサーが、原核生物のリプレッサーと比べて「より多様」だとされる理由は？",
+      choices: [
+        "真核生物のリプレッサーは常にDNAに結合できないため",
+        "原核リプレッサーは物理的にオペレーターを塞ぐだけのシンプルな仕組みだが、真核リプレッサーはアクチベーターとの競合・直接妨害・クロマチン凝集の誘導など複数の作戦を使い分けられるから",
+        "真核生物にはリプレッサーという概念自体が存在しないため",
+        "真核生物のリプレッサーは必ずDNAを切断するため"
+      ],
+      correct: 1,
+      explain: "原核生物のリプレッサーは「オペレーターという1つの座席に座り込んでRNAポリメラーゼの通過を物理的に妨害する」というシンプルな仕組みでした。真核生物のリプレッサーは、アクチベーターと結合部位を奪い合う、アクチベーターの働きを直接妨害する、HDACのような酵素を呼び寄せてクロマチンを凝集させるなど、より多様で高度な抑制手段を持ちます。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#33前編 確認テスト「真核生物・転写の調節」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！クロマチン構造と基本転写因子の仕組みが完璧に理解できています。後編のヒストン修飾・演習問題も自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に基本転写因子と転写調節因子の違い、DNAループの仕組みは要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはクロマチンの階層構造から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#33前編 確認テスト「真核生物・転写の調節」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

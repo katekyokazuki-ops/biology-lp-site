@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 原核生物と真核生物の転写調節を比較したとき、正しい組み合わせはどれか？",
+      choices: [
+        "原核=RNAポリメラーゼ3種類・真核=1種類",
+        "原核=環状DNAが裸のまま・真核=クロマチン構造にパッケージ",
+        "原核=調節タンパク質がゲノムの5%以上・真核=少数のみ",
+        "原核=転写と翻訳が時空間分離・真核=同じ場所で同時進行"
+      ],
+      correct: 1,
+      explain: "原核生物(大腸菌)のDNAはヒストンを持たず裸のまま存在しますが、真核生物のDNAはヒストンに巻きついてクロマチン構造として核内にパッケージされています。RNAポリメラーゼの種類、調節タンパク質の割合、転写・翻訳の場所の分離は、いずれも逆(真核の方が複雑・多層)です。"
+    },
+    {
+      q: "Q2. ヒストンのアセチル化がクロマチンを緩める仕組みとして正しい説明は？",
+      choices: [
+        "アセチル基がDNAに直接結合し、ヒストンを押しのける",
+        "HATによってリシン残基の正電荷が中和され、DNAとの静電引力(クーロン力)が弱まる",
+        "アセチル化によってヒストンが分解され、DNAから完全に外れる",
+        "アセチル化はDNAの塩基配列そのものを変化させる"
+      ],
+      correct: 1,
+      explain: "HAT(ヒストンアセチル化酵素)がリシン残基の正電荷(−NH₃⁺)にアセチル基を付加すると、電気的に中性(−NH−COCH₃)になります。正電荷が消えることでDNAの負電荷との静電引力が弱まり、ヒストンとDNAの結合が緩んでユークロマチン化します。"
+    },
+    {
+      q: "Q3. HDAC(脱アセチル化酵素)を阻害する薬(ボリノスタットなど)が、白血病などのがん治療に役立つ理由は？",
+      choices: [
+        "HDACを阻害するとがん細胞のDNAが直接切断されるから",
+        "HDAC阻害でアセチル基が外されなくなり、ヘテロクロマチン化して眠っていたがん抑制遺伝子が再び開いて働けるようになるから",
+        "HDACを阻害するとヒストンが完全に消失し、DNAが露出しすぎて細胞が死ぬから",
+        "HDAC阻害はDNAメチル化を直接除去する作用だから"
+      ],
+      correct: 1,
+      explain: "HDACの働きを止めると、アセチル基が外されなくなり、ヒストンの正電荷が中和されたままの状態(ユークロマチン化)が維持されます。がん細胞では本来働くべきがん抑制遺伝子が異常にヘテロクロマチン化されて眠らされていることがあり、HDAC阻害薬はこの眠りを解除して再び働かせることでがん細胞の増殖を抑えます。"
+    },
+    {
+      q: "Q4. ヒストンメチル化が、アセチル化とは異なり「位置によってON にもOFFにもなる」のはなぜか？",
+      choices: [
+        "メチル化はアセチル化より強い正電荷を作るから",
+        "メチル基はほとんど電荷を変化させず、代わりに\"どの位置にメチル化されたか\"という情報自体が目印として読み手タンパク質に認識され、その結果でON/OFFが決まるから",
+        "メチル化は常にDNAメチル化と同時に起こるから",
+        "メチル化はDNA配列そのものを直接書き換えるから"
+      ],
+      correct: 1,
+      explain: "アセチル化は正電荷を中和するという、常に一方向(緩める方向)に働く化学変化でした。一方メチル化は電荷をほとんど変化させません。その代わり「どのアミノ酸の何番目にメチル基がついたか」という位置情報自体が目印(マーク)として働き、それを認識する読み手タンパク質によって、活性化にも抑制にもなりえます。"
+    },
+    {
+      q: "Q5. H3K4me3とH3K9me3の機能上の違いとして正しいものは？",
+      choices: [
+        "H3K4me3は抑制型、H3K9me3は活性化型のマーク",
+        "H3K4me3はアクティブなプロモーター周辺に集積する活性化型のマーク、H3K9me3はヘテロクロマチン領域に集積する抑制型のマーク",
+        "両者は全く同じ機能を持ち、区別に意味はない",
+        "H3K4me3・H3K9me3はどちらもDNAメチル化の一種である"
+      ],
+      correct: 1,
+      explain: "H3K4me3(ヒストンH3の4番目のリシンのトリメチル化)はアクティブなプロモーター周辺に集積し「発現している遺伝子のマーク」として働きます。H3K9me3(9番目のリシンのトリメチル化)はヘテロクロマチン領域に集積し、HP1などが結合してクロマチン凝集を促す「発現OFFにされた遺伝子のマーク」です。どちらもヒストンの修飾であり、DNAメチル化とは別物です。"
+    },
+    {
+      q: "Q6. DNAメチル化が、ヒストン修飾(アセチル化・メチル化)よりも「長期的に持続する」とされる理由は？",
+      choices: [
+        "DNAメチル化はヒストンよりも化学的に不安定だから",
+        "ヒストン修飾はDNAを巻きつけるタンパク質側の変化であり比較的動的・可逆的だが、DNAメチル化はDNA自身への直接的な化学修飾であり、細胞分裂の際にそのパターンごとコピーされて次世代の細胞に受け継がれるから",
+        "DNAメチル化は細胞分裂のたびにリセットされるから",
+        "ヒストン修飾はDNA配列そのものを変化させるため不可逆だから"
+      ],
+      correct: 1,
+      explain: "ヒストンにつく修飾(アセチル化・メチル化)は、DNAを取り巻くタンパク質側の状態を変えるものであり、比較的動的で素早く付け外しされる可逆的な変化です。一方DNAメチル化はDNA自体に直接刻まれる化学修飾で、より安定して長く持続し、細胞分裂の際にそのメチル化パターンごとコピーされて次世代の細胞に受け継がれます。"
+    },
+    {
+      q: "Q7. がん抑制遺伝子(p16やBRCA1など)のプロモーターが異常にメチル化されると、がん化のリスクが高まる理由は？",
+      choices: [
+        "メチル化によってその遺伝子が強制的にOFFにされ、細胞増殖にブレーキをかける機能が失われるから",
+        "メチル化によってDNA配列自体に変異が生じるから",
+        "メチル化はがん抑制遺伝子の発現を常に増加させてしまうから",
+        "メチル化は染色体の数を倍加させてしまうから"
+      ],
+      correct: 0,
+      explain: "がん抑制遺伝子のプロモーターが異常にメチル化されると、その遺伝子は強制的にOFFにされます。がん抑制遺伝子は細胞の異常な増殖にブレーキをかける役割を持つため、この\"門番\"がエピジェネティックに沈黙させられると、細胞は増殖のブレーキを失い、がん化が進みやすくなります。DNA配列自体に変異がなくても、この仕組みだけでがんが進みうる点が重要です。"
+    },
+    {
+      q: "Q8. リシン残基が生理的pH下で正電荷(−NH₃⁺)を帯びるのはなぜか？また、アセチル化されると電荷はどうなるか？",
+      choices: [
+        "側鎖のアミノ基がプロトン(H⁺)を受け取り(プロトン化)正電荷を帯びる。アセチル化されるとアセチル基がこの部位を占有し、電荷は中性になる",
+        "側鎖のカルボキシ基が電子を放出して正電荷を帯びる。アセチル化されても電荷は変化しない",
+        "リシンは常に電荷を持たない中性アミノ酸である",
+        "アセチル化されるとリシンの正電荷はさらに強くなる"
+      ],
+      correct: 0,
+      explain: "リシンの側鎖末端のアミノ基(−NH₂)は、生理的pH(約7.4)で水素イオン(H⁺)を受け取り(プロトン化)、「−NH₃⁺」というプラスの電荷を帯びた形になります。HATによってアセチル基(−COCH₃)が付加されると「−NH−COCH₃」という中性の構造に変わり、正電荷が消失します。"
+    },
+    {
+      q: "Q9. 演習1「アセチル化によって遺伝子Xの転写量が増加する」という現象を説明する記述で、医学部レベルの満点解答に必要な要素は？",
+      choices: [
+        "「アセチル化されるとクロマチンが緩んで転写がONになる」という一文だけで十分",
+        "電荷変化(正電荷の消失)→DNA結合力の変化(静電引力の減弱)→クロマチン構造の変化(ユークロマチン化)→転写因子のアクセス向上、という4段階の因果連鎖を順に説明する",
+        "アセチル化酵素の名前(HAT)だけを答えればよい",
+        "この現象はDNAメチル化で説明するのが正しい"
+      ],
+      correct: 1,
+      explain: "「アセチル化されるとクロマチンが緩んで転写ONになる」だけでは、なぜ緩むのかという理由を答えていないため半分の得点にしかなりません。電荷変化→引力減弱→構造変化(ユークロマチン化)→転写因子のアクセス向上、という1本の因果の鎖として、専門用語(クーロン力・ユークロマチン化・PIC形成)を交えて記述するのが医学部レベルの満点の型です。"
+    },
+    {
+      q: "Q10. 演習2で、配列Bを切除したところ遺伝子Xの発現量が野生株の300%に増加した。配列Bの正体として正しい判定は？",
+      choices: [
+        "配列Bはエンハンサーである(切除すると発現が上がったから)",
+        "配列Bはサイレンサーである(切除で\"抑えるブレーキ\"が外れて発現が跳ね上がったから)",
+        "配列Bはプロモーターである",
+        "この結果だけでは配列Bの正体は全く判断できない"
+      ],
+      correct: 1,
+      explain: "「切除して発現が上がった＝失っても発現できる＝むしろ普段は抑えられていた」と考えるのが正しい方向感覚です。壊す(切除)ことで発現が上がった配列は、抑制していたもの、つまりサイレンサーです。「切除して発現が上がったからエンハンサー」という判断は、この単元で最も多い誤答パターンです。"
+    },
+    {
+      q: "Q11. TFIIHのヘリカーゼ活性\"のみ\"を失った変異細胞では、PIC(転写開始前複合体)の形成そのものはどうなるか？",
+      choices: [
+        "TFIIHタンパク質自体は正常に存在し他因子と結合できるため、PIC形成(タンパク質の集合)自体は正常に進む",
+        "TFIIHが存在しないのと同じ扱いになり、PICは全く形成されない",
+        "PICの形成にはそもそもTFIIHは不要なので、変異の影響は一切ない",
+        "ヘリカーゼ活性の有無に関わらずPICの形成は常に不可能である"
+      ],
+      correct: 0,
+      explain: "「タンパク質同士が集合すること」と「集合したタンパク質が実際に機能(酵素活性)を発揮すること」は別の段階です。ヘリカーゼ活性のみを失った変異では、TFIIHタンパク質自体は正常に存在し他のタンパク質と結合できるため、PIC形成(集合)自体は正常に進みます。しかしDNAを開くという酵素としての仕事ができないため、その先のmRNA合成には進めません。"
+    },
+    {
+      q: "Q12. TFIIHが「転写」と「DNA修復(ヌクレオチド除去修復)」という一見別々の2つの仕事を兼任している理由として、最も適切な説明は？",
+      choices: [
+        "偶然2つの無関係な機能が同じタンパク質に組み込まれただけ",
+        "転写とDNA修復はどちらも「DNAの二重らせんを一時的に開く」という同じ物理的作業を必要とするため、進化的に同じヘリカーゼ機能を使い回している",
+        "TFIIHは転写にのみ関与しており、DNA修復には一切関与しない",
+        "DNA修復はTFIIHとは無関係な別の酵素群のみで行われる"
+      ],
+      correct: 1,
+      explain: "転写(RNAポリメラーゼが読み取るため)とヌクレオチド除去修復(傷ついた部分を切り出して合成し直すため)は、どちらも「DNAの二重らせんを一時的に開く」という同じ物理的作業を必要とします。進化の過程で、生物はこの「DNAを開く」という同じ道具(TFIIHのヘリカーゼ機能)を、転写にも修復にも使い回しています。そのためTFIIHのヘリカーゼ機能が壊れると、色素性乾皮症(DNA修復不全)とコケイン症候群(転写異常)という複数の疾患群が関連してきます。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#33後編 確認テスト「ヒストン修飾+THEME2総合演習」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！THEME2「真核生物・転写の調節」が完璧に理解できています。次回THEME3(転写以降の調節)もスムーズに進めるはずです。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にアセチル化とメチル化の違い、演習2の切除実験の判定ロジックは要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは原核vs真核の比較表とアセチル化の仕組みから復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#33後編 確認テスト「ヒストン修飾+THEME2総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

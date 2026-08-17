@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 「mRNAが完成すれば、あとは自動的にタンパク質が作られるだけ」という考え方に対する、この講義の立場として正しいものは？",
+      choices: [
+        "その通りであり、転写後に追加の調節は一切存在しない",
+        "誤りであり、転写後にもmRNA成熟化・スプライシング・RNAi・品質管理という複数の関門(調節段階)が存在する",
+        "転写後の調節は原核生物にのみ存在し、真核生物には存在しない",
+        "転写後の調節はDNA複製にのみ関わり、タンパク質合成量には影響しない"
+      ],
+      correct: 1,
+      explain: "「mRNAができた=タンパクが作られる」という単純な図式は誤りです。mRNAという\"原稿\"が完成した後にも、成熟化(編集)・スプライシング・RNA干渉・ノンコーディングRNAによる品質管理といった複数の関門が控えており、これらすべてが最終的なタンパク質の\"量\"を左右します。"
+    },
+    {
+      q: "Q2. mRNAの5'キャップ構造が持つ3つの機能として正しい組み合わせは？",
+      choices: [
+        "分解促進・翻訳阻害・核内保持",
+        "分解防止(エキソヌクレアーゼからの保護)・翻訳効率化(リボソームの認識を助ける)・核外輸送(核から細胞質への出荷ラベル)",
+        "DNA複製の開始点としての機能のみ",
+        "スプライソソームを直接構成する機能のみ"
+      ],
+      correct: 1,
+      explain: "5'キャップ構造(7-メチルグアノシンが逆向きに結合した特殊構造)は、①5'側からのエキソヌクレアーゼによる分解を防ぎ、②Cap結合タンパク質(eIF4E)を介してリボソームによる翻訳開始を促進し、③核から細胞質への輸送シグナル(出荷ラベル)として働く、という3つの機能を同時に果たす万能パーツです。"
+    },
+    {
+      q: "Q3. 3'ポリAテールの長さが「mRNAの寿命の指標」になるとされる理由は？",
+      choices: [
+        "ポリAテールが長いほど、翻訳されるタンパク質の分子量が大きくなるから",
+        "ポリAテールは3'側からのエキソヌクレアーゼ攻撃に対するバンパーであり、テールが短くなるほどコード領域(本体)への分解が近づくため",
+        "ポリAテールの長さがDNA複製の回数を直接決めるから",
+        "ポリAテールはmRNAの色を変化させ、細胞がそれを目印に分解時期を判断するから"
+      ],
+      correct: 1,
+      explain: "ポリAテールは「車の後部バンパー」のような役割を持ち、3'側から迫るエキソヌクレアーゼをまず削られます。バンパーがある間は本体は無傷ですが、削られて短くなるとやがて本体まで分解が及びます。そのため「ポリAテールの長さ」がそのmRNAの残り寿命を反映する指標になります。"
+    },
+    {
+      q: "Q4. mRNAの「環状化(サーキュラーモデル)」が翻訳効率を大きく高める仕組みとして正しい説明は？",
+      choices: [
+        "環状化によりmRNAの塩基配列自体が短縮されるから",
+        "eIF4E(キャップ結合)とPABP(ポリA結合)がeIF4G(仲介因子)を介して結合し輪状構造を作ることで、翻訳を終えたリボソームが3'端からすぐ近くの5'端(次の開始点)へ素早く移動できるようになるから",
+        "環状化によりmRNAが2倍に複製されるから",
+        "環状化はスプライシングの精度を上げるためだけの構造である"
+      ],
+      correct: 1,
+      explain: "5'キャップに結合するeIF4Eと、3'ポリAテールに結合するPABPが、仲介因子eIF4Gを介して手をつなぐことで、mRNA全体が輪っか状の立体構造(サーキュラーモデル)をとります。この結果、翻訳を終えたリボソームは遠く離れた5'端まで移動する必要がなくなり、すぐ近くから次の翻訳を始められるため、翻訳効率が約10倍に高まります。片方(キャップまたはポリAのみ)では環が作れず、この効果は得られません。"
+    },
+    {
+      q: "Q5. mRNA分解の正しい順序(4段階)はどれか？",
+      choices: [
+        "①脱キャップ→②本体分解→③脱アデニル化→④PABP解離",
+        "①脱アデニル化(ポリA短縮)→②PABP解離・環状構造崩壊→③脱キャップ→④5'→3'エキソヌクレアーゼによる本体分解",
+        "①本体分解→②脱アデニル化→③PABP解離→④脱キャップ",
+        "4段階はすべて同時に、順不同で起こる"
+      ],
+      correct: 1,
+      explain: "mRNA分解は「外側のバンパー(ポリA)から先に崩れ、その結果として内側の保護(キャップ・環状構造)が連鎖的に崩れ、最後に本体が破壊される」というドミノ倒しのような段階的過程です。①脱アデニル化酵素(CCR4-NOT)がポリAを短縮→②PABPが解離し環状構造が崩壊→③脱キャップ酵素(DCP1/2)がキャップを除去→④5'エキソヌクレアーゼ(Xrn1)が本体を分解、という順序が「ポリAが短くなる速度が寿命を決める最上流の制御」という結論につながります。"
+    },
+    {
+      q: "Q6. 「エキソン」と「イントロン」という名前の語源的な意味の組み合わせとして正しいものは？",
+      choices: [
+        "エキソン=Expressed(発現される、最終mRNAに残る)、イントロン=Intervening(間に入る、切除される)",
+        "エキソン=Intervening(間に入る)、イントロン=Expressed(発現される)",
+        "エキソンもイントロンも、どちらも最終的に切除される部分を指す",
+        "エキソンもイントロンも、どちらも最終mRNAに残る部分を指す"
+      ],
+      correct: 0,
+      explain: "「Exon」は「Expressed(発現される、外に表れる)」に由来し、最終的なmRNAに残って翻訳される部分です。「Intron」は「Intervening(間に割り込んでいる)」に由来し、エキソンとエキソンの間に挟まっており、スプライソソームによって切除される部分です。名前の語源が、そのまま機能を反映しています。"
+    },
+    {
+      q: "Q7. ヒトゲノム計画で判明した「遺伝子数(約2万個)とタンパク質の種類数(約10万種類)の不一致」を説明する仕組みは何か？",
+      choices: [
+        "1つの遺伝子は常に1つのタンパク質しか作らないため、不一致は測定誤差である",
+        "選択的スプライシングにより、ヒトの遺伝子の約95%で1つの遺伝子から平均約5種類の異なるmRNA(タンパク質)が作られるため",
+        "ヒトの細胞は遺伝子を持たない未知の経路でタンパク質を作っているため",
+        "遺伝子の数は実際には10万個であり、当初の\"2万個\"という測定が誤りだったため"
+      ],
+      correct: 1,
+      explain: "ヒトの遺伝子の約95%で選択的スプライシングが起きており、1つの遺伝子から平均して約5種類の異なるタンパク質が作られます。約2万(遺伝子数)×約5(1遺伝子あたりの平均タンパク質種数)=約10万(タンパク質の種類)という掛け算で、この\"謎\"は説明されます。「遺伝子の数は少なくても、使い方(編集の仕方)を工夫することで多様性を生み出せる」というのがヒトの複雑さの秘密です。"
+    },
+    {
+      q: "Q8. Bcl-x遺伝子において、Bcl-xL(細胞を守る)とBcl-xS(細胞死を促す)という真逆の機能を持つ2つのタンパク質が作られる理由は？",
+      choices: [
+        "全く別の2つの遺伝子から、それぞれ独立に作られているため",
+        "同じ遺伝子から、選択的スプライシングによって、たった1つのエキソンを含むか含まないかという違いだけで作り分けられているため",
+        "翻訳後に酵素によってランダムに構造が変えられるため",
+        "DNA複製のたびに突然変異が起こり、異なるタンパク質になるため"
+      ],
+      correct: 1,
+      explain: "Bcl-xLとBcl-xSは同じ1つの遺伝子から、選択的スプライシングによって作り分けられる、機能的に正反対のタンパク質です。両者の違いはたった1つのエキソンを含むか含まないかというごくわずかな編集の違いのみで生まれます。この使い分けが乱れる(Bcl-xLが過剰になる等)と、本来死ぬべき異常な細胞が生き残ってしまい、がん化につながることがあるため、医学部で頻出のトピックです。"
+    },
+    {
+      q: "Q9. RNA干渉(RNAi)を発見し、2006年にノーベル生理学・医学賞を受賞した研究者と、その発見のきっかけとなった生物の組み合わせは？",
+      choices: [
+        "ワトソンとクリック、大腸菌",
+        "ファイアーとメロー、線虫(C. elegans)",
+        "ニーレンバーグとコラナ、ショウジョウバエ",
+        "ジャコブとモノー、酵母"
+      ],
+      correct: 1,
+      explain: "アメリカの研究者アンドリュー・ファイアーとクレイグ・メローは、線虫(C. elegans)を使った実験でRNA干渉という現象を発見し、その功績により2006年にノーベル生理学・医学賞を受賞しました。線虫はスライド18のヒトゲノム計画の話にも登場した、遺伝学でよく使われるモデル生物です。"
+    },
+    {
+      q: "Q10. siRNAとmiRNAの違いとして正しい説明は？",
+      choices: [
+        "siRNAは細胞自身のゲノム由来で標的への相補性が低い、miRNAは外来性で相補性が高い",
+        "siRNAは主に長い二本鎖RNA(ウイルス由来や人工導入)に由来し標的と完全相補的に結合する、miRNAは細胞内ゲノム由来で標的と部分相補的に結合する",
+        "siRNAとmiRNAは全く同じ物質であり、名前が違うだけである",
+        "siRNAはダイサーで作られるが、miRNAはダイサーを介さずに直接作られる"
+      ],
+      correct: 1,
+      explain: "siRNAは主にウイルスの複製過程で生じる長い二本鎖RNAや、実験・治療のために人工的に導入された二本鎖RNAに由来し、標的mRNAと完全相補的に結合します。miRNAは細胞自身のゲノムにあらかじめ組み込まれた配列から作られ、標的mRNAと部分相補的に結合します。どちらもダイサーによって切り出され、RISCに組み込まれるという処理経路自体は共通しています。"
+    },
+    {
+      q: "Q11. RISC(RNA-Induced Silencing Complex)の構成要素と、その中心的なタンパク質の役割として正しい説明は？",
+      choices: [
+        "RISCはDNAポリメラーゼのみから構成され、DNAを複製する",
+        "RISCはArgonauteタンパク質と1本鎖のガイドRNAから構成され、Argonauteのガイド保持ドメイン(PAZ・MID)とエンドヌクレアーゼドメイン(PIWI)によって標的mRNAを探索・切断する",
+        "RISCはリボソームそのものであり、翻訳を直接行う装置である",
+        "RISCはヒストンとDNAのみから構成される、クロマチンの一部である"
+      ],
+      correct: 1,
+      explain: "RISCはArgonauteタンパク質と、ダイサーによって生成された1本鎖のガイドRNA(siRNAまたはmiRNA由来)から構成される複合体です。Argonauteは、PAZ・MIDドメインでガイドRNAの両端をしっかり保持しながら、PIWIドメインのエンドヌクレアーゼ活性によって相補的な標的mRNAを切断します。"
+    },
+    {
+      q: "Q12. ガイドRNAと標的mRNAが「完全相補的」な場合と「部分相補的」な場合とで、標的mRNAに起こる結果の違いとして正しいものは？",
+      choices: [
+        "完全相補的でも部分相補的でも、常に同じ結果(切断)が起こる",
+        "完全相補的な場合はmRNAが切断され不可逆的に分解される(siRNA型)、部分相補的な場合はmRNAは壊されず翻訳のみが可逆的に抑制される(miRNA型)",
+        "完全相補的な場合は翻訳が促進され、部分相補的な場合は転写が促進される",
+        "相補性の程度に関わらず、結果はすべてランダムに決まる"
+      ],
+      correct: 1,
+      explain: "ガイドRNAと標的mRNAが完全に一致(完全相補的)している場合、ArgonauteのPIWIドメインが標的mRNAを物理的に切断し、不可逆的に分解されます(siRNA型)。部分的にしか一致しない(部分相補的)場合は、Argonauteは切断まではせず、3'UTRに居座って翻訳を物理的に妨害するだけなので、miRNAが外れれば翻訳は再開される可逆的な調節になります(miRNA型)。「不可逆的な完全排除」と「可逆的な微調整」という2つの道具の使い分けです。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#34前編 確認テスト「mRNA成熟化とRNA干渉」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！mRNA成熟化とRNA干渉の仕組みが完璧に理解できています。後編のRNAi応用・ノンコーディングRNAも自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にmRNA分解の4段階、siRNAとmiRNAの違いは要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはキャップとポリAテールの機能から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#34前編 確認テスト「mRNA成熟化とRNA干渉」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

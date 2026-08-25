@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. RNAiを利用した「ノックダウン実験」が、遺伝子そのものを破壊する「ノックアウト実験」と比べて優れている点は？",
+      choices: [
+        "ノックダウンは遺伝子を永久に破壊するため、より確実に機能を調べられる",
+        "siRNAを細胞に導入するだけで一時的に発現量を下げられるため、動物個体の作製が不要でヒト培養細胞でも実行でき、わずか1週間ほどで結果が得られる",
+        "ノックダウンは遺伝子の機能を完全に無効化できるため、ノックアウトより強力な変異を作れる",
+        "ノックダウンとノックアウトは全く同じ手法であり、名前が違うだけである"
+      ],
+      correct: 1,
+      explain: "ノックアウトは遺伝子そのものを恒久的に破壊するため、動物の作製に数ヶ月〜数年かかります。一方RNAiによるノックダウンは、標的遺伝子に相補的なsiRNAを細胞に導入するだけで一時的に発現量を下げられるため、ヒト培養細胞でも実行可能で、わずか1週間ほどで結果を得られるという圧倒的なスピードの優位性があります。"
+    },
+    {
+      q: "Q2. siRNA医薬品パチシラン(オンパットロ)が、mRNAワクチンと発想の面で「正反対」だとされる理由は？",
+      choices: [
+        "パチシランは標的mRNAを分解して異常タンパク質の産生を止める「壊す薬」、mRNAワクチンは体内にmRNAを届けてタンパク質を作らせる「届ける薬」だから",
+        "パチシランはDNAを直接改変する薬であり、mRNAワクチンとは全く無関係だから",
+        "パチシランは効果がなく、mRNAワクチンだけが実用化されているから",
+        "両者は全く同じ仕組みであり、正反対という表現は誤りである"
+      ],
+      correct: 0,
+      explain: "パチシラン(オンパットロ)はsiRNAを使ってTTR遺伝子のmRNAを分解し、異常なタンパク質が\"作られる前に\"生産を止める「壊す薬」です。一方mRNAワクチンは、体内にmRNAという\"設計図\"を届けて、目的のタンパク質(抗原)を作らせる「届ける薬」です。アプローチは正反対ですが、どちらも「RNAという分子を医療の主役として直接操作する」という21世紀の医療を象徴する潮流です。"
+    },
+    {
+      q: "Q3. ノンコーディングRNA(ncRNA)6種類のうち、「核内の特定の構造体(パラスペックル)を作るための足場」として働くのはどれか？",
+      choices: [
+        "rRNA",
+        "tRNA",
+        "NEAT1(lncRNAの一種)",
+        "snRNA"
+      ],
+      correct: 2,
+      explain: "NEAT1は長鎖ノンコーディングRNA(lncRNA)の一種で、タンパク質のように機能するのではなく、RNA分子自体が核内の特定の構造体(パラスペックル)を形成するための\"足場\"として働きます。これはタンパク質とは全く異なる、RNAならではの役割です。"
+    },
+    {
+      q: "Q4. lncRNA「Xist」が担う、非常にスケールの大きな仕事とは何か？",
+      choices: [
+        "全身の細胞のタンパク質合成速度を2倍にする",
+        "女性(XX)の体細胞で、一方のX染色体を丸ごと不活性化する(バー小体形成)ことで、男性(XY)との遺伝子産物量のバランスを取る",
+        "リボソームの構造そのものを直接構成する",
+        "全てのmRNAの寿命を均一化する"
+      ],
+      correct: 1,
+      explain: "XistというlncRNAは、女性の体細胞にある2本のX染色体のうち1本を丸ごと不活性化(ヘテロクロマチン化)することで、X染色体を1本しか持たない男性との間で、X染色体由来の遺伝子産物の量のバランスを取っています。この現象を「X染色体の不活性化」、不活性化されたX染色体が凝集して見える構造を「バー小体」と呼びます。三毛猫のまだら模様も、この仕組みが関わる身近な例です。"
+    },
+    {
+      q: "Q5. かつて「ジャンクDNA(意味のないがらくたのDNA)」と呼ばれていたタンパク質非コード領域について、現代生物学の見方として正しいものは？",
+      choices: [
+        "現在も機能のない不要な領域だと確認されている",
+        "その多くがncRNA(lncRNAなど)として転写され、染色体構造の制御や核内構造体の形成など、RNA自体が機能分子として働くことが明らかになってきている",
+        "ジャンクDNAという領域はそもそも存在しないことが証明された",
+        "ジャンクDNAはすべてタンパク質に翻訳されることが判明した"
+      ],
+      correct: 1,
+      explain: "かつてタンパク質をコードしない領域は機能のない\"ジャンク\"とされていましたが、その多くがncRNA(lncRNAなど)として転写され、Xistによる染色体構造の制御やNEAT1による核内構造体の形成など、RNA自体が重要な機能分子として働くことが明らかになってきました。「遺伝子」の定義も、タンパク質をコードするものに限らず、機能を持つRNAをコードするものへと拡張されつつあります。"
+    },
+    {
+      q: "Q6. RNA分解酵素の3タイプのうち、「特定の標的を狙って迅速かつ特異的に切断する、緊急排除タイプ」に分類されるのはどれか？",
+      choices: [
+        "エキソヌクレアーゼ(端から食うタイプ)",
+        "エンドヌクレアーゼ(真ん中で切るタイプ、AGO2など)",
+        "脱アデニル化酵素(ポリAだけを削るタイプ)",
+        "3タイプすべてが同じ役割を担う"
+      ],
+      correct: 1,
+      explain: "エンドヌクレアーゼ(RISC内のAGO2、Dicer、SMG6など)は、RNAの内部を直接切断する酵素で、「今すぐこの特定のmRNAを消したい」という緊急性・特異性の高いシグナルを受けた時に働く\"狙撃\"タイプです。これに対しエキソヌクレアーゼは端からじわじわ分解する日常的な寿命管理、脱アデニル化酵素は分解の\"開始スイッチ\"を担います。"
+    },
+    {
+      q: "Q7. mRNA品質管理機構「NMD(ナンセンス変異依存mRNA分解)」が検出する異常のタイプは？",
+      choices: [
+        "終止コドンを全く持たないmRNA",
+        "本来の位置より手前に、誤った早期終止コドン(PTC)が生じたmRNA(エキソン接合部EJCが終止コドンの下流に残っていることで検出される)",
+        "リボソームが構造上の問題で動けなくなったmRNA",
+        "ポリAテールが異常に長くなったmRNA"
+      ],
+      correct: 1,
+      explain: "NMDは、本来の終止コドンより手前に誤った早期終止コドン(PTC)が紛れ込んだmRNAを検出します。正常なmRNAでは、スプライシングの\"つなぎ目\"(エキソン接合部、EJC)は最後のエキソンより上流にしか残りませんが、PTCがあると翻訳がそこで止まり、EJCが終止コドンより下流に取り残されます。この異常な位置関係を細胞は検知の手がかりとします。"
+    },
+    {
+      q: "Q8. 「Non-stop decay」と「No-go decay」の検出のきっかけの違いとして正しいものは？",
+      choices: [
+        "Non-stop decay=終止コドンを持たないmRNA(リボソームがポリA領域で立ち往生)、No-go decay=構造異常等でリボソームが途中で動けなくなったmRNA",
+        "Non-stop decay=構造異常のmRNA、No-go decay=終止コドンを持たないmRNA(名称が逆)",
+        "両者は全く同じ現象を指す同義語である",
+        "Non-stop decayとNo-go decayはどちらもNMDの別名である"
+      ],
+      correct: 0,
+      explain: "Non-stop decayは終止コドンを持たないmRNAが対象で、リボソームが翻訳を止める場所が分からずポリAテールの中まで読み進んで立ち往生することをSki7が検出します。No-go decayは終止コドンの有無に関係なく、mRNA内部の構造異常(強固な二次構造など)でリボソームが途中で動けなくなった状態を検出し、その位置でmRNAを切断します。"
+    },
+    {
+      q: "Q9. 「リードスルー療法」という治療戦略の発想として正しいものは？",
+      choices: [
+        "NMDの働きをさらに強化し、より多くの異常mRNAを分解する",
+        "病気の原因が\"早すぎる終止コドン\"(ナンセンス変異)である場合、NMDによる分解をあえて抑え、リボソームにその誤った終止コドンを読み飛ばさせて先まで翻訳させることで、ある程度機能するタンパク質を作らせる",
+        "リボソームを完全に停止させ、翻訳そのものを止めてしまう",
+        "終止コドンを人工的に増やすことで、より安定なmRNAを作る"
+      ],
+      correct: 1,
+      explain: "通常NMDは、早すぎる終止コドンを持つ異常なmRNAを分解して欠陥タンパク質を防ぐ\"味方\"の仕組みです。しかし、その早すぎる終止コドン自体が病気の原因(ナンセンス変異)である場合、NMDによる分解を一時的に抑え、リボソームにその誤った終止コドンを\"読み飛ばして\"翻訳を続けさせることで、たとえ完璧でなくても機能するタンパク質を作らせる——これがリードスルー療法です。品質管理システムを治療のために逆手に取る発想です。"
+    },
+    {
+      q: "Q10. 「真核生物の調節がなぜ多層的なのか」という問いに対する、この講義の結論として正しいものは？",
+      choices: [
+        "転写のON/OFFという1層だけでも、調節の解像度は十分に高いから多層は不要である",
+        "各層が独立に10倍程度の調節能力を持つ場合、4つの層が掛け算的に働くことで4層×10倍=1万倍という桁違いのダイナミックレンジが実現でき、さらに素早い応答と持続的な応答を層ごとに使い分けられるから",
+        "多層化は進化上の偶然であり、機能的な意味は特にない",
+        "多層化することで、むしろ調節の精度は低下してしまう"
+      ],
+      correct: 1,
+      explain: "転写ON/OFFという1つのレイヤーだけでは、調節の解像度はせいぜい10倍程度にとどまり、異常タンパク質の除去にも対応できません。転写・mRNA成熟化・RNA干渉・品質管理という4つの独立したレイヤーが、それぞれ10倍程度の調節能力を持って掛け算的に働くことで、理論上10×10×10×10=1万倍という精密なダイナミックレンジが実現します。さらに各層が独立に働くため、素早く反応したい場面(分解・翻訳レベル)とじっくり持続させたい場面(転写レベル)を柔軟に使い分けられます。"
+    },
+    {
+      q: "Q11. 演習1で「脳ではタンパク質A、肝臓ではタンパク質Bができる(N末端は同じ、C末端が違う)」という現象を選択的スプライシングで説明する際、絶対に落としてはいけない誤答上のポイントは？",
+      choices: [
+        "「脳と肝臓では別々の遺伝子が発現している」と誤答すること(問題文は\"遺伝子X\"という単一の遺伝子から両方が作られると明記している)",
+        "「両方とも同じタンパク質である」と誤答すること",
+        "「エキソンという用語を一切使わない」こと",
+        "「肝臓の方がアミノ酸数が多い」と誤答すること"
+      ],
+      correct: 0,
+      explain: "「脳と肝臓で違うタンパク質ができている」という現象だけを見ると、つい「それぞれ別の遺伝子が働いている」と早合点しがちですが、問題文は明確に「遺伝子X」という単一の遺伝子から両方のタンパク質ができると述べています。「同じ設計図(1つの遺伝子)から、\"編集方針\"の違いによって異なる製品ができる」という選択的スプライシングの本質を見失わないことが最重要のポイントです。"
+    },
+    {
+      q: "Q12. 演習2で問われた「Dicerの酵素活性」と「Argonauteの酵素活性」の違いとして正しい説明は？",
+      choices: [
+        "Dicerは長いdsRNAを認識し一定の長さ(21〜23塩基)に切断する\"非特異的な加工\"担当、Argonauteはその切断産物(ガイドRNA)を保持し相補的な標的mRNAを狙って切断する\"配列特異的な標的破壊\"担当。両者ともエンドヌクレアーゼだが基質と目的が異なる",
+        "DicerとArgonauteは全く同じ酵素であり、名前が違うだけである",
+        "Dicerは標的mRNAを直接切断し、Argonauteは長いdsRNAを切り出す(役割が逆)",
+        "DicerはRISC複合体そのものであり、Argonauteはその補助因子にすぎない"
+      ],
+      correct: 0,
+      explain: "Dicerは「加工係」として、あらゆる長いdsRNAを均一なサイズ(21〜23塩基)に切り出すことに専念します。Argonauteは「狙撃手」として、切り出された短いガイドRNAを使って特定の標的mRNAだけを正確に狙うことに専念します。両者ともエンドヌクレアーゼという分類は共通しますが、Dicerが\"非特異的な加工\"、Argonauteが\"配列特異的な標的破壊\"という、全く異なる目的で役割分担(専門分化)しています。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#34後編 確認テスト「RNAi応用+ncRNA+THEME3総合演習」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！THEME3「転写以降の遺伝子発現調節」が完璧に理解できています。次回THEME4(一遺伝子一酵素説)もスムーズに進めるはずです。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にNMD/Non-stop decay/No-go decayの違いと、多層調節の掛け算ロジックは要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはRNAiの応用とncRNAの6種類一覧から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#34後編 確認テスト「RNAi応用+ncRNA+THEME3総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

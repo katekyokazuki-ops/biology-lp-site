@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゼロからわかる高校生物 #35前編 確認テスト</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;max-width:900px;margin:0 auto;padding:24px;line-height:1.7;background:#f7f8fa;color:#222}
+  h1{font-size:1.7rem;margin-bottom:.3rem}
+  .lead,.result{background:#fff;padding:18px;border-radius:12px;margin-bottom:20px}
+  .q{background:#fff;padding:18px;border-radius:12px;margin:14px 0}
+  .q h2{font-size:1.05rem;margin-top:0}
+  label{display:block;margin:8px 0;padding:8px;border-radius:8px;cursor:pointer}
+  label:hover{background:#f0f2f5}
+  button{font-size:1rem;padding:12px 20px;border:0;border-radius:10px;cursor:pointer}
+  .explain{margin-top:12px;padding:12px;border-radius:8px;background:#f3f4f6;display:none}
+  .correct{font-weight:700}
+  .result{display:none;font-size:1.1rem}
+</style>
+</head>
+<body>
+<h1>ゼロからわかる高校生物 #35前編 確認テスト</h1>
+<div class="lead">
+  <p><strong>テーマ：</strong>一遺伝子一酵素説／ビードルとテータム／アカパンカビ／栄養要求性変異株／アルギニン合成経路／一遺伝子一ポリペプチド説／PKU</p>
+  <p>全12問・4択。最後に「採点する」を押すと、得点と各問の解説が表示されます。</p>
+</div>
+
+<form id="quiz">
+<div class="q" data-answer="b">
+<h2>Q1. ビードルとテータムがアカパンカビを用いた実験で明らかにしようとした中心的な問いはどれか。</h2>
+<label><input type="radio" name="q1" value="a"> DNAが二重らせん構造をとる理由</label>
+<label><input type="radio" name="q1" value="b"> 遺伝子が具体的に何を通して形質や代謝を決めるのか</label>
+<label><input type="radio" name="q1" value="c"> 染色体が細胞分裂でどのように移動するか</label>
+<label><input type="radio" name="q1" value="d"> RNAがDNAから複製される仕組み</label>
+<div class="explain">正解：B。遺伝子と代謝を結ぶ分子的な橋を明らかにし、「遺伝子は特定の酵素を作る指令書である」という考えにつながりました。</div>
+</div>
+
+<div class="q" data-answer="c">
+<h2>Q2. アカパンカビが実験材料として有利だった理由として最も適切でないものはどれか。</h2>
+<label><input type="radio" name="q2" value="a"> 栄養体が一倍体で、変異が表現型に現れやすい</label>
+<label><input type="radio" name="q2" value="b"> 最小培地で野生型が生育できる</label>
+<label><input type="radio" name="q2" value="c"> 二倍体なので潜性変異を隠しやすい</label>
+<label><input type="radio" name="q2" value="d"> X線で多数の変異株を得やすい</label>
+<div class="explain">正解：C。アカパンカビの栄養体は一倍体なので、変異を隠す正常アレルがなく、変異の効果が表現型に現れやすいことが利点です。</div>
+</div>
+
+<div class="q" data-answer="d">
+<h2>Q3. 栄養要求性変異株を選び出すとき、完全培地を最初に用いる主な目的は何か。</h2>
+<label><input type="radio" name="q3" value="a"> 野生型だけを死滅させるため</label>
+<label><input type="radio" name="q3" value="b"> 変異を新たに誘発するため</label>
+<label><input type="radio" name="q3" value="c"> どの酵素が欠損したかを直接測定するため</label>
+<label><input type="radio" name="q3" value="d"> 合成能力を失った変異株も生存・維持させるため</label>
+<div class="explain">正解：D。完全培地には多くの栄養素が含まれるため、合成能力を失った株も生存できます。その後、最小培地で生育できない株を選びます。</div>
+</div>
+
+<div class="q" data-answer="a">
+<h2>Q4. 「完全培地では育つが、最小培地では育たない」株は何と判断できるか。</h2>
+<label><input type="radio" name="q4" value="a"> 栄養要求性変異株</label>
+<label><input type="radio" name="q4" value="b"> 野生株</label>
+<label><input type="radio" name="q4" value="c"> 必ず致死変異株</label>
+<label><input type="radio" name="q4" value="d"> 必ずアルギニン要求株</label>
+<div class="explain">正解：A。何らかの物質を自力合成できなくなった栄養要求性変異株です。どの物質を要求するかは、添加実験でさらに調べます。</div>
+</div>
+
+<div class="q" data-answer="b">
+<h2>Q5. アルギニン合成経路を高校生物の模式図で表したものとして正しいものはどれか。</h2>
+<label><input type="radio" name="q5" value="a"> アルギニン → シトルリン → オルニチン</label>
+<label><input type="radio" name="q5" value="b"> オルニチン → シトルリン → アルギニン</label>
+<label><input type="radio" name="q5" value="c"> シトルリン → アルギニン → オルニチン</label>
+<label><input type="radio" name="q5" value="d"> オルニチン → アルギニン → シトルリン</label>
+<div class="explain">正解：B。模式的には、前駆体（糖・グルタミン酸側）→オルニチン→シトルリン→アルギニンの順です。</div>
+</div>
+
+<div class="q" data-answer="c">
+<h2>Q6. arg2変異株は、最小培地＋オルニチンでは育たないが、最小培地＋シトルリンでは育つ。この結果から最も適切に推定できることはどれか。</h2>
+<label><input type="radio" name="q6" value="a"> オルニチンより上流の反応が壊れている</label>
+<label><input type="radio" name="q6" value="b"> シトルリンからアルギニンへの反応が壊れている</label>
+<label><input type="radio" name="q6" value="c"> オルニチンからシトルリンへの反応が壊れている</label>
+<label><input type="radio" name="q6" value="d"> アルギニン合成経路は正常である</label>
+<div class="explain">正解：C。オルニチンを与えても先へ進めず、シトルリンを与えれば詰まりを飛び越えられるため、オルニチン→シトルリンの段階が障害されています。</div>
+</div>
+
+<div class="q" data-answer="a">
+<h2>Q7. 代謝経路の変異株を「下流の物質」で救済できる理由として最も適切なものはどれか。</h2>
+<label><input type="radio" name="q7" value="a"> 壊れた反応段階を飛び越えて、その先の正常な反応を利用できるから</label>
+<label><input type="radio" name="q7" value="b"> 下流物質が変異遺伝子そのものを修復するから</label>
+<label><input type="radio" name="q7" value="c"> 下流物質がX線の作用を打ち消すから</label>
+<label><input type="radio" name="q7" value="d"> 下流物質を加えると全遺伝子の発現量が増えるから</label>
+<div class="explain">正解：A。欠損酵素より下流の物質を外から与えると、障害された段階を迂回し、その先の正常な反応を使って最終産物まで進めます。</div>
+</div>
+
+<div class="q" data-answer="d">
+<h2>Q8. 最小培地では育たず、オルニチンでも育たず、シトルリンでも育たず、アルギニンを加えたときだけ育つ株はどれか。</h2>
+<label><input type="radio" name="q8" value="a"> 野生型</label>
+<label><input type="radio" name="q8" value="b"> arg1</label>
+<label><input type="radio" name="q8" value="c"> arg2</label>
+<label><input type="radio" name="q8" value="d"> arg3</label>
+<div class="explain">正解：D。arg3はシトルリン→アルギニンの段階が障害されているため、最終産物のアルギニンを直接与えた場合のみ救済されます。</div>
+</div>
+
+<div class="q" data-answer="b">
+<h2>Q9. ビードルとテータムの実験結果から導かれた「一遺伝子一酵素説」の核心として最も適切なものはどれか。</h2>
+<label><input type="radio" name="q9" value="a"> 1個体には1種類の酵素しか存在しない</label>
+<label><input type="radio" name="q9" value="b"> 1つの遺伝子が特定の酵素の形成に対応する</label>
+<label><input type="radio" name="q9" value="c"> すべての酵素は同じ遺伝子から作られる</label>
+<label><input type="radio" name="q9" value="d"> 遺伝子は代謝反応に関与しない</label>
+<div class="explain">正解：B。異なる遺伝子変異が代謝経路上の異なる酵素欠損に対応することから、遺伝子と酵素の対応関係が示されました。</div>
+</div>
+
+<div class="q" data-answer="c">
+<h2>Q10. 「一遺伝子一酵素説」が「一遺伝子一ポリペプチド説」へ修正された主な理由はどれか。</h2>
+<label><input type="radio" name="q10" value="a"> 酵素はすべてRNAでできていることが判明したため</label>
+<label><input type="radio" name="q10" value="b"> 遺伝子が代謝と無関係だと判明したため</label>
+<label><input type="radio" name="q10" value="c"> ヘモグロビンなど酵素ではないタンパク質も遺伝子産物だと分かったため</label>
+<label><input type="radio" name="q10" value="d"> アカパンカビの実験結果が誤りだと判明したため</label>
+<div class="explain">正解：C。遺伝子産物には、ヘモグロビン・抗体・構造タンパク質など酵素ではないタンパク質もあるため、「酵素」より広い「ポリペプチド」という表現へ拡張されました。</div>
+</div>
+
+<div class="q" data-answer="a">
+<h2>Q11. 現代的理解で「1遺伝子・複数ポリペプチド」が起こりうることと最も関係が深い仕組みはどれか。</h2>
+<label><input type="radio" name="q11" value="a"> 選択的スプライシング</label>
+<label><input type="radio" name="q11" value="b"> DNA複製</label>
+<label><input type="radio" name="q11" value="c"> 半保存的複製</label>
+<label><input type="radio" name="q11" value="d"> 独立の法則</label>
+<div class="explain">正解：A。選択的スプライシングにより、1つの遺伝子から異なるmRNA、ひいては複数のポリペプチドが生じうるという理解へ発展しました。</div>
+</div>
+
+<div class="q" data-answer="d">
+<h2>Q12. フェニルケトン尿症（PKU）を一遺伝子一酵素説の枠組みで説明したものとして最も適切なものはどれか。</h2>
+<label><input type="radio" name="q12" value="a"> PAHが過剰に働くためPheが不足する</label>
+<label><input type="radio" name="q12" value="b"> TyrがPheへ変換できなくなる</label>
+<label><input type="radio" name="q12" value="c"> メラニン合成酵素の欠損だけで起こる</label>
+<label><input type="radio" name="q12" value="d"> PAH遺伝子の変異によりPhe→Tyrの反応が障害され、上流のPheが蓄積する</label>
+<div class="explain">正解：D。PKUではフェニルアラニン水酸化酵素（PAH）の欠損によりPhe→Tyrがブロックされ、上流のPheが蓄積し、下流のTyrが不足します。</div>
+</div>
+
+<button type="button" onclick="grade()">採点する</button>
+</form>
+
+<div id="result" class="result"></div>
+
+<script>
+function grade(){
+  const qs=document.querySelectorAll('.q');
+  let score=0;
+  qs.forEach((q,i)=>{
+    const ans=q.dataset.answer;
+    const checked=document.querySelector('input[name="q'+(i+1)+'"]:checked');
+    if(checked && checked.value===ans) score++;
+    q.querySelector('.explain').style.display='block';
+  });
+  const pct=Math.round(score/qs.length*100);
+  let msg='';
+  if(score===12) msg='完璧です。実験結果から結論までの論理が定着しています。';
+  else if(score>=10) msg='かなり理解できています。間違えた問題の「上流・下流」と救済パターンを復習しましょう。';
+  else if(score>=7) msg='基本はつかめています。変異株×添加物質の生育パターンをもう一度整理すると伸びます。';
+  else msg='動画を見直しながら、①完全培地と最小培地 ②arg1〜3 ③下流物質による救済、の3点から復習しましょう。';
+  const r=document.getElementById('result');
+  r.style.display='block';
+  r.innerHTML='<strong>'+score+' / '+qs.length+' 点（'+pct+'%）</strong><br>'+msg;
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

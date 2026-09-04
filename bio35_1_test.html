@@ -1,165 +1,390 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ゼロからわかる高校生物 #35前編 確認テスト</title>
+<div id="quiz-root"></div>
 <style>
-  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;max-width:900px;margin:0 auto;padding:24px;line-height:1.7;background:#f7f8fa;color:#222}
-  h1{font-size:1.7rem;margin-bottom:.3rem}
-  .lead,.result{background:#fff;padding:18px;border-radius:12px;margin-bottom:20px}
-  .q{background:#fff;padding:18px;border-radius:12px;margin:14px 0}
-  .q h2{font-size:1.05rem;margin-top:0}
-  label{display:block;margin:8px 0;padding:8px;border-radius:8px;cursor:pointer}
-  label:hover{background:#f0f2f5}
-  button{font-size:1rem;padding:12px 20px;border:0;border-radius:10px;cursor:pointer}
-  .explain{margin-top:12px;padding:12px;border-radius:8px;background:#f3f4f6;display:none}
-  .correct{font-weight:700}
-  .result{display:none;font-size:1.1rem}
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
 </style>
-</head>
-<body>
-<h1>ゼロからわかる高校生物 #35前編 確認テスト</h1>
-<div class="lead">
-  <p><strong>テーマ：</strong>一遺伝子一酵素説／ビードルとテータム／アカパンカビ／栄養要求性変異株／アルギニン合成経路／一遺伝子一ポリペプチド説／PKU</p>
-  <p>全12問・4択。最後に「採点する」を押すと、得点と各問の解説が表示されます。</p>
-</div>
-
-<form id="quiz">
-<div class="q" data-answer="b">
-<h2>Q1. ビードルとテータムがアカパンカビを用いた実験で明らかにしようとした中心的な問いはどれか。</h2>
-<label><input type="radio" name="q1" value="a"> DNAが二重らせん構造をとる理由</label>
-<label><input type="radio" name="q1" value="b"> 遺伝子が具体的に何を通して形質や代謝を決めるのか</label>
-<label><input type="radio" name="q1" value="c"> 染色体が細胞分裂でどのように移動するか</label>
-<label><input type="radio" name="q1" value="d"> RNAがDNAから複製される仕組み</label>
-<div class="explain">正解：B。遺伝子と代謝を結ぶ分子的な橋を明らかにし、「遺伝子は特定の酵素を作る指令書である」という考えにつながりました。</div>
-</div>
-
-<div class="q" data-answer="c">
-<h2>Q2. アカパンカビが実験材料として有利だった理由として最も適切でないものはどれか。</h2>
-<label><input type="radio" name="q2" value="a"> 栄養体が一倍体で、変異が表現型に現れやすい</label>
-<label><input type="radio" name="q2" value="b"> 最小培地で野生型が生育できる</label>
-<label><input type="radio" name="q2" value="c"> 二倍体なので潜性変異を隠しやすい</label>
-<label><input type="radio" name="q2" value="d"> X線で多数の変異株を得やすい</label>
-<div class="explain">正解：C。アカパンカビの栄養体は一倍体なので、変異を隠す正常アレルがなく、変異の効果が表現型に現れやすいことが利点です。</div>
-</div>
-
-<div class="q" data-answer="d">
-<h2>Q3. 栄養要求性変異株を選び出すとき、完全培地を最初に用いる主な目的は何か。</h2>
-<label><input type="radio" name="q3" value="a"> 野生型だけを死滅させるため</label>
-<label><input type="radio" name="q3" value="b"> 変異を新たに誘発するため</label>
-<label><input type="radio" name="q3" value="c"> どの酵素が欠損したかを直接測定するため</label>
-<label><input type="radio" name="q3" value="d"> 合成能力を失った変異株も生存・維持させるため</label>
-<div class="explain">正解：D。完全培地には多くの栄養素が含まれるため、合成能力を失った株も生存できます。その後、最小培地で生育できない株を選びます。</div>
-</div>
-
-<div class="q" data-answer="a">
-<h2>Q4. 「完全培地では育つが、最小培地では育たない」株は何と判断できるか。</h2>
-<label><input type="radio" name="q4" value="a"> 栄養要求性変異株</label>
-<label><input type="radio" name="q4" value="b"> 野生株</label>
-<label><input type="radio" name="q4" value="c"> 必ず致死変異株</label>
-<label><input type="radio" name="q4" value="d"> 必ずアルギニン要求株</label>
-<div class="explain">正解：A。何らかの物質を自力合成できなくなった栄養要求性変異株です。どの物質を要求するかは、添加実験でさらに調べます。</div>
-</div>
-
-<div class="q" data-answer="b">
-<h2>Q5. アルギニン合成経路を高校生物の模式図で表したものとして正しいものはどれか。</h2>
-<label><input type="radio" name="q5" value="a"> アルギニン → シトルリン → オルニチン</label>
-<label><input type="radio" name="q5" value="b"> オルニチン → シトルリン → アルギニン</label>
-<label><input type="radio" name="q5" value="c"> シトルリン → アルギニン → オルニチン</label>
-<label><input type="radio" name="q5" value="d"> オルニチン → アルギニン → シトルリン</label>
-<div class="explain">正解：B。模式的には、前駆体（糖・グルタミン酸側）→オルニチン→シトルリン→アルギニンの順です。</div>
-</div>
-
-<div class="q" data-answer="c">
-<h2>Q6. arg2変異株は、最小培地＋オルニチンでは育たないが、最小培地＋シトルリンでは育つ。この結果から最も適切に推定できることはどれか。</h2>
-<label><input type="radio" name="q6" value="a"> オルニチンより上流の反応が壊れている</label>
-<label><input type="radio" name="q6" value="b"> シトルリンからアルギニンへの反応が壊れている</label>
-<label><input type="radio" name="q6" value="c"> オルニチンからシトルリンへの反応が壊れている</label>
-<label><input type="radio" name="q6" value="d"> アルギニン合成経路は正常である</label>
-<div class="explain">正解：C。オルニチンを与えても先へ進めず、シトルリンを与えれば詰まりを飛び越えられるため、オルニチン→シトルリンの段階が障害されています。</div>
-</div>
-
-<div class="q" data-answer="a">
-<h2>Q7. 代謝経路の変異株を「下流の物質」で救済できる理由として最も適切なものはどれか。</h2>
-<label><input type="radio" name="q7" value="a"> 壊れた反応段階を飛び越えて、その先の正常な反応を利用できるから</label>
-<label><input type="radio" name="q7" value="b"> 下流物質が変異遺伝子そのものを修復するから</label>
-<label><input type="radio" name="q7" value="c"> 下流物質がX線の作用を打ち消すから</label>
-<label><input type="radio" name="q7" value="d"> 下流物質を加えると全遺伝子の発現量が増えるから</label>
-<div class="explain">正解：A。欠損酵素より下流の物質を外から与えると、障害された段階を迂回し、その先の正常な反応を使って最終産物まで進めます。</div>
-</div>
-
-<div class="q" data-answer="d">
-<h2>Q8. 最小培地では育たず、オルニチンでも育たず、シトルリンでも育たず、アルギニンを加えたときだけ育つ株はどれか。</h2>
-<label><input type="radio" name="q8" value="a"> 野生型</label>
-<label><input type="radio" name="q8" value="b"> arg1</label>
-<label><input type="radio" name="q8" value="c"> arg2</label>
-<label><input type="radio" name="q8" value="d"> arg3</label>
-<div class="explain">正解：D。arg3はシトルリン→アルギニンの段階が障害されているため、最終産物のアルギニンを直接与えた場合のみ救済されます。</div>
-</div>
-
-<div class="q" data-answer="b">
-<h2>Q9. ビードルとテータムの実験結果から導かれた「一遺伝子一酵素説」の核心として最も適切なものはどれか。</h2>
-<label><input type="radio" name="q9" value="a"> 1個体には1種類の酵素しか存在しない</label>
-<label><input type="radio" name="q9" value="b"> 1つの遺伝子が特定の酵素の形成に対応する</label>
-<label><input type="radio" name="q9" value="c"> すべての酵素は同じ遺伝子から作られる</label>
-<label><input type="radio" name="q9" value="d"> 遺伝子は代謝反応に関与しない</label>
-<div class="explain">正解：B。異なる遺伝子変異が代謝経路上の異なる酵素欠損に対応することから、遺伝子と酵素の対応関係が示されました。</div>
-</div>
-
-<div class="q" data-answer="c">
-<h2>Q10. 「一遺伝子一酵素説」が「一遺伝子一ポリペプチド説」へ修正された主な理由はどれか。</h2>
-<label><input type="radio" name="q10" value="a"> 酵素はすべてRNAでできていることが判明したため</label>
-<label><input type="radio" name="q10" value="b"> 遺伝子が代謝と無関係だと判明したため</label>
-<label><input type="radio" name="q10" value="c"> ヘモグロビンなど酵素ではないタンパク質も遺伝子産物だと分かったため</label>
-<label><input type="radio" name="q10" value="d"> アカパンカビの実験結果が誤りだと判明したため</label>
-<div class="explain">正解：C。遺伝子産物には、ヘモグロビン・抗体・構造タンパク質など酵素ではないタンパク質もあるため、「酵素」より広い「ポリペプチド」という表現へ拡張されました。</div>
-</div>
-
-<div class="q" data-answer="a">
-<h2>Q11. 現代的理解で「1遺伝子・複数ポリペプチド」が起こりうることと最も関係が深い仕組みはどれか。</h2>
-<label><input type="radio" name="q11" value="a"> 選択的スプライシング</label>
-<label><input type="radio" name="q11" value="b"> DNA複製</label>
-<label><input type="radio" name="q11" value="c"> 半保存的複製</label>
-<label><input type="radio" name="q11" value="d"> 独立の法則</label>
-<div class="explain">正解：A。選択的スプライシングにより、1つの遺伝子から異なるmRNA、ひいては複数のポリペプチドが生じうるという理解へ発展しました。</div>
-</div>
-
-<div class="q" data-answer="d">
-<h2>Q12. フェニルケトン尿症（PKU）を一遺伝子一酵素説の枠組みで説明したものとして最も適切なものはどれか。</h2>
-<label><input type="radio" name="q12" value="a"> PAHが過剰に働くためPheが不足する</label>
-<label><input type="radio" name="q12" value="b"> TyrがPheへ変換できなくなる</label>
-<label><input type="radio" name="q12" value="c"> メラニン合成酵素の欠損だけで起こる</label>
-<label><input type="radio" name="q12" value="d"> PAH遺伝子の変異によりPhe→Tyrの反応が障害され、上流のPheが蓄積する</label>
-<div class="explain">正解：D。PKUではフェニルアラニン水酸化酵素（PAH）の欠損によりPhe→Tyrがブロックされ、上流のPheが蓄積し、下流のTyrが不足します。</div>
-</div>
-
-<button type="button" onclick="grade()">採点する</button>
-</form>
-
-<div id="result" class="result"></div>
-
 <script>
-function grade(){
-  const qs=document.querySelectorAll('.q');
-  let score=0;
-  qs.forEach((q,i)=>{
-    const ans=q.dataset.answer;
-    const checked=document.querySelector('input[name="q'+(i+1)+'"]:checked');
-    if(checked && checked.value===ans) score++;
-    q.querySelector('.explain').style.display='block';
-  });
-  const pct=Math.round(score/qs.length*100);
-  let msg='';
-  if(score===12) msg='完璧です。実験結果から結論までの論理が定着しています。';
-  else if(score>=10) msg='かなり理解できています。間違えた問題の「上流・下流」と救済パターンを復習しましょう。';
-  else if(score>=7) msg='基本はつかめています。変異株×添加物質の生育パターンをもう一度整理すると伸びます。';
-  else msg='動画を見直しながら、①完全培地と最小培地 ②arg1〜3 ③下流物質による救済、の3点から復習しましょう。';
-  const r=document.getElementById('result');
-  r.style.display='block';
-  r.innerHTML='<strong>'+score+' / '+qs.length+' 点（'+pct+'%）</strong><br>'+msg;
-  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-}
+(function(){
+  const questions = [
+    {
+      q: "Q1. ビードルとテータムが、実験材料としてヒトのような二倍体生物ではなく、一倍体のアカパンカビを選んだ最大の理由は？",
+      choices: [
+        "二倍体生物ではX線を照射しても変異が全く起こらないから",
+        "二倍体では、片方のアレルが変異しても正常なアレルが機能するため変異が隠れてしまうが、一倍体には隠してくれる正常なコピーが存在せず、変異の効果が必ず表現型に直接現れるから",
+        "二倍体生物は最小培地で全く生育できないから",
+        "アカパンカビの方が二倍体生物よりも遺伝子の数が多いから"
+      ],
+      correct: 1,
+      explain: "二倍体生物では、片方のアレルが変異で壊れても、もう片方の正常なアレルが働けば表面上は正常に見えてしまいます(潜性)。一方、アカパンカビの栄養体は一倍体(n)であり、変異を隠してくれる正常なコピーが存在しないため、1つの遺伝子の変異が必ず表現型に直接現れます。これがビードルとテータムにとって決定的に重要な利点でした。"
+    },
+    {
+      q: "Q2. 「最小培地」と「完全培地」の役割分担として正しい説明は？",
+      choices: [
+        "最小培地は変異株を\"生かしておく\"ための培地、完全培地は変異株を\"見つける\"ためのスクリーニング培地",
+        "最小培地は必要最低限の栄養素しか含まず変異株を検出する\"ふるい分け\"培地、完全培地はあらゆる栄養素を含み合成能力を失った変異株でも生存できる\"維持\"培地",
+        "最小培地と完全培地は全く同じ成分であり、名前が違うだけである",
+        "最小培地でも完全培地でも、野生型アカパンカビは生育できない"
+      ],
+      correct: 1,
+      explain: "最小培地は炭素源・無機塩・ビオチンなど必要最低限の成分しか含まず、合成能力を失った変異株はここで生育できません(ふるい分け=スクリーニング)。完全培地はアミノ酸20種・ビタミン・核酸まですべて含むため、合成能力を失った変異株でも外から材料をもらって生存できます(維持)。この2つを使い分けることで初めて、変異株を「見つけて、なおかつ死なせずに保存する」という両方の目的が達成できます。"
+    },
+    {
+      q: "Q3. 栄養要求性変異株を分離する5段階の手順のうち、「完全培地では育つが最小培地では育たない」という条件によって行われるのは何のステップか？",
+      choices: [
+        "X線照射によるランダムな変異誘発のステップ",
+        "その変異株が\"栄養要求性変異株\"であることを確定するステップ",
+        "どの物質を加えれば救済されるかによって変異株を分類する最終ステップ",
+        "野生株を対照群として準備するステップ"
+      ],
+      correct: 1,
+      explain: "STEP1(X線照射)→STEP2(完全培地で維持)→STEP3(最小培地で判定)ときて、STEP4で「完全培地では育つが最小培地では育たない」という株を、栄養要求性変異株として確定します。この後さらにSTEP5で、最小培地に特定の物質を1つずつ加えて、どの物質で生育が回復するかによって、より詳しく分類していきます。"
+    },
+    {
+      q: "Q4. アルギニン合成経路(前駆体→酵素A→オルニチン→酵素B→シトルリン→酵素C→アルギニン)において、遺伝子Bが変異した変異株②に「オルニチン」を与えても救済されない理由は？",
+      choices: [
+        "オルニチンはそもそもこの経路に無関係な物質だから",
+        "変異株②は酵素Aが正常なため、オルニチン自体はすでに自力で作れているが、その先(オルニチン→シトルリン)の反応(酵素B)が壊れているため、オルニチンを追加で与えても意味がないから",
+        "変異株②はオルニチンに対してアレルギー反応を起こすから",
+        "変異株②はどんな物質を与えても絶対に生育できないから"
+      ],
+      correct: 1,
+      explain: "変異株②は酵素Bが壊れているため、オルニチンからシトルリンへの反応が止まっています。しかし酵素Aは正常なので、オルニチン自体はすでに自力で作れています。すでに自力で作れている物質を外から追加で与えても、詰まっている場所(酵素Bのところ)より先には進めないため、救済にはなりません。救済するには、詰まっている場所より下流の物質(シトルリンかアルギニン)を与える必要があります。"
+    },
+    {
+      q: "Q5. 「観察→中間仮説→結論」という論理チェーンにおいて、「下流の物質を加えれば救済できるが、上流の物質では救済できない」という観察から導かれる中間仮説の内容として正しいものは？",
+      choices: [
+        "同じ表現型でも変異している遺伝子が違うため差が出る、という仮説",
+        "代謝経路は段階的であり、各段階を特定の酵素が触媒しているという仮説",
+        "遺伝子は全く関係なく、環境要因だけで表現型が決まるという仮説",
+        "アカパンカビは常に完全培地でしか生育できないという仮説"
+      ],
+      correct: 1,
+      explain: "「下流は救済できるが上流はできない」という観察(観察2)からは、「代謝経路は1段階ではなく複数の段階からなり、各段階を特定の酵素が担当している」という中間仮説Bが導かれます。「同じ表現型でも変異遺伝子が違う」という仮説Aは、その前の観察1(救済パターンにバリエーションがある)から導かれるものです。"
+    },
+    {
+      q: "Q6. 一遺伝子一酵素説(1941年)が、分子生物学の歴史において特に驚くべき点として挙げられているのは？",
+      choices: [
+        "DNAの二重らせん構造の発見(1953年)よりも12年も早く発表された学説であること",
+        "アカパンカビは現在の生物学ではもう研究に使われていないこと",
+        "この学説は現代では完全に否定され、使われていないこと",
+        "この学説は数学のみを用いて導かれ、実験は一切行われなかったこと"
+      ],
+      correct: 0,
+      explain: "ビードルとテータムは、DNAという物質の構造(二重らせん)を全く知らないまま、「遺伝子が何か(酵素)を作っている」という機能面の本質を、実験だけで先に突き止めました。この学説の発表(1941年)は、DNAの二重らせん構造の発見(1953年)よりも12年も早く、「構造が分かる前に、機能の本質が先に見抜かれていた」という、科学史上非常に興味深い順序になっています。"
+    },
+    {
+      q: "Q7. ヘモグロビンの発見(1949年、ポーリングら)が、一遺伝子一酵素説の\"名前の限界\"を明らかにした理由は？",
+      choices: [
+        "ヘモグロビンは遺伝子から作られないタンパク質だから",
+        "ヘモグロビンは化学反応を触媒する酵素ではないにもかかわらず、遺伝子変異が明確にこのタンパク質の異常(鎌状赤血球症)を引き起こしていたから",
+        "ヘモグロビンはアカパンカビにしか存在しないタンパク質だから",
+        "ヘモグロビンは遺伝子とは無関係に、環境要因だけで作られるから"
+      ],
+      correct: 1,
+      explain: "「一遺伝子一酵素説」という名前は、遺伝子が作るものを\"酵素\"に限定していました。しかしヘモグロビンは酸素運搬を担うタンパク質であり、化学反応を触媒する酵素ではありません。それにもかかわらず、遺伝子(β鎖遺伝子)の変異(Glu→Val)が明確にこのタンパク質の異常(鎌状赤血球症)を引き起こしていたことから、「遺伝子は酵素だけを作るわけではない」という学説の限界が明らかになりました。"
+    },
+    {
+      q: "Q8. 一遺伝子一酵素説から一遺伝子一ポリペプチド説への変遷を、正しく捉えた説明はどれか？",
+      choices: [
+        "ビードルとテータムの実験結果自体が誤りだったため、後から訂正された",
+        "ビードルとテータムの実験結果自体は今も正しく、『酵素』という限定を『ポリペプチド』へと広げることで、学説の適用範囲が拡張された",
+        "一遺伝子一酵素説は現代では完全に否定され、跡形もなく消え去った",
+        "一遺伝子一ポリペプチド説は、一遺伝子一酵素説と全く無関係の別の学説である"
+      ],
+      correct: 1,
+      explain: "アカパンカビの3つの変異株が、それぞれ異なる酵素の欠損に対応していたという観察事実そのものは、今日に至るまで一切否定されていません。ただ、その観察から導かれた「一遺伝子一酵素」という一般化の言葉が、その後の発見(非酵素タンパクの存在)によって、より広く精密な「一遺伝子一ポリペプチド」という形に磨き上げられました。「誤りの訂正」ではなく「適用範囲の拡張」として捉えるのが正確な理解です。"
+    },
+    {
+      q: "Q9. フェニルケトン尿症(PKU)において、フェニルアラニン(Phe)が体内に過剰蓄積し、一方でチロシン(Tyr)が不足する理由は？",
+      choices: [
+        "Pheを分解する酵素PAHが先天的に欠損しており、Phe→Tyrの反応がブロックされるため",
+        "Tyrを分解する酵素が過剰に働きすぎるため",
+        "PheとTyrはそもそも体内で全く別々の独立した経路で作られるため",
+        "PKU患者は食事からTyrだけを一切摂取できないため"
+      ],
+      correct: 0,
+      explain: "PKU患者では、フェニルアラニン水酸化酵素(PAH)が先天的に欠損しており、Phe→Tyrの反応がブロックされます。これはアカパンカビの変異株②(酵素Bが壊れてオルニチン→シトルリンの反応が止まる)と全く同じ論理構造です。反応がブロックされた結果、上流のPheが過剰蓄積して脳に神経毒性をもたらし、下流のTyrが欠乏してメラニン合成が低下します。"
+    },
+    {
+      q: "Q10. アルギニン合成経路の「酵素B(オルニチントランスカルバモイラーゼ、OTC)」が、ヒトの体内で果たしている役割は？",
+      choices: [
+        "免疫グロブリンの合成を触媒する",
+        "ヒトの尿素回路においてオルニチンからシトルリンを合成する反応を触媒し、この酵素が先天的に欠損する疾患(OTC欠損症)ではアンモニアが蓄積し高アンモニア血症を引き起こす",
+        "コラーゲンの構造を安定化させる",
+        "ヘモグロビンの酸素運搬能力を高める"
+      ],
+      correct: 1,
+      explain: "アカパンカビのアルギニン合成経路の酵素Bは、正式には「オルニチントランスカルバモイラーゼ(OTC)」といい、ヒトの尿素回路(体内の有毒なアンモニアを尿素に変えて排出する経路)でも全く同じ反応(オルニチン→シトルリン)を担当しています。この酵素が生まれつき欠損する疾患をOTC欠損症と呼び、アンモニアが分解されずに蓄積し高アンモニア血症という重篤な状態を引き起こします。"
+    },
+    {
+      q: "Q11. 1958年ノーベル生理学・医学賞を、ビードル・テータムと共同受賞したジョシュア・レーダーバーグの功績は何か？",
+      choices: [
+        "DNAの二重らせん構造を発見した",
+        "細菌(大腸菌)が接合して遺伝子を交換する(遺伝子組換え)現象を発見した",
+        "アカパンカビの栄養要求性変異株を初めて分離した",
+        "フェニルケトン尿症の新生児スクリーニングを開発した"
+      ],
+      correct: 1,
+      explain: "レーダーバーグはテータムの弟子にあたる人物で、アカパンカビではなく大腸菌を使い、「細菌同士が接合(Conjugation)して遺伝子を交換する」という、ビードル&テータムの実験とは全く別の現象を発見した功績で、同じ年に同時受賞しています。1958年のノーベル賞は「遺伝子の生化学的機能」という大きなテーマのもとで、3人の異なる功績が同時に評価された珍しい形でした。"
+    },
+    {
+      q: "Q12. 変異株×培地の生育表を左から右へ(最小培地→+オルニチン→+シトルリン→+アルギニン)眺めたとき、「○が最初に現れる列」が示しているものは？",
+      choices: [
+        "その変異株の生育速度の速さ",
+        "その変異株において壊れている酵素の位置(その列より上流のどこかで経路がブロックされている)",
+        "その変異株が野生株より優れていること",
+        "その培地に含まれる物質の総数"
+      ],
+      correct: 1,
+      explain: "生育表を左から右へ見ていくと、「✕が並んだ後、あるところから急に○に変わり、そこから先はずっと○が続く」という階段状のパターンが現れます。この「✕から○に切り替わる境界」が、まさにその変異株がどこで詰まっているか(壊れた酵素の位置)を示しています。例えばarg2株はシトルリンの列から○に変わるので、酵素B(オルニチン→シトルリン)が壊れていると分かります。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#35前編 確認テスト「一遺伝子一酵素説」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！一遺伝子一酵素説の論理構造が完璧に理解できています。後編のFINAL総合演習も自信を持って挑めます。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に救済パターンの読み取りと、学説の限界・発展の部分は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは最小培地と完全培地の役割分担から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#35前編 確認テスト「一遺伝子一酵素説」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
 </script>
-</body>
-</html>

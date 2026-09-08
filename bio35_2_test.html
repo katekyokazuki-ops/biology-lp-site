@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. PKU・アルビノ・アルカプトン尿症という3つの疾患が、アカパンカビのarg1・arg2・arg3の3変異株と対応するとされる根拠は？",
+      choices: [
+        "3つとも全く同じ症状を示すから",
+        "3つとも、同じチロシン代謝経路上の異なる地点で、それぞれ異なる酵素(PAH・チロシナーゼ・HGD)が欠損することで生じる、\"ヒトの変異株\"だから",
+        "3つとも治療法が全く同じだから",
+        "3つとも同じ1つの遺伝子の変異によって起こるから"
+      ],
+      correct: 1,
+      explain: "PKU(PAH欠損)、アルビノ(チロシナーゼ欠損)、アルカプトン尿症(HGD欠損)は、いずれもPhe→Tyr→(枝分かれ)→メラニン/ホモゲンチジン酸という1本の代謝経路上の、それぞれ異なる地点での酵素欠損によって生じます。「経路のどこで詰まるかによって症状が全く違ってくる」という論理は、アカパンカビのアルギニン合成経路における3つの変異株(arg1・arg2・arg3)と全く同じ構造です。"
+    },
+    {
+      q: "Q2. イギリスの医師アーチボルド・ギャロッドによるアルカプトン尿症の報告が、科学史上重要とされる理由は？",
+      choices: [
+        "ビードルとテータムのアカパンカビ実験より数十年も早く、『遺伝子の異常が代謝の異常を引き起こす』という発想の先駆けとなる観察を行っていたから",
+        "ギャロッドはビードルとテータムの実験を直接手伝った共同研究者だったから",
+        "ギャロッドはアカパンカビを用いて一遺伝子一酵素説を最初に証明したから",
+        "ギャロッドの報告は現代では完全に誤りだったことが判明しているから"
+      ],
+      correct: 0,
+      explain: "20世紀初頭、ギャロッドはアルカプトン尿症を「メンデルの法則に従って遺伝する、生まれつきの代謝異常」として報告しました。これは1941年のビードル&テータムの実験より数十年も早く、「遺伝子の異常が代謝の異常を引き起こす」という発想の先駆けとなった、歴史的に重要な観察でした。"
+    },
+    {
+      q: "Q3. 「代謝ブロックの三徴」に含まれない要素はどれか？",
+      choices: [
+        "原因酵素より上流の物質の蓄積",
+        "下流の物質の欠乏",
+        "蓄積した上流物質が引き起こす、代替経路の活性化とその産物の毒性",
+        "原因となった遺伝子が完全に消失すること"
+      ],
+      correct: 3,
+      explain: "代謝ブロックの三徴は、①上流物質の蓄積②下流物質の欠乏③代替経路の暴走、の3点です。これはPKUに限らず、ガラクトース血症やホモシスチン尿症など、ほぼ全ての先天性代謝異常に共通する普遍的な病態パターンです。「遺伝子が完全に消失する」ことは必須要素ではなく、あくまで特定の酵素の機能が失われることが本質です。"
+    },
+    {
+      q: "Q4. FINAL問1で、trpR遺伝子(調節遺伝子)を欠損させた変異株Xと、オペレーター配列自体を変異させた変異株Yは、どちらもトリプトファンの有無にかかわらず高発現(構成的発現)を示す。この2つの変異が、外部から正常な因子を導入する「相補性テスト」でどう区別できるか？",
+      choices: [
+        "どちらも正常なリプレッサーを外から導入すれば、必ず調節機能が回復する",
+        "変異株X(trpR欠損)は正常なtrpR遺伝子を導入すれば調節機能が回復する(トランス変異)が、変異株Y(オペレーター変異)は正常なリプレッサーを導入しても座る場所自体がないため回復しない(シス変異)",
+        "どちらも正常な因子を導入しても、絶対に調節機能は回復しない",
+        "変異株Xと変異株Yは分子機構的に全く区別がつかない"
+      ],
+      correct: 1,
+      explain: "変異株X(trpR欠損)は\"タンパク質の設計図\"が壊れているだけなので、正常なtrpR遺伝子を導入すれば正常なアポリプレッサーが作られ、調節機能が回復します(トランス変異)。一方、変異株Y(オペレーター配列変異)は\"DNA上の結合座席\"そのものが壊れているので、外から正常なリプレッサーをいくら導入しても座る場所がなく、調節機能は回復しません(シス変異)。表現型(高発現)は同じでも、分子機構(トランスかシスか)は全く異なります。"
+    },
+    {
+      q: "Q5. 「結果(表現型)が同じだからといって、原因(分子機構)まで同じとは限らない」という視点が、FINAL問1で特に重要だとされる、より実践的な理由は？",
+      choices: [
+        "見た目が同じ変異なら常に同じ治療法で対応できるから",
+        "遺伝子治療で\"何を\"補えばよいかという治療戦略の選択に直結する、極めて実践的な問いだから",
+        "この視点は理論上の話にすぎず、実際の医療現場では全く使われていないから",
+        "シス変異とトランス変異は結局同じ結果になるので区別する意味がないから"
+      ],
+      correct: 1,
+      explain: "トランス変異(遺伝子Xの欠損)は、正常な遺伝子を(別の場所からでも)導入すれば救済できますが、シス変異(オペレーターYの変異)は、たとえ正常なタンパク質をどれだけ持ってきても、DNA配列自体を修復しない限り救済されません。この違いは「遺伝子治療で何を標的にすべきか」という、実際の治療戦略に直結する重要な問いです。"
+    },
+    {
+      q: "Q6. FINAL問2で、HDAC阻害薬(ボリノスタット)が癌抑制遺伝子の発現を回復させる仕組みとして正しい因果連鎖は？",
+      choices: [
+        "HDAC阻害→アセチル化が維持される→ヒストンの正電荷が中和されたまま→DNAとの静電引力が弱まりクロマチンが緩む→転写因子がアクセス可能になり発現が回復する",
+        "HDAC阻害→DNA配列そのものが書き換えられる→遺伝子が新しく作られる",
+        "HDAC阻害→ヒストンが完全に分解される→DNAが露出しすぎて細胞が死ぬ",
+        "HDAC阻害→メチル化が急激に進行し発現が完全に停止する"
+      ],
+      correct: 0,
+      explain: "HDAC(脱アセチル化酵素)を阻害すると、ヒストンにアセチル基が付いたまま維持されます。ヒストンの正電荷(Lys側鎖)が中和されたままの状態が保たれ、DNAとの静電引力(クーロン力)が弱まり、クロマチンが緩んでユークロマチン化します。これにより基本転写因子やアクチベーターがアクセス可能になり、沈黙していた癌抑制遺伝子の発現が回復します。"
+    },
+    {
+      q: "Q7. HDAC阻害薬によるエピジェネティック治療が、従来の細胞毒性型抗癌剤と根本的に異なる点は？",
+      choices: [
+        "DNA配列自体を変えずに、クロマチンの修飾状態(発現のしやすさ)を変えることで治療効果を得る点",
+        "従来の抗癌剤と全く同じ仕組みで、名前が違うだけである",
+        "エピジェネティック治療は必ずDNAを切断することで効果を発揮する",
+        "従来の抗癌剤は正常な遺伝子には一切作用しない点で異なる"
+      ],
+      correct: 0,
+      explain: "従来の細胞毒性型抗癌剤は、DNA自体に損傷を与えたり複製を阻害したりします。一方エピジェネティック治療(HDAC阻害薬等)は、DNA配列自体は変えず、ヒストン修飾などのクロマチン状態を変化させることで、本来発現すべき遺伝子(癌抑制遺伝子など)の発現を回復させます。「遺伝情報の解読は配列だけでは決まらない」というエピジェネティクスの本質を体現した、全く異なる治療パラダイムです。"
+    },
+    {
+      q: "Q8. FINAL問3で、siRNAによるノックダウンが「100%ではなく80%」にとどまる理由として、この講義が挙げていないものはどれか？",
+      choices: [
+        "siRNAは既存のmRNAを分解するが、すでに翻訳されて存在するタンパク質自体は分解できないため",
+        "RISCによる標的認識は完全ではなく、一部のmRNAは分解を逃れるため",
+        "siRNAの導入効率も100%ではなく、転写自体は続いているためmRNAが継続供給されるため",
+        "この細胞では遺伝子Gが物理的に完全に破壊されているため"
+      ],
+      correct: 3,
+      explain: "100%にならない理由として挙げられているのは、①既存タンパク質は分解できない②RISCの標的認識が不完全③siRNAの導入効率が100%でない④転写が継続しmRNAが供給され続ける、という4点です。「遺伝子が物理的に破壊されている」という説明は誤りで、siRNAはあくまでmRNAレベルの一時的な抑制であり、遺伝子(DNA)そのものを破壊するノックアウトとは異なります。"
+    },
+    {
+      q: "Q9. FINAL問3で「Gを80%ノックダウンするとアポトーシスが起きた」という結果から言えることとして、科学的に適切な結論は？",
+      choices: [
+        "Gの機能は間違いなくアポトーシス抑制であり、それ以外の可能性は完全に排除できる",
+        "Gは何らかの形でアポトーシスの抑制(細胞生存の維持)に関わっていることが示唆されるが、Gが\"直接\"その経路を制御しているとまでは断定できない",
+        "この実験結果からは、Gについて何も結論を出すことはできない",
+        "Gはアポトーシスと全く無関係であると結論できる"
+      ],
+      correct: 1,
+      explain: "「Gを減らすとYが起きる」という観察から確実に言えるのは「GがYの制御に何らかの形で関わっている」ということまでです。「Gの機能はYである」と断定してしまうのは、間接的な経路(例えばGが本来は別の機能を持ち、その喪失が二次的にアポトーシスを引き起こしている可能性)を排除しきれていないため、科学的に慎重さを欠いています。相関関係から因果関係の詳細まで一足飛びに断定しない姿勢が重要です。"
+    },
+    {
+      q: "Q10. FINAL問4で、株1のデータ(+Nで○だが+Lで✕)が、「M→N→L→X」という直線的な経路の仮定と矛盾するのはなぜか？",
+      choices: [
+        "直線的経路の仮定では、Nより下流にあるLでも当然救済されるはずなのに、実際には救済されていないから",
+        "株1はどんな物質を与えても絶対に生育できないから",
+        "Nという物質はこの経路には全く存在しない物質だから",
+        "直線的経路の仮定では、Mを与えても絶対に救済されないはずだから"
+      ],
+      correct: 0,
+      explain: "「M→N→L→X」という直線的経路を仮定すると、Lは Nよりも下流に位置するはずです。演習1で学んだ大原則「壊れた位置より下流の物質を与えれば必ず救済される」に従えば、Nで救済される株1は、より下流のLでも救済されるはずです。しかし実際には、株1は「+Nでは○」なのに「+Lでは✕」という、直線的経路の仮定では説明できない矛盾したデータを示しました。この矛盾が「経路は一本道ではなく分岐している」という新しい仮説につながります。"
+    },
+    {
+      q: "Q11. 代謝経路が「分岐」構造(メインルートとバイパス)を持つことの、医学的な意義として正しいものは？",
+      choices: [
+        "分岐構造は病気の原因にしかならず、良い影響は一切ない",
+        "片方のルートが遮断されても、もう片方のルート(バイパス)が機能していれば致命的な事態を免れられるという\"冗長性\"を持つ一方、両方のルートが同時に壊れると、より深刻な症状が出うる",
+        "分岐構造を持つ経路は、ヒトの体内には実際には存在しない",
+        "分岐構造があると、必ずどちらのルートも同時に機能しなくなる"
+      ],
+      correct: 1,
+      explain: "ヒトの代謝経路の多くは分岐(冗長性)を持っており、1つのルートが遮断されても別のルート(バイパス)が生き残っていれば、致命的な事態を免れることができます。逆に言えば、両方のルートが同時に壊れてしまった場合には、より深刻な症状が出る可能性があります。チロシン代謝経路(メラニンを作る方向と分解される方向への分岐)も、この冗長性の一例です。"
+    },
+    {
+      q: "Q12. このシリーズ全体（#32〜#35）を通して繰り返し強調されてきた、一遺伝子一酵素説の学説の変遷に対する、正しい科学的な捉え方は？",
+      choices: [
+        "「一遺伝子一酵素説は誤りであり、一遺伝子一ポリペプチド説によって完全に否定・置き換えられた」と捉える",
+        "「1941年の実験結果自体は今も正しく、"酵素"という限定を"ポリペプチド"へ拡張し、さらに選択的スプライシングにより"1対多"の関係も包含するようになった」という"適用範囲の拡張"として捉える",
+        "「学説は一度発表されたら二度と変更されるべきではない」と捉える",
+        "「実験データが1つでも例外を示したら、その学説は即座に丸ごと放棄すべきである」と捉える"
+      ],
+      correct: 1,
+      explain: "ビードル&テータムのアカパンカビでの観察事実そのものは、今日に至るまで一切否定されていません。ヘモグロビンなど非酵素タンパクの発見や選択的スプライシングの発見によって、学説の適用範囲がより広く精密な形に「拡張」されてきたのであって、「誤りの訂正」ではありません。「遺伝子はタンパク質の設計図である」という核心的な認識は、80年以上経った今も一貫して変わっていません。この「否定ではなく拡張」という科学観が、シリーズ全体を貫く最も重要なメッセージです。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#35後編 確認テスト「アルカプトン尿症・アルビノ+FINAL総合演習」</h1>
+        <p>全${questions.length}問 ／ シリーズ完結、最後の力試しです</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！「遺伝子の発現調節 完全講義」シリーズ全体を完璧に理解できています。本当にお疲れ様でした！";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。シリーズ完走まであと一息です。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にFINAL問1(シス/トランス)とFINAL問4(分岐経路)は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはPKU・アルビノ・アルカプトン尿症の統一原理から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#35後編 確認テスト「アルカプトン尿症・アルビノ+FINAL総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

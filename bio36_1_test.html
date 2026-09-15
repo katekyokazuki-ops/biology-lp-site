@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 体液の2大分類のうち、細胞外液の説明として正しいものはどれか？",
+      choices: [
+        "体液の約2/3を占め、K⁺・Mg²⁺に富む",
+        "体液の約1/3を占め、Na⁺・Cl⁻に富み、血液・組織液・リンパ液の総称である",
+        "体液には分類が存在せず、すべて均一な組成である",
+        "細胞外液は成人の体重の約60%を占める、体液そのものである"
+      ],
+      correct: 1,
+      explain: "体液は細胞内液(体液の約2/3、K⁺・Mg²⁺に富む)と細胞外液(体液の約1/3、Na⁺・Cl⁻に富む)に分けられます。細胞外液こそが、血液・組織液・リンパ液という3つの液体の総称であり、この講義全体の主役です。なお「体液が体重の約60%」であり、細胞外液はその中のさらに一部です。"
+    },
+    {
+      q: "Q2. 「血液・組織液・リンパ液は別々の3種類の液体ではない」という講義の核心的な視点として正しいものは？",
+      choices: [
+        "3つは化学組成が全く異なる別々の液体であり、互いに変換されることはない",
+        "同じ1つの液体(細胞外液)が、存在する場所を変えるたびに名前を変えているだけであり、閉じた1つの循環ループを形成している",
+        "血液だけが本物の体液であり、組織液とリンパ液は不要な老廃物である",
+        "リンパ液は血液や組織液と全く独立した、別の起源を持つ液体である"
+      ],
+      correct: 1,
+      explain: "血液が毛細血管からしみ出せば組織液に、組織液のうち再吸収されなかった分がリンパ管に回収されればリンパ液になり、リンパ液は最終的に鎖骨下静脈で再び血液に合流します。「別々の液体」ではなく「同一の液体が名前を変える」という視点が、この単元全体を貫く最重要ポイントです。"
+    },
+    {
+      q: "Q3. スターリングの原理において、毛細血管の「静脈側(出口)」で水が血管内に引き戻される理由は？",
+      choices: [
+        "静脈側では静水圧が膠質浸透圧を上回るから",
+        "毛細血管を流れる間に血圧(静水圧)が低下し、ほぼ一定の膠質浸透圧の方が上回るようになるから",
+        "静脈側ではアルブミンが完全に消失するから",
+        "静脈側では血液がリンパ管に直接流れ込むから"
+      ],
+      correct: 1,
+      explain: "動脈側(入口)では静水圧(血圧)が膠質浸透圧より強いため水が押し出されて組織液になりますが、血液が毛細血管を通過する間に血圧は徐々に弱まります。静脈側(出口)に到達する頃には、ほぼ一定のままの膠質浸透圧の方が静水圧を上回るようになるため、力の差の分だけ水が血管内に引き戻されます。"
+    },
+    {
+      q: "Q4. 動脈側で押し出された水のうち、静脈側で再吸収される割合とリンパ管に回収される割合の比率として、講義で示されたものは？",
+      choices: [
+        "再吸収5割：リンパ管回収5割",
+        "再吸収約9割：リンパ管回収約1割",
+        "再吸収0割：リンパ管回収10割",
+        "再吸収10割：リンパ管回収0割"
+      ],
+      correct: 1,
+      explain: "動脈側で押し出された水の量と静脈側で吸い戻される水の量は完全にイコールではなく、押し出された量のおよそ9割が静脈側で再吸収され、残りの約1割が組織液として残り、リンパ管によって回収されます。この「9:1」という比率は、後の演習問題でも数値問題として扱われます。"
+    },
+    {
+      q: "Q5. ヘマトクリット値(Ht)についての説明として正しいものは？",
+      choices: [
+        "血漿に占める水分の割合を示す指標である",
+        "血液全体に占める血球(細胞成分)の体積百分率のことで、値が低いと貧血、高いと脱水・多血症が疑われる臨床指標である",
+        "白血球の数だけを表す指標であり、赤血球とは無関係である",
+        "ヘマトクリット値は常に一定で、病気の影響を受けることはない"
+      ],
+      correct: 1,
+      explain: "ヘマトクリット値(Ht)は血液全体に占める血球の体積百分率(代表値は約45%)で、単なる比率の暗記事項ではなく、実際の臨床検査で日常的に測定される重要な指標です。Ht値が低ければ貧血、異常に高ければ脱水症や多血症が疑われます。"
+    },
+    {
+      q: "Q6. 血漿の組成(水91%・タンパク質7%・その他2%)について、正しい理解の仕方は？",
+      choices: [
+        "91:7:2という数字を、意味を考えずにそのまま丸暗記すればよい",
+        "『ほとんどは水(溶媒として物質を溶かし運搬)、少しはタンパク質(体を守る機能分子)、残りわずかに色々な溶質(電解質・栄養素・老廃物・ホルモン)』という役割ごとのイメージとセットで理解する",
+        "水91%は全く重要ではなく、タンパク質7%だけを覚えればよい",
+        "血漿にはタンパク質が91%含まれ、水は7%しか含まれない"
+      ],
+      correct: 1,
+      explain: "血漿の中身は水(91%、溶媒として機能)・タンパク質(7%、膠質浸透圧・免疫・血液凝固を担う体を守る機能分子)・その他(2%、電解質・栄養素・老廃物・ホルモンなど多種多様な溶質)という3区分に分かれます。数字をそのまま覚えるのではなく、それぞれの役割とセットで理解することが「脱・暗記」のコツです。"
+    },
+    {
+      q: "Q7. 血漿タンパク質3種のうち、「γ-グロブリン」が担う役割として正しいものは？",
+      choices: [
+        "膠質浸透圧の維持による水分バランスの調節",
+        "抗体として免疫を担う、いわば『戦闘員』の役割",
+        "血液凝固の材料となり、トロンビンによってフィブリンに変化する役割",
+        "脂肪酸や薬物を血管内で運搬する役割のみ"
+      ],
+      correct: 1,
+      explain: "グロブリンはα・β・γの3種類に分類され、α・βグロブリンは鉄や脂質などを運ぶ『輸送屋』、γ-グロブリンは抗体として病原体と戦う『戦闘員』という役割分担があります。「γ-グロブリン＝抗体」という対応は免疫学の入り口として最重要のポイントです。膠質浸透圧の維持はアルブミン、血液凝固の材料はフィブリノーゲンの役割です。"
+    },
+    {
+      q: "Q8. 肝硬変から浮腫(むくみ)に至る6段階の因果連鎖の順序として正しいものは？",
+      choices: [
+        "肝細胞破壊→アルブミン合成低下→膠質浸透圧低下→水を血管内に引き止められない→組織液の過剰貯留→浮腫発生",
+        "浮腫発生→組織液の過剰貯留→膠質浸透圧低下→アルブミン合成低下→肝細胞破壊",
+        "アルブミン合成低下→肝細胞破壊→浮腫発生→膠質浸透圧低下",
+        "肝細胞破壊は浮腫の原因とは全く無関係である"
+      ],
+      correct: 0,
+      explain: "①肝細胞が破壊される→②アルブミンの合成が低下する→③血漿の膠質浸透圧が低下する→④水を血管内に引き止められなくなる→⑤組織液が過剰に貯留する→⑥浮腫(むくみ)・腹水が発生する、という順序です。「合成→浸透圧→水の動き→浮腫」という4本の矢印でつながる1つの物語として理解することが重要です。"
+    },
+    {
+      q: "Q9. 「血漿」と「血清」の違いとして正しいものは？",
+      choices: [
+        "血漿はフィブリノーゲンを含む液体であり、血清は血液凝固後の上澄みでフィブリノーゲンを含まない",
+        "血漿と血清は全く同じものであり、呼び方が違うだけである",
+        "血漿は血球を含む液体であり、血清は血球を含まない液体である",
+        "血清の方が血漿よりも先に採取される、より新鮮な液体である"
+      ],
+      correct: 0,
+      explain: "血漿は血液から血球を除いた液体成分でフィブリノーゲンを含みます。血清は血液が凝固した後にできる上澄み液で、凝固の過程でフィブリノーゲンが(フィブリンに変化して)消費されているため、これを含みません。「血漿＝フィブリノーゲンあり」「血清＝フィブリノーゲンなし」という対比は入試頻出の引っかけポイントです。"
+    },
+    {
+      q: "Q10. 血球3種(赤血球・白血球・血小板)のうち、「有核」であるのはどれか？",
+      choices: [
+        "赤血球のみ",
+        "白血球のみ",
+        "血小板のみ",
+        "3種類とも有核である"
+      ],
+      correct: 1,
+      explain: "赤血球と血小板は無核(核を持たない)である一方、白血球だけは有核(核を持つ)です。この違いには、それぞれの細胞が「使い捨ての運搬・反応の道具」か「生きて働き続ける細胞」かという本質的な違いが表れています。"
+    },
+    {
+      q: "Q11. 哺乳類の赤血球が核を捨てた理由として、講義が挙げていないものはどれか？",
+      choices: [
+        "核が占めていたスペースにヘモグロビンを詰め込み、酸素運搬能を最大化するため",
+        "核がないことで細胞が柔らかく変形しやすくなり、自身の直径より狭い毛細血管も通過できるため",
+        "ミトコンドリアも失うことで、自分が運ぶ酸素を自ら消費しないようにするため",
+        "核を失うことで、赤血球自身の寿命を無限に延ばすことができるため"
+      ],
+      correct: 3,
+      explain: "赤血球が核を捨てた理由として挙げられているのは、①ヘモグロビンの充填による酸素運搬能の最大化②柔軟性の確保による毛細血管の通過③ミトコンドリアも失うことによる酸素の自己消費回避、の3点です。実際には核(DNA)を失うことで自己複製(分裂)ができなくなり、赤血球の寿命はむしろ約120日と限られたものになります。「核を失う＝寿命が無限になる」というのは誤りです。"
+    },
+    {
+      q: "Q12. 赤血球が核を失うことの「トレードオフ(両立できない関係)」として正しい説明は？",
+      choices: [
+        "核を失うことで、赤血球は自己複製(分裂・増殖)する能力も同時に失うため、寿命を終えた分は骨髄で常に新しく作り続けられなければならない",
+        "核を失うことで、赤血球は酸素運搬能力を完全に失ってしまう",
+        "核を失うことにはデメリットが一切なく、単なる利点の獲得にすぎない",
+        "核を失うことで、赤血球はかえって毛細血管を通過しにくくなる"
+      ],
+      correct: 0,
+      explain: "分裂・増殖には核内のDNAの複製が不可欠なため、核を失った赤血球は自分自身で増えることができません。だからこそ、寿命(約120日)を迎えて脾臓で壊された分を補うために、骨髄で絶え間なく新しい赤血球が作られ続ける必要があります。「核を捨てたことで得られる利点」と「自己複製能力を失うという代償」という、両立できない関係(トレードオフ)を理解することが医学部レベルの理解です。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#36前編 確認テスト「体液の組成」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！体液の組成が完璧に理解できています。後編の血球5種・血小板・恒常性も自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特にスターリングの原理と、肝硬変から浮腫までの因果連鎖は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは体液の2大分類から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#36前編 確認テスト「体液の組成」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

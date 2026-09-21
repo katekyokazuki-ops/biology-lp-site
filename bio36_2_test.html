@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 白血球5種類に共通する性質として、赤血球と対照的なものはどれか？",
+      choices: [
+        "無核であり、決まった形(円盤状)を保つ",
+        "有核であり、不定形(アメーバ様運動が可能)で、血管の壁をすり抜けて血管外に出られる(血管外遊走)",
+        "血管の中だけを流れ、血管の外には決して出られない",
+        "寿命が約120日と決まっている"
+      ],
+      correct: 1,
+      explain: "白血球はすべて有核で、決まった形を持たない不定形(アメーバ様運動)、そして血管の壁をすり抜けて血管外へ出られる(血管外遊走)という特徴を持ちます。これは無核・円盤状・血管内限定の赤血球とは、核・形・機能のすべてが対照的です。"
+    },
+    {
+      q: "Q2. 白血球の中で最も割合が高く、感染時に真っ先に大量動員される、食作用の主役はどれか？",
+      choices: [
+        "好酸球(約3%)",
+        "好中球(約60%)",
+        "好塩基球(約1%)",
+        "単球(約6%)"
+      ],
+      correct: 1,
+      explain: "白血球全体のうち約60%を占める好中球が最大勢力で、細菌などを食べて消化する食作用の主役として、感染時に真っ先に、そして大量に動員されます。次いで多いのが約30%を占めるリンパ球(T細胞・B細胞・NK細胞)です。"
+    },
+    {
+      q: "Q3. 血小板の生い立ちについて正しい説明はどれか？",
+      choices: [
+        "赤血球と同じく、通常の細胞分裂によって1個ずつ作られる",
+        "骨髄にある巨核細胞(直径50〜100μmの巨大な細胞)の細胞質が断片化することで生じる、いわば\"細胞のかけら\"であり、1個の巨核球から2000〜5000個もの血小板が作られる",
+        "血小板はリンパ節で作られる、リンパ球の一種である",
+        "血小板は白血球が分裂してできる、白血球の子孫細胞である"
+      ],
+      correct: 1,
+      explain: "血小板は独立した1個の完結した細胞ではなく、骨髄の巨核細胞(直径50〜100μmという非常に巨大な細胞)の細胞質がちぎれるように断片化してできる\"かけら\"です。1個の巨核球から2000〜5000個もの血小板が生み出されるという、非常にユニークな生い立ちを持ちます。"
+    },
+    {
+      q: "Q4. 血小板が、普通の細胞のように分裂で1個ずつ作られるのではなく、巨大な細胞を断片化するという方式で作られる生理学的な理由は？",
+      choices: [
+        "その方が、材料となるタンパク質の節約になるから",
+        "出血という緊急事態には一刻も早く大量の血小板が必要になるため、あらかじめ数千個分の\"部品\"としてストックしておき、必要な時に一気にちぎって放出する方が、瞬時に大量供給できるから",
+        "巨核球は核を持たないため、分裂という手段自体が使えないから",
+        "この方式にすることで、血小板の寿命を無限に延ばせるから"
+      ],
+      correct: 1,
+      explain: "止血という仕事は、一刻も早く大量の\"何か\"が傷口に殺到する必要があります。もし血小板を1個ずつ分裂で作っていたら、緊急時に必要な数を揃えるまで時間がかかってしまいます。あらかじめ巨大な細胞を数千個分の\"部品\"としてストックしておき、必要な時に一気にちぎって放出する方式なら、瞬時に大量の血小板を供給できます。"
+    },
+    {
+      q: "Q5. 一次止血の4段階の正しい順序は？",
+      choices: [
+        "①コラーゲンへの結合→②活性化・凝集→③ADP・トロンボキサンA2の放出→④血小板塊(血栓)の形成",
+        "①血小板塊の形成→②活性化・凝集→③コラーゲンへの結合→④ADP・トロンボキサンA2の放出",
+        "①ADP・トロンボキサンA2の放出→②血小板塊の形成→③コラーゲンへの結合→④活性化・凝集",
+        "一次止血には決まった順序はなく、すべて同時に起こる"
+      ],
+      correct: 0,
+      explain: "①血管が傷つき露出したコラーゲンに血小板が結合②活性化し形を変えながら互いに凝集③ADP・トロンボキサンA2という物質を放出して他の血小板を呼び寄せる④血小板がどんどん集まり血小板塊(血栓)が完成、という順序で一次止血が進みます。"
+    },
+    {
+      q: "Q6. ADPとトロンボキサンA2という2つの物質に共通する役割は？",
+      choices: [
+        "血液を凝固させるフィブリンそのものである",
+        "血小板が\"今、傷口で活性化した\"ということを周りの血小板に知らせる合図として撒き散らされ、新しい血小板を連鎖的に呼び寄せる",
+        "赤血球にヘモグロビンを供給する役割を持つ",
+        "白血球の食作用を直接補助する役割を持つ"
+      ],
+      correct: 1,
+      explain: "ADP(ATPの仲間の分子)とトロンボキサンA2(血小板が自分の膜成分から活性化した瞬間に合成する物質)は、どちらも「自分は今、傷口で活性化した」ということを周囲の血小板に知らせる\"合図\"として撒き散らされます。これにより次々と新しい血小板が呼び寄せられ、集合が連鎖的に加速していきます。"
+    },
+    {
+      q: "Q7. リンパ液が、心臓のようなポンプを持たないにもかかわらず、体の末端から中心へと流れていく仕組みは？",
+      choices: [
+        "リンパ液自体が化学的に自己推進する力を持っているから",
+        "骨格筋が収縮する力と、リンパ管内の弁(逆流を防ぐ仕組み)の働きによって、末梢から中心(鎖骨下静脈)へ一方通行で押し流されるから",
+        "リンパ液は重力によって、常に下方向にのみ流れるから",
+        "心臓が血液だけでなくリンパ液も直接ポンプで送り出しているから"
+      ],
+      correct: 1,
+      explain: "リンパ液には専用のポンプが存在しない代わりに、骨格筋が収縮する力とリンパ管内の弁(逆流を防ぐ)によって、体の末端から中心へ一方通行で押し流されます。歩いたり体を動かしたりすることが、実はリンパ液の流れを助けています。"
+    },
+    {
+      q: "Q8. 血漿・組織液・リンパ液の組成の違いと、「乳糜」という現象について正しい説明は？",
+      choices: [
+        "血漿はタンパク濃度が最も高く、組織液は薄まり、リンパ液はさらにリンパ球が加わる。食後は小腸で吸収された脂質がリンパ管(乳び管)に入り、リンパ液が白く濁ることを『乳糜』と呼ぶ",
+        "血漿・組織液・リンパ液は常に全く同じ組成であり、違いは一切ない",
+        "乳糜とは、血液が完全に凝固した後にできる白い沈殿物のことである",
+        "リンパ液は血漿よりもタンパク質濃度が高い"
+      ],
+      correct: 0,
+      explain: "血漿はアルブミン等の大きなタンパク質が血管壁を通り抜けにくいためタンパク濃度が最も高く、組織液はそれが薄まったもの、リンパ液はさらにリンパ節でリンパ球が加わるという特徴を持ちます。食後、小腸で吸収された脂質は血管ではなくリンパ管(乳び管)に入るため、食後のリンパ液が脂肪粒子で白く濁る現象を『乳糜』と呼びます。"
+    },
+    {
+      q: "Q9. 体液の恒常性が崩れた際、カリウムイオン(K⁺)の異常が引き起こす特に重篤なリスクは？",
+      choices: [
+        "筋けいれんや血液凝固異常",
+        "不整脈による心停止のリスク",
+        "脳のむくみ(脳浮腫)や脱水",
+        "酵素が働かなくなるアシドーシス"
+      ],
+      correct: 1,
+      explain: "K⁺(カリウムイオン)濃度の異常は不整脈・心停止のリスクを引き起こします。ちなみに、筋けいれんや血液凝固異常はCa²⁺(カルシウムイオン)異常、脳浮腫や脱水は浸透圧異常、酵素が働かなくなるのはpH異常(アシドーシス/アルカローシス)によるものです。それぞれのイオン・指標と病態を対応づけて覚えることが重要です。"
+    },
+    {
+      q: "Q10. 演習1-1(肝硬変による浮腫の記述問題)で、模範解答が制限字数160字に対して117字と余裕を持たせて書かれていた理由として、講義が説明した正しい姿勢は？",
+      choices: [
+        "字数制限ぎりぎりまで埋めることこそが記述問題の目的だから、本来は不適切な解答である",
+        "記述問題では、必要な因果の矢印(①肝細胞減少→②アルブミン合成低下→③膠質浸透圧低下→④水を引き戻す力の低下→⑤組織液の貯留→⑥浮腫)を過不足なく書き切ることが目的であり、無理に字数を埋める必要はない",
+        "この問題ではアルブミン以外の情報を大量に書き足す必要があったから、実際には字数不足である",
+        "字数に余裕を持たせることは、必ず減点の対象になる"
+      ],
+      correct: 1,
+      explain: "記述問題では「制限字数ぎりぎりまで埋めること」自体が目的ではなく、必要な因果の\"矢印\"をすべて過不足なく書き切ることこそが目的です。無駄な修飾語を足したり同じ内容を繰り返したりする必要はなく、「因果の鎖を、過不足なく、簡潔に」という姿勢が高く評価されます。"
+    },
+    {
+      q: "Q11. 演習1-2で、赤血球の総数(約25兆個)と寿命(120日)から「1秒あたりの新生数」を求める際の、最も重要な\"気づき\"は何か？",
+      choices: [
+        "赤血球はミトコンドリアを持たないという事実",
+        "赤血球の総数が一定に保たれている以上、\"作られる数\"と\"壊される数\"は常に釣り合っている(定常状態)ため、総数÷寿命(時間)というシンプルな割り算で新生数が求まるという気づき",
+        "赤血球は両凹円盤状の形をしているという事実",
+        "赤血球はヘモグロビンを大量に含んでいるという事実"
+      ],
+      correct: 1,
+      explain: "「総数が一定＝作られる数と壊される数が釣り合っている(定常状態)」と気づけば、「25兆個の赤血球が120日かけて入れ替わっていく」というイメージのもと、総数÷寿命(秒に換算)という単純な割り算だけで、1秒あたりの新生数(約240万個)が求まります。この\"定常状態\"という考え方は、皮膚のターンオーバーなど他の場面にも応用できる汎用的な解法パターンです。"
+    },
+    {
+      q: "Q12. 演習1-3(論評問題)で高評価を得るための型と、Starlingの原理の具体的な数値の組み合わせとして正しいものは？",
+      choices: [
+        "『反対である』とまず明確に否定し、その後は一切補足を加えない書き方が最も評価される",
+        "『妥当である』と賛成の立場をまず明確にし、その後\"しかし\"という逆接で組成の違いなどの補足を加える『Yes, and』の構成が高評価につながる。動脈側は静水圧が優位(約30mmHg)、静脈側は膠質浸透圧が優位(約25mmHg、静水圧は約15mmHgまで低下)という数値関係が代表的",
+        "賛成か反対かを一切示さず、知識だけを羅列する書き方が最も評価される",
+        "静脈側では静水圧が膠質浸透圧を大きく上回るため、水はさらに血管外へ押し出される"
+      ],
+      correct: 1,
+      explain: "論評問題では、まず「妥当である」など自分の立場を明確に示した上で、\"しかし\"という逆接を使って補足すべき点(組成の違いなど)を加える\"Yes, and\"(賛成しつつ補足する)の構成が高評価につながります。またStarlingの原理の代表的数値として、動脈側では静水圧約30mmHgが膠質浸透圧約25mmHgを上回り水が押し出され、血液が毛細血管を流れる間に血圧が下がることで、静脈側では静水圧が約15mmHgまで低下し、変わらず約25mmHgの膠質浸透圧の方が上回って水が引き戻される、という力関係の逆転が起こります。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#36後編 確認テスト「白血球・血小板・リンパ液+THEME1総合演習」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！THEME1「体液の組成」が完璧に理解できています。次回THEME2(血球の生成)もスムーズに進めるはずです。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に演習1-2の定常状態の計算と、演習1-3の論評問題の型は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは白血球5種類と血小板の生い立ちから復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#36後編 確認テスト「白血球・血小板・リンパ液+THEME1総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

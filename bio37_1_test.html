@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. ヒトの造血が行われる場所について、正しい説明はどれか？",
+      choices: [
+        "生涯を通じて常に骨髄でのみ造血が行われる",
+        "胎児期には卵黄嚢→胎児中期には肝臓・脾臓→胎児後期以降は骨髄、というように発生の段階に応じて造血の場所が移り変わる",
+        "造血は生涯を通じて肝臓と脾臓でのみ行われる",
+        "造血の場所は生涯を通じて完全にランダムに決まる"
+      ],
+      correct: 1,
+      explain: "ヒトの造血の場所は、発生の段階に応じて大きく移り変わります。胎児期(ごく初期)にはまず卵黄嚢で、胎児中期になると肝臓・脾臓で、そして胎児後期以降にようやく骨髄が造血の主戦場になります。成人では実質的に骨髄のみで造血が行われます。"
+    },
+    {
+      q: "Q2. 白血病や骨髄線維症などで骨髄が正常に機能しなくなった際、肝臓や脾臓が造血能力を再び発揮することを何と呼ぶか？",
+      choices: [
+        "髄外造血",
+        "骨髄移植",
+        "造血幹細胞移植",
+        "多分化能"
+      ],
+      correct: 0,
+      explain: "「髄外造血」とは、骨髄以外の臓器(主に肝臓・脾臓)で造血が行われる現象です。胎児期には肝臓・脾臓が主要な造血の場であった歴史的経緯から、骨髄機能不全などの病的状態において、これらの臓器が予備的に造血能力を再び発揮することがあります。"
+    },
+    {
+      q: "Q3. 造血幹細胞が持つ「自己複製能」の説明として正しいものは？",
+      choices: [
+        "分裂するたびに必ず別の血球へと変化し、造血幹細胞自身は減っていく能力",
+        "分裂した際に、単に別の細胞へ変化して消えていくのではなく、分裂後も必ず一部は元の造血幹細胞のまま残り続ける能力",
+        "1個の造血幹細胞が、一生のうちに1回だけ分裂できる能力",
+        "他の血球を攻撃して排除する能力"
+      ],
+      correct: 1,
+      explain: "自己複製能とは、造血幹細胞が分裂する際、分裂後も必ず一部が元の造血幹細胞のまま維持される能力のことです。この能力があるからこそ、造血幹細胞のプールが枯渇せず、生涯にわたって血球産生を継続できます。"
+    },
+    {
+      q: "Q4. もし造血幹細胞に自己複製能がなく、分裂するたびに必ず別の血球へ変化してしまうとしたら、長期的にどうなるか？",
+      choices: [
+        "血球の生産速度がさらに上がり続ける",
+        "造血幹細胞は使うたびに数を減らしていき、いずれ枯渇し、血球を作る能力そのものを失ってしまう",
+        "造血幹細胞の数は変化せず、一定に保たれ続ける",
+        "造血の場所が自動的に骨髄から肝臓へ移動する"
+      ],
+      correct: 1,
+      explain: "自己複製能がなければ、造血幹細胞は分裂するたびに数を減らしていき、いずれ枯渇してしまいます。そうなれば、生涯のどこかで血球を作る能力そのものを失うことになります。自己複製能は、生涯にわたる造血を支える生命線です。"
+    },
+    {
+      q: "Q5. 分化の階層構造における「読み方のルール」として正しいものは？",
+      choices: [
+        "上位の細胞ほど、多分化能が高く、数が少なく、分裂する力が強い",
+        "上位の細胞ほど、多分化能が低く、数が多く、分裂する力が弱い",
+        "階層の上下と、多分化能・数・分裂能の間には、何の関係性もない",
+        "下位の細胞(成熟した細胞)ほど、多分化能が高く分裂能も高い"
+      ],
+      correct: 0,
+      explain: "階層構造において、上位に行くほど「まだ何にでもなれる(多分化能が高い)」「数が少ない(希少)」「分裂する力が強い」という性質を持ちます。逆に下位(成熟に近づく)ほど「分化が進んでいる」「数が多い」「分裂する力は弱まっている」という性質に変わっていきます。"
+    },
+    {
+      q: "Q6. 造血の系統樹における「骨髄系」と「リンパ系」の役割分担として正しい組み合わせは？",
+      choices: [
+        "骨髄系=敵を認識・特定して排除する担当／リンパ系=食う・運ぶ・止める担当(役割が逆)",
+        "骨髄系=食う担当(好中球・単球)＋運ぶ担当(赤血球)＋止める担当(血小板)／リンパ系=敵を認識・特定して排除する担当(T細胞・B細胞・NK細胞)",
+        "骨髄系とリンパ系はどちらも全く同じ役割を担っている",
+        "骨髄系は赤血球のみを、リンパ系は白血球すべてを産生する"
+      ],
+      correct: 1,
+      explain: "骨髄系は、異物を食べる担当(好中球・単球)、酸素を運ぶ担当(赤血球)、傷口を塞ぐ担当(血小板)からなる、いわば\"現場作業員\"のグループです。一方リンパ系は、敵を認識・記憶・排除するという、より高度で知的な役割を担う\"諜報・作戦部隊\"(T細胞・B細胞・NK細胞)です。"
+    },
+    {
+      q: "Q7. 「○○芽球→○○球」という命名ルールにおいて、唯一の例外とされているのはどれか？",
+      choices: [
+        "赤芽球→赤血球",
+        "単芽球→単球",
+        "巨核芽球→巨核球→血小板(血小板は細胞そのものではなく、巨核球の断片であるため命名ルールから外れる)",
+        "リンパ芽球→リンパ球(T・B・NK細胞)"
+      ],
+      correct: 2,
+      explain: "一般に「○○芽球」(未熟)が育つと「○○球」(成熟形)になるという命名ルールがありますが、巨核芽球だけは例外です。巨核芽球が育った成熟形である巨核球は、そのまま血液中を流れる血球にはならず、巨核球の細胞質が断片化してちぎれた欠片こそが、実際に血液中を流れる「血小板」です。"
+    },
+    {
+      q: "Q8. 赤血球の分化過程で、「核(DNA)を捨てる」タイミングが、ヘモグロビン(Hb)の合成が完了した『後』である理由は？",
+      choices: [
+        "核を先に捨てた方が、細胞の見た目が美しくなるから",
+        "核(DNA)はヘモグロビンを作るための設計図そのものであり、もし合成前に核を捨ててしまうと、その後Hbを作る指示を出す仕組み自体がなくなり、空っぽの抜け殻になってしまうから",
+        "核を先に捨てると、赤血球の寿命が無限に延びてしまうから",
+        "核とヘモグロビンの合成は、全く無関係な独立した現象だから"
+      ],
+      correct: 1,
+      explain: "核(DNA)は、ヘモグロビンというタンパク質を作るための\"設計図\"そのものです。もし核を最初に(Hbを作る前に)捨ててしまったら、そもそもヘモグロビンを作る指示を出す仕組み自体がなくなってしまいます。だからこそ赤血球は「まず核の指令のもとでHbをたっぷり合成し、積み込みが完全に終わってから、初めて用済みになった核を捨てる」という順序を踏みます。"
+    },
+    {
+      q: "Q9. エリスロポエチン(EPO)による赤血球産生の調節を、正しいフィードバックの順序で示したものは？",
+      choices: [
+        "骨髄の赤芽球分化促進→腎臓が酸素不足を感知→EPO分泌→赤血球産生増加",
+        "①体内の酸素不足を腎臓が感知→②腎臓がEPOを分泌→③EPOが骨髄に作用し赤芽球の分化を促進→④赤血球産生が増加し酸素運搬能が向上、酸素不足が解消される",
+        "EPOは肝臓で作られ、直接赤血球そのものに作用してヘモグロビンを合成させる",
+        "EPOは白血球の産生のみを調節し、赤血球には全く関与しない"
+      ],
+      correct: 1,
+      explain: "①体内が酸素不足になるとそれを腎臓が感知②腎臓がEPOという\"増産命令\"のホルモンを血液中に分泌③EPOが骨髄に届くと赤芽球の分化が促進され赤血球の生産量が増える④結果として酸素運搬能力が上がり、最初の酸素不足という問題が解消される、という見事な負のフィードバックループです。腎不全ではこのEPOを作る能力が低下するため、貧血が引き起こされます。"
+    },
+    {
+      q: "Q10. 好酸球が酸性の色素(エオシン)によく染まる、化学的な理由は？",
+      choices: [
+        "好酸球の顆粒には酸性のタンパク質が多く含まれているから",
+        "好酸球の顆粒には「主要塩基性タンパク(MBP)」など塩基性の物質が多く含まれており、酸性の色素は塩基性の物質によく結合する性質があるから",
+        "好酸球には顆粒が全く存在しないため、色素がそのまま細胞内に浸透するから",
+        "好酸球という名前は、染色性とは全く無関係に付けられた名前だから"
+      ],
+      correct: 1,
+      explain: "酸性の色素(エオシン)は、塩基性の物質によく結合する性質があります。好酸球の顆粒の中身(主要塩基性タンパクMBPなど)は塩基性のタンパク質なので、酸性の色素であるエオシンとよく結合し、赤く染まって見えます。「好酸球」という名前と、その顆粒の化学的性質が、こうしてつながっています。"
+    },
+    {
+      q: "Q11. 血液中の単球が、組織に出た後に何と呼ばれる細胞に変化し、どんな2つの役割を担うか？",
+      choices: [
+        "リンパ球に変化し、抗体産生と貪食を行う",
+        "マクロファージ(大食細胞)に変化し、貪食(細菌・老廃物・死細胞を食う)と抗原提示(食べた敵の情報をヘルパーT細胞に伝える)という2つの役割を担う",
+        "赤血球に変化し、酸素運搬のみを行う",
+        "好中球に変化し、細菌との戦闘のみを行う"
+      ],
+      correct: 1,
+      explain: "血液中の単球は\"未完成\"の待機状態であり、血管外遊走して組織に出て初めて「マクロファージ(大食細胞)」という本来の姿になります。マクロファージは貪食(細菌・老廃物・死細胞を食う)と抗原提示(食べた敵の情報をヘルパーT細胞に伝える)という2つの重要な役割を担い、自然免疫と獲得免疫を繋ぐ橋渡し役として機能します。"
+    },
+    {
+      q: "Q12. 樹状細胞が、末梢組織で捕まえた抗原を、その場で提示せずにわざわざリンパ節まで運搬してから提示する理由は？",
+      choices: [
+        "リンパ節までの移動距離を稼ぐことで、抗原そのものを強化するため",
+        "ヘルパーT細胞はリンパ節に多数存在するため、樹状細胞自身がリンパ節へ移動することで、末梢の広い組織で偶然の遭遇を待つよりも効率的かつ迅速に、特異的なヘルパーT細胞と出会い、獲得免疫を発動させることができるから",
+        "リンパ節でなければ、抗原はMHCクラスIIに全く結合できないため",
+        "樹状細胞はリンパ節でしか生存できないため、仕方なく移動しているだけ"
+      ],
+      correct: 1,
+      explain: "ヘルパーT細胞は体中に均等に散らばっているのではなく、リンパ節という\"集合場所\"に大量に集まって待機しています。情報(抗原)を持った樹状細胞自身がヘルパーT細胞の多いリンパ節まで出向くことで、末梢の広い組織内で偶然の遭遇を待つよりもはるかに効率よく、目的のヘルパーT細胞と出会える確率が高まります。「敵を探すのではなく、味方が集まる場所に情報を届けに行く」という効率化戦略です。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#37前編 確認テスト「血球の生成と特徴」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！造血の系統樹と血球分化の仕組みが完璧に理解できています。後編のリンパ球3種・演習3問も自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に造血の系統樹(骨髄系vsリンパ系)と、EPOのフィードバック機構は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは造血幹細胞の2つの性質から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#37前編 確認テスト「血球の生成と特徴」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜血球の生成と特徴（ゼロからわかる高校生物 #37後編）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF4E9;          /* 血漿クリーム */
+  --ink:#2B2018;
+  --sub:#6E5A4E;
+  --red:#B3283C;         /* 赤血球レッド */
+  --red-deep:#8C1D2E;
+  --violet:#54488C;      /* ギムザ染色の青紫（白血球） */
+  --gold:#C9962E;        /* 血漿の淡い金色 */
+  --card:#FFFDF8;
+  --line:#E8DCCB;
+  --ok:#2E7D4F;
+  --ok-bg:#EAF4EC;
+  --ng:#B3323F;
+  --ng-bg:#F9ECEE;
+  --vessel:#F1DFD8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Noto Sans JP',"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(179,40,60,.06), transparent 60%),
+    radial-gradient(900px 480px at -10% 110%, rgba(84,72,140,.07), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 64px;}
+/* ---------- header ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);border:1.5px solid var(--red);color:var(--red-deep);
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.78rem;letter-spacing:.06em;
+  padding:6px 14px;border-radius:999px;
+}
+.eyebrow .dot{width:9px;height:9px;border-radius:50%;background:var(--red);}
+h1{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:900;font-size:clamp(1.5rem,4.6vw,2.05rem);
+  margin:14px 0 6px;line-height:1.4;
+}
+h1 .accent{color:var(--red);}
+.lead{color:var(--sub);font-size:.95rem;}
+.lead b{color:var(--ink);}
+/* ---------- vessel progress (signature) ---------- */
+.vessel-zone{margin:26px 0 8px;}
+.vessel{
+  position:relative;height:16px;border-radius:999px;
+  background:var(--vessel);
+  border:1px solid #E5C9C0;
+}
+.vessel .fill{
+  position:absolute;inset:0;width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#D96A7C,var(--red));
+  transition:width .45s cubic-bezier(.22,1,.36,1);
+}
+.disc{
+  position:absolute;top:50%;left:0%;
+  width:30px;height:30px;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #A02336 0 18%, #C2435A 40%, #E9909F 72%, #F6C9CF 100%);
+  box-shadow:0 3px 8px rgba(140,29,46,.35);
+  transition:left .45s cubic-bezier(.22,1,.36,1);
+}
+.vessel-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;color:var(--sub);margin-top:9px;font-weight:500;
+}
+.vessel-meta .cnt b{color:var(--red-deep);font-size:1rem;}
+@media (prefers-reduced-motion: reduce){
+  .vessel .fill,.disc{transition:none;}
+  *{animation:none!important;}
+}
+/* ---------- question card ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(90,60,40,.07);
+  padding:26px 24px 24px;
+  margin-top:18px;
+}
+.q-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;}
+.chip{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.75rem;letter-spacing:.05em;
+  padding:4px 12px;border-radius:999px;
+}
+.chip.no{background:var(--red);color:#fff;}
+.chip.cat{background:#F3E9F5;color:var(--violet);border:1px solid #DCD2EA;}
+.chip.gold{background:#FBF1DC;color:#8A6410;border:1px solid #EBD9A8;}
+.q-text{
+  font-size:1.08rem;font-weight:700;line-height:1.75;
+  padding:6px 0 16px;border-bottom:1px dashed var(--line);
+}
+.opts{display:grid;gap:10px;margin-top:16px;}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;text-align:left;
+  width:100%;cursor:pointer;
+  background:#FFF;
+  border:1.5px solid var(--line);border-radius:14px;
+  padding:13px 15px;font:inherit;font-size:.97rem;color:var(--ink);
+  transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--red);transform:translateY(-1px);box-shadow:0 6px 14px rgba(179,40,60,.10);}
+.opt:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.opt:disabled{cursor:default;}
+.opt .mark{
+  flex:none;width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#F6EEE2;color:var(--sub);
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.86rem;
+}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg);}
+.opt.correct .mark{background:var(--ok);color:#fff;}
+.opt.wrong{border-color:var(--ng);background:var(--ng-bg);}
+.opt.wrong .mark{background:var(--ng);color:#fff;}
+.opt.dim{opacity:.45;}
+/* ---------- feedback ---------- */
+.fb{
+  margin-top:16px;border-radius:14px;padding:16px 18px;
+  border:1.5px solid var(--ok);background:var(--ok-bg);
+}
+.fb.ng{border-color:var(--ng);background:var(--ng-bg);}
+.fb .verdict{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.02rem;
+  color:var(--ok);display:flex;align-items:center;gap:7px;
+}
+.fb.ng .verdict{color:var(--ng);}
+.fb .exp{font-size:.92rem;margin-top:8px;}
+.fb .part{
+  margin-top:10px;font-size:.82rem;color:var(--sub);
+  border-top:1px dashed rgba(110,90,78,.35);padding-top:8px;
+}
+.actions{margin-top:18px;display:flex;justify-content:flex-end;}
+.btn{
+  font:inherit;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;
+  border:none;cursor:pointer;border-radius:999px;
+  background:var(--red);color:#fff;
+  padding:12px 30px;font-size:.98rem;
+  box-shadow:0 6px 16px rgba(179,40,60,.28);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(179,40,60,.34);}
+.btn:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.btn.ghost{
+  background:transparent;color:var(--red-deep);border:1.5px solid var(--red);
+  box-shadow:none;
+}
+/* ---------- result ---------- */
+.result{display:none;}
+.result.show{display:block;animation:pop .35s ease;}
+@keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.score-zone{text-align:center;padding:10px 0 4px;}
+.score-num{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;
+  font-size:3.4rem;line-height:1.1;color:var(--red);
+}
+.score-num small{font-size:1.3rem;color:var(--sub);font-weight:700;}
+.tier{
+  display:inline-block;margin-top:8px;
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:1.05rem;
+  background:#F7E9E0;color:var(--red-deep);
+  border-radius:999px;padding:8px 22px;
+}
+.review{margin-top:22px;}
+.review h2{
+  font-family:'Zen Maru Gothic',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--sub);margin-bottom:10px;letter-spacing:.04em;
+}
+.rv{
+  border:1px solid var(--line);border-left:5px solid var(--ok);
+  background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.88rem;
+}
+.rv.miss{border-left-color:var(--ng);}
+.rv .rq{font-weight:700;}
+.rv .ra{margin-top:4px;color:var(--sub);}
+.rv .tag{font-weight:700;color:var(--ok);}
+.rv.miss .tag{color:var(--ng);}
+.result .actions{justify-content:center;gap:12px;flex-wrap:wrap;}
+.note{
+  margin-top:14px;text-align:center;font-size:.84rem;color:var(--sub);
+}
+/* ---------- footer ---------- */
+.foot{
+  margin-top:36px;text-align:center;color:var(--sub);font-size:.8rem;
+  border-top:1px solid var(--line);padding-top:18px;
+}
+.foot b{color:var(--red-deep);}
+@media (max-width:480px){
+  .card{padding:20px 16px 18px;border-radius:16px;}
+  .q-text{font-size:1.02rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow"><span class="dot"></span>ゼロからわかる高校生物 ＃37後編</span>
+    <h1>THEME2 血球の生成と特徴<br><span class="accent">確認テスト</span></h1>
+    <p class="lead">全 <b>16問</b>・4択式。全問正解するまで繰り返せば、この単元は完璧！<br>まちがえた問題は、動画の該当パートを見返して仕上げよう。</p>
+  </header>
+
+  <div class="vessel-zone" aria-hidden="false">
+    <div class="vessel" role="progressbar" aria-label="テストの進行状況" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+      <div class="disc" id="disc"></div>
+    </div>
+    <div class="vessel-meta">
+      <span class="cnt" id="cnt">進捗 <b>0</b> / 16問</span>
+      <span>骨髄で生まれた血球が、戦場へ向かう🎬</span>
+    </div>
+  </div>
+
+  <main class="card" id="quiz">
+    <div class="q-top">
+      <span class="chip no" id="qno">問 1</span>
+      <span class="chip cat" id="qcat">分野</span>
+      <span class="chip gold" id="qscore">正解 0</span>
+    </div>
+    <p class="q-text" id="qtext">読み込み中…</p>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb" style="display:none">
+      <p class="verdict" id="verdict"></p>
+      <p class="exp" id="exp"></p>
+      <p class="part" id="part"></p>
+    </div>
+    <div class="actions" id="actions" style="display:none">
+      <button class="btn" id="nextBtn">次の問題へ →</button>
+    </div>
+  </main>
+
+  <main class="card result" id="result">
+    <div class="score-zone">
+      <div class="score-num"><span id="rscore">0</span><small> / 16</small></div>
+      <div class="tier" id="tier"></div>
+      <p class="note" id="tierNote"></p>
+    </div>
+    <div class="review">
+      <h2>▶ 見直しリスト（間違えた問題は動画の該当パートを見返そう）</h2>
+      <div id="rlist"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="retryBtn">もう一度最初から挑戦 ↺</button>
+      <button class="btn ghost" id="againMissBtn">まちがえた問題だけ再挑戦 ↺</button>
+    </div>
+    <p class="note">解説・まちがい直しは「ゼロからわかる高校生物 ＃37後編」の動画で！</p>
+  </main>
+
+  <footer class="foot">
+    ゼロからわかる高校生物 ＃37後編　THEME2「血球の生成と特徴」<br>
+    <b>Kazuki Medical Biology</b>（カズキ）｜医学部・難関大対策のオンライン家庭教師
+  </footer>
+</div>
+
+<script>
+"use strict";
+const QUESTIONS = [
+  {cat:"造血幹細胞", q:"造血幹細胞のもつ「多分化能」とは、どんな能力のこと？",
+   opts:["1つの細胞が、複数の種類の血球に分化できる能力","自分とまったく同じ細胞を複製して増える能力","血液中を移動して、組織の中に侵入する能力","一度出会った抗原を記憶して、再感染に備える能力"],
+   ans:0,
+   exp:"多分化能＝複数の種類の血球に分化できる能力。もう1つの性質「自己複製能」は、自分と同じ細胞を複製して幹細胞を減らさずに済ませる能力。この2つが造血幹細胞の2大性質です。",
+   part:"▶該当パート：造血幹細胞の2つの性質"},
+  {cat:"造血の系統樹", q:"造血幹細胞が大きく枝分かれする2つの系統は？",
+   opts:["骨髄系とリンパ系","赤血球系と白血球系","顆粒球系と単球系","自然免疫系と獲得免疫系"],
+   ans:0,
+   exp:"骨髄系は「食う・運ぶ・止める」の現場作業チーム、リンパ系は「認識する」諜報部隊に分かれます。骨髄系→赤血球・好中球・好酸球・好塩基球・単球・血小板、リンパ系→T・B・NK細胞。",
+   part:"▶該当パート：造血の系統樹"},
+  {cat:"造血の系統樹", q:"骨髄系のチーム分け「食う・運ぶ・止める」のうち、「止める」を担当するのは？",
+   opts:["血小板","赤血球","好中球","リンパ球"],
+   ans:0,
+   exp:"「食う」＝好中球・好酸球・好塩基球・単球、「運ぶ」＝赤血球、「止める」＝血小板。リンパ系は「認識する」（T・B・NK細胞）担当です。",
+   part:"▶該当パート：造血の系統樹・総括"},
+  {cat:"白血球の割合", q:"白血球に占める好中球の割合は？",
+   opts:["約60%","約30%","約6%","約3%"],
+   ans:0,
+   exp:"「中60／リ30／単6／酸3／塩1」。好中球は白血球の約6割を占め、細菌感染時に急増する、貪食の主戦力です。",
+   part:"▶該当パート：顆粒球の割合"},
+  {cat:"赤血球の分化", q:"赤血球の分化過程として、正しい順序は？",
+   opts:["前赤芽球→中赤芽球→後赤芽球→網赤血球→赤血球","前赤芽球→網赤血球→中赤芽球→後赤芽球→赤血球","巨核芽球→巨核球→網赤血球→赤血球","リンパ芽球→赤芽球→前赤芽球→赤血球"],
+   ans:0,
+   exp:"「○○芽球→○○球」の命名規則にのっとり、前赤芽球→中赤芽球→後赤芽球→網赤血球→赤血球の5段階で分化します。脱核（核を放出すること）はHb合成後に起こるのがポイント。",
+   part:"▶該当パート：赤血球の分化5段階"},
+  {cat:"赤血球の分化", q:"「網赤血球」の説明として正しいものは？",
+   opts:["脱核した直後の、未熟な赤血球","寿命の約120日を終えて脾臓で処理される古い赤血球","骨髄で成熟するリンパ球の一種","血小板を放出する前段階の巨核球"],
+   ans:0,
+   exp:"網赤血球＝脱核直後の未熟な赤血球で、1〜2日で成熟して赤血球になります。高地順化の実験では、網赤血球が先に増加し、赤血球の総数は寿命120日をかけてじわじわ積み上がる、という時間差が本質でした。",
+   part:"▶該当パート：赤血球の分化／演習2-2"},
+  {cat:"リンパ球3種", q:"T細胞が成熟する場所は？",
+   opts:["胸腺","骨髄","脾臓","リンパ節"],
+   ans:0,
+   exp:"T＝Thymus（胸腺）の頭文字。B細胞はBone marrow（骨髄）で、NK細胞も骨髄で成熟します。「リンパ球＝胸腺で育つ」という短絡的な覚え方は誤りのもと！",
+   part:"▶該当パート：リンパ球3種"},
+  {cat:"リンパ球3種", q:"B細胞の説明として正しいものは？",
+   opts:["骨髄で成熟し、抗原を直接認識して形質細胞に分化→抗体を大量産生する","胸腺で成熟し、MHCに提示された抗原の断片を認識する","事前学習なしで即座に働き、MHC発現の低下した細胞を攻撃する","ヘルパーT細胞を破壊して、免疫全体を機能不全にする"],
+   ans:0,
+   exp:"B細胞は骨髄で成熟し、表面のBCRで抗原そのものを直接認識。活性化されると形質細胞（抗体工場）へ分化します。一部は記憶B細胞として残り、ワクチンの原理になります。→ 胸腺で成熟するのはT細胞、MHC発現低下細胞を攻撃するのはNK細胞、ヘルパーTを破壊するのはHIV。",
+   part:"▶該当パート：リンパ球3種（B細胞）"},
+  {cat:"リンパ球3種", q:"NK細胞の特徴は？",
+   opts:["自然免疫の一員で、パーフォリン・グランザイムで標的細胞にアポトーシスを誘導する","胸腺で成熟し、サイトカインを出してB細胞やキラーTを活性化する司令塔","抗体を大量産生し、2回目の感染で高速反応を起こす","抗原を食べて分解し、MHCに載せてヘルパーT細胞へ提示する"],
+   ans:0,
+   exp:"NK＝Natural Killer（天然のキラー）。学習不要・即応の自然免疫で、ウイルス感染細胞やがん細胞（MHC発現が低下した細胞）を検出して攻撃します。→ 司令塔はヘルパーT、抗体産生はB細胞、抗原提示はマクロファージ・樹状細胞。",
+   part:"▶該当パート：リンパ球3種／T・B・NK徹底比較"},
+  {cat:"臨床との接続", q:"HIVの感染がAIDSの発症につながる仕組みは？",
+   opts:["免疫の司令塔ヘルパーT細胞を破壊し、獲得免疫全体が機能不全になるから","赤血球を破壊して、酸素運搬能を低下させるから","骨髄の造血幹細胞を直接破壊し、血球が作れなくなるから","脾臓を肥大させて、赤血球を過剰に破壊するから"],
+   ans:0,
+   exp:"HIVはヘルパーT細胞に感染して破壊。司令塔が失われるとB細胞の抗体産生もキラーTの活性化もできなくなり、普段なら問題にならない病原体にも感染する（日和見感染）→これがAIDSです。",
+   part:"▶該当パート：リンパ球3種（臨床メモ）"},
+  {cat:"巨核球と血小板", q:"巨核球から血小板が生まれる過程の説明として、正しいものは？",
+   opts:["核内分裂で多倍体化した巨大な巨核球の細胞質が断片化し、1個から2000〜5000個の血小板が放出される","巨核球が通常の細胞分裂を繰り返し、1回の分裂ごとに2個の血小板が生まれる","血小板は核をもった独立した細胞として、骨髄で直接つくられる","巨核球は胸腺へ移動したあと、血小板へと分化する"],
+   ans:0,
+   exp:"巨核球は細胞質分裂を伴わない「核内分裂」を繰り返す多倍体（16〜64N）の巨大細胞。細胞質が断片化して血小板になります。核は血小板に分配されず残骸として処分されるので、血小板は核なし＝分裂もタンパク質合成もできない「1回きりの使い捨て」です。",
+   part:"▶該当パート：巨核球→血小板"},
+  {cat:"造血ホルモン", q:"TPO（トロンボポエチン）による血小板数の調節の仕組みは？",
+   opts:["血小板が少ないとTPOが血中で増え、骨髄の巨核球による血小板産生が促進される","血小板が少ないと、肝臓が血小板そのものを直接つくって補う","血小板が多いほどTPOの産生が増え、血小板の増加がさらに加速する","腎臓がEPOを分泌し、血小板と赤血球を同時に増やす"],
+   ans:0,
+   exp:"TPOは主に肝臓・腎臓でつくられ、血小板自身がTPOを吸着して消費。血小板が少ないと吸着する受け皿が減って血中TPOが増え、巨核球への刺激が強まります。血小板自身がセンサーを兼ねた、巧妙な負のフィードバックです。",
+   part:"▶該当パート：巨核球→血小板（産生調節）"},
+  {cat:"食作用", q:"食作用のSTEP3「分解」で起こることは？",
+   opts:["ファゴソームがリソソームと融合し、ファゴリソソームで酵素分解される","仮足を伸ばして異物を包み込み、ファゴソームを形成する","受容体がPAMPやオプソニン化異物を感知して結合する","分解産物をMHCに載せて、ヘルパーT細胞へ提示する"],
+   ans:0,
+   exp:"①認識・接着（数秒）→②取り込み＝ファゴソーム形成（数十秒）→③分解＝ファゴリソソームで消化（数分〜数十分）→④結末の分岐。好中球は自らも死んで膿に、マクロファージ・樹状細胞は断片をMHCで提示して獲得免疫へつなげます。",
+   part:"▶該当パート：食作用のメカニズム"},
+  {cat:"リンパ器官", q:"一次リンパ器官＝免疫細胞の「工場」にあたる組合せは？",
+   opts:["骨髄と胸腺","リンパ節と脾臓","扁桃とパイエル板","脾臓と肝臓"],
+   ans:0,
+   exp:"一次リンパ器官＝骨髄（すべての血球の産生・B細胞の成熟）と胸腺（T細胞の成熟・自己反応性T細胞の除去）。二次リンパ器官＝リンパ節・脾臓・扁桃・パイエル板で、成熟した免疫細胞が敵と出会う「戦場」です。",
+   part:"▶該当パート：一次/二次リンパ器官"},
+  {cat:"演習2-3", q:"ヌードマウス（胸腺欠損マウス）で、抗大腸菌抗体量が著しく低くなった理由は？",
+   opts:["胸腺がなくヘルパーT細胞が成熟せず、B細胞が形質細胞へ分化して抗体を十分産生できないから","骨髄もないため、B細胞そのものがつくられないから","NK細胞が過剰に働いて、B細胞を攻撃してしまうから","血液中に抗体を破壊する酵素が増えるから"],
+   ans:0,
+   exp:"B細胞は存在しても、形質細胞への分化にはヘルパーTからのサイトカイン（Tヘルプ）が必要。一方NK活性は保たれます——NKは骨髄で成熟する自然免疫だから。皮膚移植の拒絶（キラーT主導の細胞性免疫）も起こりません。",
+   part:"▶該当パート：演習2-3 胸腺と免疫の関係"},
+  {cat:"造血ホルモン", q:"EPO（エリスロポエチン）の主な産生臓器は？",
+   opts:["腎臓","肝臓","胸腺","脾臓"],
+   ans:0,
+   exp:"成人では腎臓が主（胎児期は肝臓）。高地の低酸素→腎臓が感知→EPO分泌→赤芽球の分化促進→赤血球増→酸素運搬能回復→EPO低下、という負のフィードバック。低酸素のセンサーHIF-1αの発見は2019年のノーベル生理学・医学賞です。",
+   part:"▶該当パート：演習2-2 EPOと高地順化"}
+];
+const PARTS_LABEL = {total:QUESTIONS.length};
+
+/* ---------- state ---------- */
+let order=[], cur=0, score=0, log=[], missIdx=[];
+const $ = id => document.getElementById(id);
+const N = QUESTIONS.length;
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* each item: prepared question = {qi, opts(shuffled order), ansPos} */
+function prepare(pool){
+  order = pool.map(qi=>{
+    const q=QUESTIONS[qi];
+    const map=shuffle(q.opts.map((_,i)=>i));
+    return {qi, map, ansPos: map.indexOf(q.ans)};
+  });
+  cur=0; score=0; log=[]; missIdx=[];
+  $("result").classList.remove("show");
+  $("quiz").style.display="";
+  updateVessel();
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function updateVessel(){
+  const done = log.length;
+  const pct = done / N * 100;
+  $("fill").style.width = pct + "%";
+  $("disc").style.left = Math.max(pct, 2) + "%";
+  $("cnt").innerHTML = '進捗 <b>' + done + '</b> / ' + N + '問';
+  $("qscore").textContent = "正解 " + score;
+}
+
+function render(){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  $("qno").textContent = "問 " + (cur+1);
+  $("qcat").textContent = q.cat;
+  $("qtext").textContent = q.q;
+  const box = $("opts"); box.innerHTML="";
+  const marks = ["ア","イ","ウ","エ"];
+  item.map.forEach((oi, pos)=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button";
+    b.innerHTML = '<span class="mark">' + marks[pos] + '</span><span>' + q.opts[oi] + '</span>';
+    b.addEventListener("click", ()=>choose(pos));
+    box.appendChild(b);
+  });
+  $("fb").style.display="none";
+  $("actions").style.display="none";
+}
+
+function choose(pos){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  const btns = document.querySelectorAll("#opts .opt");
+  btns.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === item.ansPos) b.classList.add("correct");
+    else if(i === pos) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok = pos === item.ansPos;
+  if(ok) score++; else missIdx.push(item.qi);
+  log.push({qi:item.qi, ok, picked:pos, ansPos:item.ansPos});
+  const fb=$("fb");
+  fb.style.display="";
+  fb.className = ok ? "fb" : "fb ng";
+  $("verdict").textContent = ok ? "⭕ 正解！その調子💪" : "❌ 残念！該当パートを見返して挽回しよう";
+  $("exp").textContent = q.exp;
+  $("part").textContent = q.part;
+  $("nextBtn").textContent = (cur === N-1) ? "結果を見る →" : "次の問題へ →";
+  $("actions").style.display="";
+  updateVessel();
+}
+
+function finish(){
+  $("quiz").style.display="none";
+  const r=$("result"); r.classList.add("show");
+  $("rscore").textContent = score;
+  let tier, note;
+  if(score === N){ tier="🏆 完璧！THEME2は君のものです"; note="全問正解おめでとう！この調子で次回「血液凝固の仕組み」もねらおう！"; }
+  else if(score >= Math.ceil(N*0.75)){ tier="🔥 かなりいい感じ！"; note="まちがえた問題の該当パートを見返せば、全問正解まであと少し！"; }
+  else if(score >= Math.ceil(N*0.5)){ tier="📚 もう一周してみよう！"; note="骨髄系とリンパ系の系統樹を軸に、動画をもう一度！見返せば必ず伸びる。"; }
+  else { tier="🌱 まだまだこれから！"; note="1回で全部は難しいのが普通。動画を見返して、もう一度チャレンジ！"; }
+  $("tier").textContent = tier;
+  $("tierNote").textContent = note;
+  const list=$("rlist"); list.innerHTML="";
+  log.forEach((l,i)=>{
+    const q=QUESTIONS[l.qi];
+    const div=document.createElement("div");
+    div.className = "rv" + (l.ok ? "" : " miss");
+    const marks=["ア","イ","ウ","エ"];
+    div.innerHTML = '<span class="tag">' + (l.ok ? "⭕" : "❌") + ' 問' + (i+1) + '</span> <span class="rq">' + q.q + '</span>'
+      + '<div class="ra">正解：' + q.opts[q.ans] + (l.ok ? "" : '<br>あなたの回答：' + q.opts[order[i].map[l.picked]]) + '</div>';
+    list.appendChild(div);
+  });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* wire up */
+$("nextBtn").addEventListener("click", ()=>{ if(cur === N-1){ finish(); } else { cur++; updateVessel(); render(); } });
+$("retryBtn").addEventListener("click", ()=>prepare(shuffle(QUESTIONS.map((_,i)=>i))));
+$("againMissBtn").addEventListener("click", ()=>{
+  if(missIdx.length === 0){ prepare(shuffle(QUESTIONS.map((_,i)=>i))); }
+  else { prepare(shuffle(missIdx.slice())); }
+});
+
+/* start */
+prepare(shuffle(QUESTIONS.map((_,i)=>i)));
+</script>
+</body>
+</html>

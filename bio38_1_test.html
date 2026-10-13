@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜血液凝固の仕組み（ゼロからわかる高校生物 #38前編）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF4E9;          /* 血漿クリーム */
+  --ink:#2B2018;
+  --sub:#6E5A4E;
+  --red:#B3283C;         /* 赤血球レッド */
+  --red-deep:#8C1D2E;
+  --violet:#54488C;      /* ギムザ染色の青紫（白血球） */
+  --gold:#C9962E;        /* 血漿の淡い金色 */
+  --card:#FFFDF8;
+  --line:#E8DCCB;
+  --ok:#2E7D4F;
+  --ok-bg:#EAF4EC;
+  --ng:#B3323F;
+  --ng-bg:#F9ECEE;
+  --vessel:#F1DFD8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Noto Sans JP',"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(179,40,60,.06), transparent 60%),
+    radial-gradient(900px 480px at -10% 110%, rgba(84,72,140,.07), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 64px;}
+/* ---------- header ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);border:1.5px solid var(--red);color:var(--red-deep);
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.78rem;letter-spacing:.06em;
+  padding:6px 14px;border-radius:999px;
+}
+.eyebrow .dot{width:9px;height:9px;border-radius:50%;background:var(--red);}
+h1{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:900;font-size:clamp(1.5rem,4.6vw,2.05rem);
+  margin:14px 0 6px;line-height:1.4;
+}
+h1 .accent{color:var(--red);}
+.lead{color:var(--sub);font-size:.95rem;}
+.lead b{color:var(--ink);}
+/* ---------- vessel progress (signature) ---------- */
+.vessel-zone{margin:26px 0 8px;}
+.vessel{
+  position:relative;height:16px;border-radius:999px;
+  background:var(--vessel);
+  border:1px solid #E5C9C0;
+}
+.vessel .fill{
+  position:absolute;inset:0;width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#D96A7C,var(--red));
+  transition:width .45s cubic-bezier(.22,1,.36,1);
+}
+.disc{
+  position:absolute;top:50%;left:0%;
+  width:30px;height:30px;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #A02336 0 18%, #C2435A 40%, #E9909F 72%, #F6C9CF 100%);
+  box-shadow:0 3px 8px rgba(140,29,46,.35);
+  transition:left .45s cubic-bezier(.22,1,.36,1);
+}
+.vessel-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;color:var(--sub);margin-top:9px;font-weight:500;
+}
+.vessel-meta .cnt b{color:var(--red-deep);font-size:1rem;}
+@media (prefers-reduced-motion: reduce){
+  .vessel .fill,.disc{transition:none;}
+  *{animation:none!important;}
+}
+/* ---------- question card ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(90,60,40,.07);
+  padding:26px 24px 24px;
+  margin-top:18px;
+}
+.q-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;}
+.chip{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.75rem;letter-spacing:.05em;
+  padding:4px 12px;border-radius:999px;
+}
+.chip.no{background:var(--red);color:#fff;}
+.chip.cat{background:#F3E9F5;color:var(--violet);border:1px solid #DCD2EA;}
+.chip.gold{background:#FBF1DC;color:#8A6410;border:1px solid #EBD9A8;}
+.q-text{
+  font-size:1.08rem;font-weight:700;line-height:1.75;
+  padding:6px 0 16px;border-bottom:1px dashed var(--line);
+}
+.opts{display:grid;gap:10px;margin-top:16px;}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;text-align:left;
+  width:100%;cursor:pointer;
+  background:#FFF;
+  border:1.5px solid var(--line);border-radius:14px;
+  padding:13px 15px;font:inherit;font-size:.97rem;color:var(--ink);
+  transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--red);transform:translateY(-1px);box-shadow:0 6px 14px rgba(179,40,60,.10);}
+.opt:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.opt:disabled{cursor:default;}
+.opt .mark{
+  flex:none;width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#F6EEE2;color:var(--sub);
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.86rem;
+}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg);}
+.opt.correct .mark{background:var(--ok);color:#fff;}
+.opt.wrong{border-color:var(--ng);background:var(--ng-bg);}
+.opt.wrong .mark{background:var(--ng);color:#fff;}
+.opt.dim{opacity:.45;}
+/* ---------- feedback ---------- */
+.fb{
+  margin-top:16px;border-radius:14px;padding:16px 18px;
+  border:1.5px solid var(--ok);background:var(--ok-bg);
+}
+.fb.ng{border-color:var(--ng);background:var(--ng-bg);}
+.fb .verdict{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.02rem;
+  color:var(--ok);display:flex;align-items:center;gap:7px;
+}
+.fb.ng .verdict{color:var(--ng);}
+.fb .exp{font-size:.92rem;margin-top:8px;}
+.fb .part{
+  margin-top:10px;font-size:.82rem;color:var(--sub);
+  border-top:1px dashed rgba(110,90,78,.35);padding-top:8px;
+}
+.actions{margin-top:18px;display:flex;justify-content:flex-end;}
+.btn{
+  font:inherit;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;
+  border:none;cursor:pointer;border-radius:999px;
+  background:var(--red);color:#fff;
+  padding:12px 30px;font-size:.98rem;
+  box-shadow:0 6px 16px rgba(179,40,60,.28);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(179,40,60,.34);}
+.btn:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.btn.ghost{
+  background:transparent;color:var(--red-deep);border:1.5px solid var(--red);
+  box-shadow:none;
+}
+/* ---------- result ---------- */
+.result{display:none;}
+.result.show{display:block;animation:pop .35s ease;}
+@keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.score-zone{text-align:center;padding:10px 0 4px;}
+.score-num{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;
+  font-size:3.4rem;line-height:1.1;color:var(--red);
+}
+.score-num small{font-size:1.3rem;color:var(--sub);font-weight:700;}
+.tier{
+  display:inline-block;margin-top:8px;
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:1.05rem;
+  background:#F7E9E0;color:var(--red-deep);
+  border-radius:999px;padding:8px 22px;
+}
+.review{margin-top:22px;}
+.review h2{
+  font-family:'Zen Maru Gothic',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--sub);margin-bottom:10px;letter-spacing:.04em;
+}
+.rv{
+  border:1px solid var(--line);border-left:5px solid var(--ok);
+  background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.88rem;
+}
+.rv.miss{border-left-color:var(--ng);}
+.rv .rq{font-weight:700;}
+.rv .ra{margin-top:4px;color:var(--sub);}
+.rv .tag{font-weight:700;color:var(--ok);}
+.rv.miss .tag{color:var(--ng);}
+.result .actions{justify-content:center;gap:12px;flex-wrap:wrap;}
+.note{
+  margin-top:14px;text-align:center;font-size:.84rem;color:var(--sub);
+}
+/* ---------- footer ---------- */
+.foot{
+  margin-top:36px;text-align:center;color:var(--sub);font-size:.8rem;
+  border-top:1px solid var(--line);padding-top:18px;
+}
+.foot b{color:var(--red-deep);}
+@media (max-width:480px){
+  .card{padding:20px 16px 18px;border-radius:16px;}
+  .q-text{font-size:1.02rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow"><span class="dot"></span>ゼロからわかる高校生物 ＃38前編</span>
+    <h1>THEME3 血液凝固の仕組み<br><span class="accent">確認テスト</span></h1>
+    <p class="lead">全 <b>16問</b>・4択式。全問正解するまで繰り返せば、この単元は完璧！<br>まちがえた問題は、動画の該当パートを見返して仕上げよう。</p>
+  </header>
+
+  <div class="vessel-zone" aria-hidden="false">
+    <div class="vessel" role="progressbar" aria-label="テストの進行状況" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+      <div class="disc" id="disc"></div>
+    </div>
+    <div class="vessel-meta">
+      <span class="cnt" id="cnt">進捗 <b>0</b> / 16問</span>
+      <span>血管が破れたら、まずは元栓を絞る🩹</span>
+    </div>
+  </div>
+
+  <main class="card" id="quiz">
+    <div class="q-top">
+      <span class="chip no" id="qno">問 1</span>
+      <span class="chip cat" id="qcat">分野</span>
+      <span class="chip gold" id="qscore">正解 0</span>
+    </div>
+    <p class="q-text" id="qtext">読み込み中…</p>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb" style="display:none">
+      <p class="verdict" id="verdict"></p>
+      <p class="exp" id="exp"></p>
+      <p class="part" id="part"></p>
+    </div>
+    <div class="actions" id="actions" style="display:none">
+      <button class="btn" id="nextBtn">次の問題へ →</button>
+    </div>
+  </main>
+
+  <main class="card result" id="result">
+    <div class="score-zone">
+      <div class="score-num"><span id="rscore">0</span><small> / 16</small></div>
+      <div class="tier" id="tier"></div>
+      <p class="note" id="tierNote"></p>
+    </div>
+    <div class="review">
+      <h2>▶ 見直しリスト（間違えた問題は動画の該当パートを見返そう）</h2>
+      <div id="rlist"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="retryBtn">もう一度最初から挑戦 ↺</button>
+      <button class="btn ghost" id="againMissBtn">まちがえた問題だけ再挑戦 ↺</button>
+    </div>
+    <p class="note">解説・まちがい直しは「ゼロからわかる高校生物 ＃38前編」の動画で！</p>
+  </main>
+
+  <footer class="foot">
+    ゼロからわかる高校生物 ＃38前編　THEME3「血液凝固の仕組み〜Coagulation Cascade〜」<br>
+    <b>Kazuki Medical Biology</b>（カズキ）｜医学部・難関大対策のオンライン家庭教師
+  </footer>
+</div>
+
+<script>
+"use strict";
+const QUESTIONS = [
+  {cat:"止血の意義", q:"ヒトの循環血液量と、出血時にショック状態になる量の正しい組合せは？",
+   opts:["約5L／出血2Lでショック状態","約10L／出血5Lでショック状態","約5L／出血3Lでショック状態","約10L／出血2Lでショック状態"],
+   ans:0,
+   exp:"ヒトの循環血液量は全身で約5L。出血1Lで軽度の血圧低下・頻脈、2Lでショック状態、3L以上で致死的になります。たった5Lの大切な資源を一刻も早く守るのが止血の理由①です。",
+   part:"▶該当パート：血液凝固の意義"},
+  {cat:"止血の3段階", q:"止血の3段階として、正しい順序は？",
+   opts:["血管収縮→血小板凝集→フィブリン形成","血小板凝集→血管収縮→フィブリン形成","フィブリン形成→血小板凝集→血管収縮","血小板凝集→フィブリン形成→血管収縮"],
+   ans:0,
+   exp:"①血管収縮（0〜数秒・応急処置）→②血小板凝集＝一次止血（数分・仮止め）→③フィブリン形成＝二次止血（数十分・本止め）。「応急処置→仮止め→本止め」と段階的に強度を増します。",
+   part:"▶該当パート：止血の3段階"},
+  {cat:"止血の3段階", q:"STEP2の血小板凝集（一次止血）のしくみとして、正しいものは？",
+   opts:["血小板が傷口のコラーゲンに付着し、ADP・TXA₂を放出して互いに凝集し、仮の栓をつくる","平滑筋が反射的に収縮して、血流量そのものを減らす","フィブリン網が血球を絡めとり、強固な栓に固める","セロトニンを放出して血管を拡張し、血流を増やす"],
+   ans:0,
+   exp:"血小板は傷口のコラーゲンに付着→活性化して形が変わる→ADP・TXA₂を放出して他の血小板を呼ぶ→凝集して血小板血栓（仮の栓）をつくります。→ 血管収縮はSTEP1、フィブリン網はSTEP3、血管を「拡張」ではなく止血は収縮させる方向です。",
+   part:"▶該当パート：止血の3段階"},
+  {cat:"一次止血と二次止血", q:"血小板だけの「仮の栓」では不十分な理由は？",
+   opts:["血流の圧力に耐えられる強度がなく、フィブリンの網で固定して初めて本止めになるから","血小板の寿命が数秒しかなく、すぐに崩れてしまうから","仮の栓には核がないため、分裂して栓を大きくできないから","フィブリノーゲンがまだ血中に存在していないから"],
+   ans:0,
+   exp:"血小板だけの仮の栓は、接着剤なしの積み木のようなもろい構造です。フィブリノーゲンからできたフィブリンの頑丈な網で覆い、内部に固定して初めて血流の圧力に耐えられる「本物の栓」になります。",
+   part:"▶該当パート：止血の3段階／一次止血と二次止血"},
+  {cat:"凝固のバランス", q:"「凝固しない」側の天秤が傾きすぎたときに起こる病気は？",
+   opts:["血友病・血小板減少症","血栓・梗塞","動脈硬化・高血圧","貧血・低血圧"],
+   ans:0,
+   exp:"血管内では固まらないのがデフォルト。「凝固する」は傷というトリガーが入ったときだけ発動する例外プログラムです。このバランスが崩れ、非凝固側に傾くと血友病・血小板減少症、凝固側に傾くと血栓・梗塞になります。",
+   part:"▶該当パート：血液凝固の意義（BALANCE）"},
+  {cat:"凝固因子", q:"高校生物で絶対に押さえるべき凝固因子3つは？",
+   opts:["Ⅰフィブリノーゲン・Ⅱプロトロンビン・Ⅳカルシウムイオン","Ⅲ組織因子・Ⅷ因子・ⅩⅢ因子","Ⅴ・Ⅶ・Ⅸ","Ⅰフィブリノーゲン・Ⅴ・Ⅻ"],
+   ans:0,
+   exp:"Ⅰ＝最終産物フィブリンの材料、Ⅱ＝中心酵素トロンビンの元、Ⅳ＝全ステップの必須補助（除去すれば凝固しない）。13種類の名前を丸暗記するのではなく、この3つと「流れ」を押さえればOKです。",
+   part:"▶該当パート：血液凝固因子"},
+  {cat:"凝固因子", q:"凝固因子の共通のパターンとして、正しいものは？",
+   opts:["ほとんどが肝臓で合成され、活性型は名前の末尾に「a」をつける（Ⅹ→Ⅹa）","すべて脾臓で合成され、活性型は「p」をつける","ビタミンC依存性で、不足すると凝固が進みすぎる","活性化するときはリン酸化ではなく、膜を貫通して DNA を読む"],
+   ans:0,
+   exp:"凝固因子のほとんどは肝臓で合成されるため、肝機能の低下すると出血しやすくなります。活性型は「Ⅹa」のように末尾にa。不活性な前駆体が切断されて活性型になる、という共通パターンで理解しましょう。",
+   part:"▶該当パート：血液凝固因子（共通点）"},
+  {cat:"Ca²⁺の役割", q:"Ca²⁺（カルシウムイオン）の本質的な役割は？",
+   opts:["凝固因子と血小板膜のリン脂質を橋渡しする「接着剤」になること","フィブリン網を共有結合で架橋すること自身","血小板を直接活性化して、ADPを放出させること","血管の平滑筋を収縮させること"],
+   ans:0,
+   exp:"Ca²⁺は凝固因子と膜表面のリン脂質を橋渡しする「金具」です。これによって因子が膜にアンカーされ、膜表面という狭い場所に高濃度で集合し、反応が効率よく進みます。Ca²⁺なしで凝固は起こりません。",
+   part:"▶該当パート：Ca²⁺の絶対的役割"},
+  {cat:"Ca²⁺×ビタミンK", q:"ビタミンK欠乏で凝固が進まなくなる連鎖として、正しいものは？",
+   opts:["Gla残基がつくれない→Ca²⁺が結合できない→凝固因子が膜に固定されない","Gla残基が増えすぎる→Ca²⁺が消費されすぎる→凝固因子が分解される","フィブリノーゲンが肝臓でつくれない→トロンビンが過剰になる","血小板そのものがつくれない→仮の栓ができない"],
+   ans:0,
+   exp:"Ca²⁺が因子に結合するには「Gla残基」（グルタミン酸のカルボキシル化型）が必要で、この修飾にはビタミンKが不可欠。→ 骨髄で血小板そのものがつくれないのは別の話です（血小板の産生は＃37で学んだTPOの調節）。",
+   part:"▶該当パート：Ca²⁺×ビタミンK（Gla残基）"},
+  {cat:"凝固阻止の応用", q:"採血管にクエン酸ナトリウムを入れると凝固しない原理は？",
+   opts:["クエン酸イオンがCa²⁺とキレート結合し、遊離Ca²⁺を減らすから","クエン酸イオンがトロンビンの活性部位を直接塞ぐから","クエン酸イオンが血小板膜を破壊するから","クエン酸イオンがフィブリン網を溶かすから"],
+   ans:0,
+   exp:"クエン酸イオンはCa²⁺を挟み込んで無力化（キレート）します。遊離Ca²⁺が減ると凝固因子が膜に結合できず、カスケードが進みません。血液検査・輸血用の抗凝固剤として使われる原理です。",
+   part:"▶該当パート：クエン酸ナトリウムの原理"},
+  {cat:"プロの法則", q:"「プロトロンビン」の「プロ」が意味するものは？",
+   opts:["不活性な前駆体（プロを取ると活性型になる）","プロの技術者だけが扱える高度な酵素であること","細胞膜を貫通するプロテイン（膜タンパク）であること","プロトン（H⁺）を放出してpHを下げること"],
+   ans:0,
+   exp:"「プロ」＝まだ完成していない不活性な前駆体。プロインスリン→インスリン、プロコラーゲン→コラーゲンと同じパターンです。この視点があれば、初めて見る「プロ○○」でも見当がつきます。",
+   part:"▶該当パート：プロトロンビン→トロンビン"},
+  {cat:"トロンビン", q:"トロンビンの働きとして、正しいものは？",
+   opts:["フィブリノーゲンを切断するだけでなく、血小板を活性化し、因子Ⅴ・Ⅷ・ⅩⅢも活性化して自分の産生を増やす","フィブリン網を分解して、血栓を溶かす","組織因子（TF）を露出させて、外因系を開始する","赤血球の脱核を促進して、網赤血球をつくる"],
+   ans:0,
+   exp:"トロンビンは凝固の中心スイッチ。①フィブリノーゲン→フィブリン（主任務）②血小板をさらに活性化 ③自分をつくるための因子Ⅴ・Ⅷ・ⅩⅢまで活性化——トロンビンが増えるほどさらにトロンビンがつくられる「増幅ループ（自己触媒反応）」で凝固を加速します。",
+   part:"▶該当パート：プロトロンビン→トロンビン（増幅ループ）"},
+  {cat:"外因系と内因系", q:"外因系と内因系の違いとして、正しいものは？",
+   opts:["外因系は組織因子（TF）＋Ⅶaで速くXを活性化、内因系はコラーゲン接触→Ⅻ→Ⅺ→Ⅸ→Ⅷと連鎖して遅く活性化","外因系は遅く、内因系は速くXを活性化する","外因系は血小板のみで進み、内因系はフィブリンのみで進む","両者はフィブリンで合流し、その後プロトロンビンに戻る"],
+   ans:0,
+   exp:"外因系＝組織損傷でTFが露出→Ⅶaと結合→Xを活性化（速い）。内因系＝血管内皮下のコラーゲンに接触→Ⅻ→Ⅺ→Ⅸ→Ⅷと連鎖→Xを活性化（遅い）。2つのルートはXで合流し、その後は共通経路としてプロトロンビン→トロンビン→フィブリノーゲン→フィブリンへ進みます。",
+   part:"▶該当パート：外因系と内因系"},
+  {cat:"フィブリン形成", q:"フィブリノーゲン→フィブリンの変化、3段階の正しい順序は？",
+   opts:["トロンビンが両端のフィブリノペプチドを切断→モノマーが自発重合→ⅩⅢ因子が架橋","ⅩⅢ因子が架橋→トロンビンが切断→モノマーが重合","血小板がフィブリノーゲンを飲み込む→断裂→重合","Ca²⁺が重合→トロンビンが架橋→フィブリンが切断"],
+   ans:0,
+   exp:"①トロンビンが両端の「邪魔なフタ」（フィブリノペプチド）を切断→②フタが取れたモノマーが自発的に重合（まだ弱い繊維）→③ⅩⅢ因子（フィブリン安定化因子）が共有結合で架橋。これで頑丈なフィブリン網が完成します。",
+   part:"▶該当パート：トロンビンの働き（フィブリノーゲン→フィブリン）"},
+  {cat:"血ぺいと血清", q:"「血清＝？」を表す式として、正しいものは？",
+   opts:["血清＝血漿－フィブリノーゲン","血清＝血漿＋フィブリノーゲン","血清＝全血－フィブリン網","血清＝血漿－免疫グロブリン"],
+   ans:0,
+   exp:"血漿＝血液－血球（フィブリノーゲンを含む）／血清＝血漿－フィブリノーゲン（凝固後の上澄み。免疫グロブリンは残る）／血ぺい＝フィブリン網＋血球。血清は血小板のアクチン・ミオシンによる血ぺい退縮で絞り出されて現れます。抗体検査は血清、凝固検査はクエン酸Na管の血漿を使い分け。",
+   part:"▶該当パート：血ぺいと血清（血漿との違い）"},
+  {cat:"血ぺいの正体", q:"血ぺい（かさぶた）が赤く見える理由は？",
+   opts:["フィブリン網の中に大量の赤血球が絡めとられるから","フィブリン自体が赤色の色素を持つから","血小板がへモグロビンを合成するから","血清が大気中の酸素と反応して赤くなるから"],
+   ans:0,
+   exp:"フィブリン自体は無色透明な繊維。網の中に赤血球が大量に絡めとられることで、ゼリー状の赤い塊＝かさぶたとして見えます。さらに血小板のアクチン・ミオシンが血ぺいをぎゅっと締める「血ぺい退縮」が起こります。",
+   part:"▶該当パート：フィブリン網が血ぺいを作る"}
+];
+const N = QUESTIONS.length;
+
+/* ---------- state ---------- */
+let order=[], cur=0, score=0, log=[], missIdx=[];
+const $ = id => document.getElementById(id);
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* each item: prepared question = {qi, opts(shuffled order), ansPos} */
+function prepare(pool){
+  order = pool.map(qi=>{
+    const q=QUESTIONS[qi];
+    const map=shuffle(q.opts.map((_,i)=>i));
+    return {qi, map, ansPos: map.indexOf(q.ans)};
+  });
+  cur=0; score=0; log=[]; missIdx=[];
+  $("result").classList.remove("show");
+  $("quiz").style.display="";
+  updateVessel();
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function updateVessel(){
+  const done = log.length;
+  const pct = done / N * 100;
+  $("fill").style.width = pct + "%";
+  $("disc").style.left = Math.max(pct, 2) + "%";
+  $("cnt").innerHTML = '進捗 <b>' + done + '</b> / ' + N + '問';
+  $("qscore").textContent = "正解 " + score;
+}
+
+function render(){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  $("qno").textContent = "問 " + (cur+1);
+  $("qcat").textContent = q.cat;
+  $("qtext").textContent = q.q;
+  const box = $("opts"); box.innerHTML="";
+  const marks = ["ア","イ","ウ","エ"];
+  item.map.forEach((oi, pos)=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button";
+    b.innerHTML = '<span class="mark">' + marks[pos] + '</span><span>' + q.opts[oi] + '</span>';
+    b.addEventListener("click", ()=>choose(pos));
+    box.appendChild(b);
+  });
+  $("fb").style.display="none";
+  $("actions").style.display="none";
+}
+
+function choose(pos){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  const btns = document.querySelectorAll("#opts .opt");
+  btns.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === item.ansPos) b.classList.add("correct");
+    else if(i === pos) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok = pos === item.ansPos;
+  if(ok) score++; else missIdx.push(item.qi);
+  log.push({qi:item.qi, ok, picked:pos, ansPos:item.ansPos});
+  const fb=$("fb");
+  fb.style.display="";
+  fb.className = ok ? "fb" : "fb ng";
+  $("verdict").textContent = ok ? "⭕ 正解！その調子💪" : "❌ 残念！該当パートを見返して挽回しよう";
+  $("exp").textContent = q.exp;
+  $("part").textContent = q.part;
+  $("nextBtn").textContent = (cur === N-1) ? "結果を見る →" : "次の問題へ →";
+  $("actions").style.display="";
+  updateVessel();
+}
+
+function finish(){
+  $("quiz").style.display="none";
+  const r=$("result"); r.classList.add("show");
+  $("rscore").textContent = score;
+  let tier, note;
+  if(score === N){ tier="🏆 完璧！THEME3前編は君のものです"; note="全問正解おめでとう！この調子で後編もねらおう！"; }
+  else if(score >= Math.ceil(N*0.75)){ tier="🔥 かなりいい感じ！"; note="まちがえた問題の該当パートを見返せば、全問正解まであと少し！"; }
+  else if(score >= Math.ceil(N*0.5)){ tier="📚 もう一周してみよう！"; note="止血の3段階とカスケードの流れを軸に、動画をもう一度！見返せば必ず伸びる。"; }
+  else { tier="🌱 まだまだこれから！"; note="1回で全部は難しいのが普通。動画を見返して、もう一度チャレンジ！"; }
+  $("tier").textContent = tier;
+  $("tierNote").textContent = note;
+  const list=$("rlist"); list.innerHTML="";
+  log.forEach((l,i)=>{
+    const q=QUESTIONS[l.qi];
+    const div=document.createElement("div");
+    div.className = "rv" + (l.ok ? "" : " miss");
+    div.innerHTML = '<span class="tag">' + (l.ok ? "⭕" : "❌") + ' 問' + (i+1) + '</span> <span class="rq">' + q.q + '</span>'
+      + '<div class="ra">正解：' + q.opts[q.ans] + (l.ok ? "" : '<br>あなたの回答：' + q.opts[order[i].map[l.picked]]) + '</div>';
+    list.appendChild(div);
+  });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* wire up */
+$("nextBtn").addEventListener("click", ()=>{ if(cur === N-1){ finish(); } else { cur++; updateVessel(); render(); } });
+$("retryBtn").addEventListener("click", ()=>prepare(shuffle(QUESTIONS.map((_,i)=>i))));
+$("againMissBtn").addEventListener("click", ()=>{
+  if(missIdx.length === 0){ prepare(shuffle(QUESTIONS.map((_,i)=>i))); }
+  else { prepare(shuffle(missIdx.slice())); }
+});
+
+/* start */
+prepare(shuffle(QUESTIONS.map((_,i)=>i)));
+</script>
+</body>
+</html>

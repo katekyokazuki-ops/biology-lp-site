@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>確認テスト｜血管系による動物の分類（ゼロからわかる高校生物 #39前編）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF4E9;          /* 血漿クリーム */
+  --ink:#2B2018;
+  --sub:#6E5A4E;
+  --red:#B3283C;         /* 赤血球レッド */
+  --red-deep:#8C1D2E;
+  --violet:#54488C;      /* ギムザ染色の青紫（白血球） */
+  --gold:#C9962E;        /* 血漿の淡い金色 */
+  --card:#FFFDF8;
+  --line:#E8DCCB;
+  --ok:#2E7D4F;
+  --ok-bg:#EAF4EC;
+  --ng:#B3323F;
+  --ng-bg:#F9ECEE;
+  --vessel:#F1DFD8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Noto Sans JP',"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(179,40,60,.06), transparent 60%),
+    radial-gradient(900px 480px at -10% 110%, rgba(84,72,140,.07), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  line-height:1.7;
+  min-height:100vh;
+}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 64px;}
+/* ---------- header ---------- */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);border:1.5px solid var(--red);color:var(--red-deep);
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.78rem;letter-spacing:.06em;
+  padding:6px 14px;border-radius:999px;
+}
+.eyebrow .dot{width:9px;height:9px;border-radius:50%;background:var(--red);}
+h1{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:900;font-size:clamp(1.5rem,4.6vw,2.05rem);
+  margin:14px 0 6px;line-height:1.4;
+}
+h1 .accent{color:var(--red);}
+.lead{color:var(--sub);font-size:.95rem;}
+.lead b{color:var(--ink);}
+/* ---------- vessel progress (signature) ---------- */
+.vessel-zone{margin:26px 0 8px;}
+.vessel{
+  position:relative;height:16px;border-radius:999px;
+  background:var(--vessel);
+  border:1px solid #E5C9C0;
+}
+.vessel .fill{
+  position:absolute;inset:0;width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#D96A7C,var(--red));
+  transition:width .45s cubic-bezier(.22,1,.36,1);
+}
+.disc{
+  position:absolute;top:50%;left:0%;
+  width:30px;height:30px;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%, #A02336 0 18%, #C2435A 40%, #E9909F 72%, #F6C9CF 100%);
+  box-shadow:0 3px 8px rgba(140,29,46,.35);
+  transition:left .45s cubic-bezier(.22,1,.36,1);
+}
+.vessel-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.82rem;color:var(--sub);margin-top:9px;font-weight:500;
+}
+.vessel-meta .cnt b{color:var(--red-deep);font-size:1rem;}
+@media (prefers-reduced-motion: reduce){
+  .vessel .fill,.disc{transition:none;}
+  *{animation:none!important;}
+}
+/* ---------- question card ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(90,60,40,.07);
+  padding:26px 24px 24px;
+  margin-top:18px;
+}
+.q-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;}
+.chip{
+  font-family:'Zen Maru Gothic',"Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:700;font-size:.75rem;letter-spacing:.05em;
+  padding:4px 12px;border-radius:999px;
+}
+.chip.no{background:var(--red);color:#fff;}
+.chip.cat{background:#F3E9F5;color:var(--violet);border:1px solid #DCD2EA;}
+.chip.gold{background:#FBF1DC;color:#8A6410;border:1px solid #EBD9A8;}
+.q-text{
+  font-size:1.08rem;font-weight:700;line-height:1.75;
+  padding:6px 0 16px;border-bottom:1px dashed var(--line);
+}
+.opts{display:grid;gap:10px;margin-top:16px;}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;text-align:left;
+  width:100%;cursor:pointer;
+  background:#FFF;
+  border:1.5px solid var(--line);border-radius:14px;
+  padding:13px 15px;font:inherit;font-size:.97rem;color:var(--ink);
+  transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.opt:hover:not(:disabled){border-color:var(--red);transform:translateY(-1px);box-shadow:0 6px 14px rgba(179,40,60,.10);}
+.opt:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.opt:disabled{cursor:default;}
+.opt .mark{
+  flex:none;width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#F6EEE2;color:var(--sub);
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.86rem;
+}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg);}
+.opt.correct .mark{background:var(--ok);color:#fff;}
+.opt.wrong{border-color:var(--ng);background:var(--ng-bg);}
+.opt.wrong .mark{background:var(--ng);color:#fff;}
+.opt.dim{opacity:.45;}
+/* ---------- feedback ---------- */
+.fb{
+  margin-top:16px;border-radius:14px;padding:16px 18px;
+  border:1.5px solid var(--ok);background:var(--ok-bg);
+}
+.fb.ng{border-color:var(--ng);background:var(--ng-bg);}
+.fb .verdict{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.02rem;
+  color:var(--ok);display:flex;align-items:center;gap:7px;
+}
+.fb.ng .verdict{color:var(--ng);}
+.fb .exp{font-size:.92rem;margin-top:8px;}
+.fb .part{
+  margin-top:10px;font-size:.82rem;color:var(--sub);
+  border-top:1px dashed rgba(110,90,78,.35);padding-top:8px;
+}
+.actions{margin-top:18px;display:flex;justify-content:flex-end;}
+.btn{
+  font:inherit;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;
+  border:none;cursor:pointer;border-radius:999px;
+  background:var(--red);color:#fff;
+  padding:12px 30px;font-size:.98rem;
+  box-shadow:0 6px 16px rgba(179,40,60,.28);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(179,40,60,.34);}
+.btn:focus-visible{outline:3px solid rgba(84,72,140,.45);outline-offset:2px;}
+.btn.ghost{
+  background:transparent;color:var(--red-deep);border:1.5px solid var(--red);
+  box-shadow:none;
+}
+/* ---------- result ---------- */
+.result{display:none;}
+.result.show{display:block;animation:pop .35s ease;}
+@keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.score-zone{text-align:center;padding:10px 0 4px;}
+.score-num{
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:900;
+  font-size:3.4rem;line-height:1.1;color:var(--red);
+}
+.score-num small{font-size:1.3rem;color:var(--sub);font-weight:700;}
+.tier{
+  display:inline-block;margin-top:8px;
+  font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:1.05rem;
+  background:#F7E9E0;color:var(--red-deep);
+  border-radius:999px;padding:8px 22px;
+}
+.review{margin-top:22px;}
+.review h2{
+  font-family:'Zen Maru Gothic',sans-serif;font-size:1rem;font-weight:700;
+  color:var(--sub);margin-bottom:10px;letter-spacing:.04em;
+}
+.rv{
+  border:1px solid var(--line);border-left:5px solid var(--ok);
+  background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.88rem;
+}
+.rv.miss{border-left-color:var(--ng);}
+.rv .rq{font-weight:700;}
+.rv .ra{margin-top:4px;color:var(--sub);}
+.rv .tag{font-weight:700;color:var(--ok);}
+.rv.miss .tag{color:var(--ng);}
+.result .actions{justify-content:center;gap:12px;flex-wrap:wrap;}
+.note{
+  margin-top:14px;text-align:center;font-size:.84rem;color:var(--sub);
+}
+/* ---------- footer ---------- */
+.foot{
+  margin-top:36px;text-align:center;color:var(--sub);font-size:.8rem;
+  border-top:1px solid var(--line);padding-top:18px;
+}
+.foot b{color:var(--red-deep);}
+@media (max-width:480px){
+  .card{padding:20px 16px 18px;border-radius:16px;}
+  .q-text{font-size:1.02rem;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow"><span class="dot"></span>ゼロからわかる高校生物 ＃39前編</span>
+    <h1>THEME4 血管系による動物の分類<br><span class="accent">確認テスト</span></h1>
+    <p class="lead">全 <b>16問</b>・4択式。全問正解するまで繰り返せば、この単元は完璧！<br>まちがえた問題は、動画の該当パートを見返して仕上げよう。</p>
+  </header>
+
+  <div class="vessel-zone" aria-hidden="false">
+    <div class="vessel" role="progressbar" aria-label="テストの進行状況" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0">
+      <div class="fill" id="fill"></div>
+      <div class="disc" id="disc"></div>
+    </div>
+    <div class="vessel-meta">
+      <span class="cnt" id="cnt">進捗 <b>0</b> / 16問</span>
+      <span>生き方を見れば、タイプは読める🩸</span>
+    </div>
+  </div>
+
+  <main class="card" id="quiz">
+    <div class="q-top">
+      <span class="chip no" id="qno">問 1</span>
+      <span class="chip cat" id="qcat">分野</span>
+      <span class="chip gold" id="qscore">正解 0</span>
+    </div>
+    <p class="q-text" id="qtext">読み込み中…</p>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb" style="display:none">
+      <p class="verdict" id="verdict"></p>
+      <p class="exp" id="exp"></p>
+      <p class="part" id="part"></p>
+    </div>
+    <div class="actions" id="actions" style="display:none">
+      <button class="btn" id="nextBtn">次の問題へ →</button>
+    </div>
+  </main>
+
+  <main class="card result" id="result">
+    <div class="score-zone">
+      <div class="score-num"><span id="rscore">0</span><small> / 16</small></div>
+      <div class="tier" id="tier"></div>
+      <p class="note" id="tierNote"></p>
+    </div>
+    <div class="review">
+      <h2>▶ 見直しリスト（間違えた問題は動画の該当パートを見返そう）</h2>
+      <div id="rlist"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="retryBtn">もう一度最初から挑戦 ↺</button>
+      <button class="btn ghost" id="againMissBtn">まちがえた問題だけ再挑戦 ↺</button>
+    </div>
+    <p class="note">解説・まちがい直しは「ゼロからわかる高校生物 ＃39前編」の動画で！</p>
+  </main>
+
+  <footer class="foot">
+    ゼロからわかる高校生物 ＃39前編　THEME4「血管系による動物の分類〜Evolution of Circulatory Systems〜」前編<br>
+    <b>Kazuki Medical Biology</b>（カズキ）｜医学部・難関大対策のオンライン家庭教師
+  </footer>
+</div>
+
+<script>
+"use strict";
+const QUESTIONS = [
+  {cat:"血管系の3類型", q:"血管系の進化の3類型として、正しい組合せは？",
+   opts:["0：血管系なし→1：開放血管系→2：閉鎖血管系の順に進化した","0：開放血管系→1：血管系なし→2：閉鎖血管系の順に進化した","血管系なし・開放・閉鎖は進化の順序と無関係にランダムに分布する","すべての動物は最初から閉鎖血管系を持っていた"],
+   ans:0,
+   exp:"血管系は「0：なし（海綿・刺胞・扁形・輪形・線形動物）→1：開放（節足動物・貝類など）→2：閉鎖（脊椎動物・環形動物・頭足類）」という進化の階段をたどります。「血液があるかどうか」ではなく「血液がどう流れているか」に進化の物語が隠れています。",
+   part:"▶該当パート：血管系の意義（3 TYPES）"},
+  {cat:"拡散の限界", q:"動物が大きくなると拡散だけで物質輸送ができなくなる理由として、正しいものは？",
+   opts:["体積は3乗で増えるのに表面積は2乗しか増えず、入口の増加が需要に追いつかないから","大きくなると細胞の数が減って、酸素を必要とする細胞が増えるから","大型動物では毛細血管の数が減るから","拡散は水中では起こらず、陸上でしか起こらないから"],
+   ans:0,
+   exp:"体の中の細胞の数（栄養の必要量）は体積＝3乗で増えるのに、物質を受け取る入口（皮膚や消化管の表面積）は2乗しか増えません。このS/V比の壁を乗り越えるために生まれたのが血管系。赤血球が両凹円盤なのもS/V比を大きくするためです。",
+   part:"▶該当パート：血管系の意義（DIFFUSION LIMIT）"},
+  {cat:"血管系の意義", q:"血管系の3大意義として、正しい組合せは？",
+   opts:["O2・栄養素の運搬／CO2・老廃物の回収／ホルモン・免疫細胞・熱の循環","O2の運搬のみ／CO2の運搬のみ／体温の放出のみ","消化・吸収／呼吸・排出／感覚・運動","ホルモンの分解／免疫細胞の生成／熱の産生"],
+   ans:0,
+   exp:"行きの便が酸素と栄養、帰りの便がCO2と老廃物——血管は体の中を走る「配達トラック」です。さらにホルモン（指令書）・免疫細胞（急行部隊）・熱の循環も担い、動物の大型化・活発化を可能にした「発明」です。",
+   part:"▶該当パート：血管系の意義（3 MAJOR ROLES）"},
+  {cat:"血管系なし5門", q:"「海刺扁輪線」で覚える血管系なしの5門として、正しいものは？",
+   opts:["海綿・刺胞・扁形・輪形・線形動物","海綿・刺胞・軟体・環形・節足動物","扁形・線形・棘皮・環形・軟体動物","刺胞・節足・扁形・棘皮・脊索動物"],
+   ans:0,
+   exp:"海：海綿動物、刺：刺胞動物、扁：扁形動物、輪：輪形動物、線：線形動物——この5門が血管系なしです。共通点は「体が薄いor小さい」こと。語呂でタイプを覚えつつ、「なぜ血管がなくて済むのか」の理由をセットで言えるようにしましょう。",
+   part:"▶該当パート：血管系がない動物5門（MEMORIZATION）"},
+  {cat:"血管系なし5門", q:"線形動物（回虫・センチュウなど）が血管なしで体内輸送を済ませる仕組みは？",
+   opts:["偽体腔の体腔液が、体の運動のたびに攪拌されて循環の代わりを果たす","体表の気門から気管が伸びて、細胞まで直接酸素を届ける","水管系で海の水を体内に流し込んで物質交換する","背腹に平たい体で、すべての細胞が体表に接している"],
+   ans:0,
+   exp:"線形動物は偽体腔を満たす体液を「動きで攪拌する」ことで擬似的な循環を実現しています。「動きで代用する」発想です。気管系は昆虫、水管系は海綿動物、背腹に扁平な体は扁形動物（プラナリア）の工夫です。",
+   part:"▶該当パート：血管系がない動物5門（線形動物）"},
+  {cat:"開放血管系", q:"昆虫が活発に運動するのに開放血管系で足りる理由は？",
+   opts:["気管系が酸素を細胞まで直接届けるため、血液は栄養と老廃物の運搬だけでよい（分業が成立）","昆虫の代謝がきわめて低く、酸素をほとんど必要としないから","開放血管系でも血流が非常に速く、閉鎖血管系と同じ効率があるから","昆虫には心臓がなく、体の動きだけで血液が循環するから"],
+   ans:0,
+   exp:"体表の気門から体内に張り巡らされた気管が、酸素を細胞のすぐそばまで直接届けます。だから血液は酸素を運ばず「栄養と老廃物」だけを運べばよい。この呼吸系との分業が成立しているからこそ、昆虫は活発に飛び回るのに開放血管系のままでいられるんです。",
+   part:"▶該当パート：開放血管系（WHY OPEN）"},
+  {cat:"開放血管系", q:"開放血管系の血液（血リンパ）について、正しいものは？",
+   opts:["赤血球を持たず、多くの種でほとんど無色透明。動脈から体腔に染み出し、心臓の孔から拡散で戻る","赤血球を持ち、ヘモグロビンによって鮮やかな赤色をしている","毛細血管を通って静脈に戻る、閉鎖血管系と同じループ構造をもつ","高圧で全身に押し出され、末端の毛細血管まで到達する"],
+   ans:0,
+   exp:"赤い血の正体は赤血球の中のヘモグロビン。節足動物の血リンパは赤血球を持たず、多くの場合酸素運搬の色素すら持ちません。開放血管系は動脈の先が体腔に開いていて、戻るための管（静脈のネットワーク）がなく、拡散でふわふわ戻るだけです。",
+   part:"▶該当パート：開放血管系（OPEN SYSTEM）"},
+  {cat:"閉鎖血管系", q:"閉鎖血管系の4大利点として、正しい組合せは？",
+   opts:["血流速度が速い／血圧が保てる／選択的な循環制御／大型化が可能","血圧が低い／血流が遅い／毛細血管がない／小型化できる","消化を助ける／呼吸を代行する／体温を下げる／血球を生成する","心臓が3つになる／血液が青くなる／血リンパが出る／体腔ができる"],
+   ans:0,
+   exp:"4大利点の背後には共通の大原則があります——「血管に閉じ込めたからこそ圧力を掛けられる」。圧力が掛けられるから速度が出て、末端まで届き、流れを場所ごとに制御でき、巨大な体にも隅々まで届く。ど忘れしてもこの1本で再構成できます。",
+   part:"▶該当パート：閉鎖血管系（WHY CLOSED）"},
+  {cat:"開放vs閉鎖比較", q:"開放血管系と閉鎖血管系の比較として、誤っているものは？",
+   opts:["開放血管系には毛細血管があり、血液と組織液の区別がある","開放血管系では血液と組織液の区別がなく、毛細血管もない","閉鎖血管系は血圧が高く、血流速度が速く、運搬効率が高い","開放血管系は中小型中心、閉鎖血管系は大型化が可能"],
+   ans:0,
+   exp:"開放血管系には毛細血管がなく、血液が直接組織を浸しているので「血液＝組織液」という同一の体液です。毛細血管があり血液と組織液が区別されるのは閉鎖血管系。この項目は正誤問題のひっかけとして狙われやすいので注意しましょう。",
+   part:"▶該当パート：開放vs閉鎖 徹底比較表"},
+  {cat:"頭足類の例外", q:"同じ軟体動物門のハマグリが開放血管系なのに、イカとタコが閉鎖血管系になった理由は？",
+   opts:["高速遊泳と大きな脳・複雑な神経系による高代謝が、開放血管系の限界を超えたから","イカとタコだけが海中で鰓呼吸をするから","ハマグリには心臓がないから","頭足類は脊椎動物から直接進化したから"],
+   ans:0,
+   exp:"イカはジェット推進で高速遊泳し、タコは無脊椎動物で最も賢いと言われる大きな脳を持つ——筋肉も神経も大量の酸素を要求する高代謝の生き物です。一方ハマグリは砂泥に潜る固着性・低代謝の生活。同じ門の中でも「生き方の違い」が血管系の違いを生んだ、今日の合言葉の教科書例です。",
+   part:"▶該当パート：頭足類の例外（WHY CEPHALOPODS）"},
+  {cat:"収斂進化", q:"「収斂進化」の説明として、正しいものは？",
+   opts:["共通の祖先を持たない系統が、同じ環境要求に応えて独立に同じ設計にたどり着く現象","共通の祖先から受け継いだ同じ構造が、別の機能に変化する現象","近縁の種同士が交雑して新しい種が生まれる現象","体のサイズが大きくなるほど代謝率が下がっていく現象"],
+   ans:0,
+   exp:"閉鎖血管系は、環形動物・脊椎動物・頭足類という別々の系統が「独立に」同じ設計に到達した収斂進化です。翼（鳥・コウモリ・昆虫）やカメラ眼（ヒトとイカ）、魚形（サメとイルカ）も典型例。「共通祖先から受け継いだ」と書くと逆（相同）になるので注意。",
+   part:"▶該当パート：頭足類 vs 脊椎動物（CONVERGENT EVOLUTION）"},
+  {cat:"頭足類の特徴", q:"イカ・タコの循環系・血液の特徴として、正しいものは？",
+   opts:["心臓が3つ（体心臓1＋鰓心臓2）で分業し、呼吸色素は銅を含むヘモシアニンで血液が青い","心臓が1つで、呼吸色素は鉄を含むヘモグロビンで血液が赤い","心臓がなく、体の運動だけで血液が循環する","心臓が4つあり、呼吸色素を持たない"],
+   ans:0,
+   exp:"全身に送る体心臓1つ＋左右の鰓に送る鰓心臓2つの、計3つの心臓で分業（鰓は抵抗が大きく高圧が必要）。呼吸色素は銅を含むヘモシアニンで、酸素と結合すると青くなります。ヘモグロビン（鉄・赤・赤血球の中）との3点セット「鉄vs銅・赤vs青・血球内vs血リンパに溶解」は比較問題の常連です。",
+   part:"▶該当パート：頭足類 vs 脊椎動物（WHY SAME DESIGN）"},
+  {cat:"心臓の進化", q:"脊椎動物の心臓の進化（心房・心室の数）として、正しいものは？",
+   opts:["魚類1心房1心室→両生類2心房1心室→爬虫類2心房1心室＋不完全な仕切り→鳥類・哺乳類2心房2心室","魚類2心房2心室→両生類1心房1心室→爬虫類2心房1心室→鳥類・哺乳類2心房2心室","魚類1心房1心室→両生類1心房2心室→爬虫類2心房2心室→鳥類・哺乳類3心房3心室","すべての脊椎動物で2心房2心室で共通している"],
+   ans:0,
+   exp:"陸上進出とともに心臓は複雑化しました。両生類は肺＋皮膚呼吸で心室が1つのため混合血になり、爬虫類は心室の仕切り（室中隔）が途中まで伸びて混合の程度が小さくなります（ワニだけはほぼ4室）。「動脈血と静脈血をどう混ぜないか」という戦いの帰結が2心房2心室です。",
+   part:"▶該当パート：脊椎動物の心臓の進化①"},
+  {cat:"二重循環", q:"二重循環で、肺で酸素化された血液が心臓に戻る意味は？",
+   opts:["心臓（左心室）で再加圧してから全身に高圧で送り出すため","肺の血液を薄めて血圧を下げるため","静脈血と動脈血を意図的に混ぜるため","心臓でフィブリンを追加して血液を固めるため"],
+   ans:0,
+   exp:"魚類の単循環では鰓を通過した血液が低圧のまま全身へ流れます。二重循環では「肺で酸素補給→心臓（左心室）で再加圧→全身へ高圧配送」の2段構え。これが陸上の大型動物が体の隅々まで酸素たっぷりの血液を届けられる設計の意味です。",
+   part:"▶該当パート：二重循環（体循環＋肺循環）"},
+  {cat:"肺動脈・肺静脈", q:"肺動脈と肺静脈に流れる血液の種類として、正しいものは？",
+   opts:["肺動脈＝静脈血、肺静脈＝動脈血","肺動脈＝動脈血、肺静脈＝静脈血","両方とも動脈血","両方とも静脈血"],
+   ans:0,
+   exp:"血管の名前は「心臓から出るか（動脈）／心臓に戻るか（静脈）」で決まり、血液の種類とは無関係です。右心室から肺へ向かう肺動脈には酸素の少ない静脈血、肺から左心房へ戻る肺静脈には酸素の多い動脈血が流れます。毎年大量の受験生が引っかかる定番のひっかけです。",
+   part:"▶該当パート：二重循環（肺動脈と肺静脈の補足）"},
+  {cat:"心臓の完成形", q:"鳥類・哺乳類で左心室の壁が右心室よりずっと厚い理由は？",
+   opts:["左心室は全身という長い体循環に高圧で送るのに対し、右心室は近くの肺へ低圧で送ればよいから","左心室の方が多くの血液量を保持する必要があるから","右心室は静脈血をため込む部屋だから","左心室は心房からの血液を受け取るだけの部屋だから"],
+   ans:0,
+   exp:"左心室＝全身用の高圧ポンプ（壁が厚く心筋が発達）、右心室＝肺用の低圧ポンプ（肺は心臓のすぐ隣で壁が薄くてOK）。心臓は「送り先に合わせて圧力を設計し分けている」んです。この知識は高血圧による「左心室肥大」という臨床知識につながります。",
+   part:"▶該当パート：心臓の進化②（FEATURES）"}
+];
+const N = QUESTIONS.length;
+
+/* ---------- state ---------- */
+let order=[], cur=0, score=0, log=[], missIdx=[];
+const $ = id => document.getElementById(id);
+
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* each item: prepared question = {qi, opts(shuffled order), ansPos} */
+function prepare(pool){
+  order = pool.map(qi=>{
+    const q=QUESTIONS[qi];
+    const map=shuffle(q.opts.map((_,i)=>i));
+    return {qi, map, ansPos: map.indexOf(q.ans)};
+  });
+  cur=0; score=0; log=[]; missIdx=[];
+  $("result").classList.remove("show");
+  $("quiz").style.display="";
+  updateVessel();
+  render();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function updateVessel(){
+  const done = log.length;
+  const pct = done / N * 100;
+  $("fill").style.width = pct + "%";
+  $("disc").style.left = Math.max(pct, 2) + "%";
+  $("cnt").innerHTML = '進捗 <b>' + done + '</b> / ' + N + '問';
+  $("qscore").textContent = "正解 " + score;
+}
+
+function render(){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  $("qno").textContent = "問 " + (cur+1);
+  $("qcat").textContent = q.cat;
+  $("qtext").textContent = q.q;
+  const box = $("opts"); box.innerHTML="";
+  const marks = ["ア","イ","ウ","エ"];
+  item.map.forEach((oi, pos)=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.type = "button";
+    b.innerHTML = '<span class="mark">' + marks[pos] + '</span><span>' + q.opts[oi] + '</span>';
+    b.addEventListener("click", ()=>choose(pos));
+    box.appendChild(b);
+  });
+  $("fb").style.display="none";
+  $("actions").style.display="none";
+}
+
+function choose(pos){
+  const item = order[cur];
+  const q = QUESTIONS[item.qi];
+  const btns = document.querySelectorAll("#opts .opt");
+  btns.forEach((b,i)=>{
+    b.disabled = true;
+    if(i === item.ansPos) b.classList.add("correct");
+    else if(i === pos) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok = pos === item.ansPos;
+  if(ok) score++; else missIdx.push(item.qi);
+  log.push({qi:item.qi, ok, picked:pos, ansPos:item.ansPos});
+  const fb=$("fb");
+  fb.style.display="";
+  fb.className = ok ? "fb" : "fb ng";
+  $("verdict").textContent = ok ? "⭕ 正解！その調子💪" : "❌ 残念！該当パートを見返して挽回しよう";
+  $("exp").textContent = q.exp;
+  $("part").textContent = q.part;
+  $("nextBtn").textContent = (cur === N-1) ? "結果を見る →" : "次の問題へ →";
+  $("actions").style.display="";
+  updateVessel();
+}
+
+function finish(){
+  $("quiz").style.display="none";
+  const r=$("result"); r.classList.add("show");
+  $("rscore").textContent = score;
+  let tier, note;
+  if(score === N){ tier="🏆 完璧！THEME4前編は君のものです"; note="全問正解おめでとう！この調子で後編（演習3問）もねらおう！"; }
+  else if(score >= Math.ceil(N*0.75)){ tier="🔥 かなりいい感じ！"; note="まちがえた問題の該当パートを見返せば、全問正解まであと少し！"; }
+  else if(score >= Math.ceil(N*0.5)){ tier="📚 もう一周してみよう！"; note="3類型の対応と「代謝で決まる」の理屈を軸に、動画をもう一度！見返せば必ず伸びる。"; }
+  else { tier="🌱 まだまだこれから！"; note="1回で全部は難しいのが普通。動画を見返して、もう一度チャレンジ！"; }
+  $("tier").textContent = tier;
+  $("tierNote").textContent = note;
+  const list=$("rlist"); list.innerHTML="";
+  log.forEach((l,i)=>{
+    const q=QUESTIONS[l.qi];
+    const div=document.createElement("div");
+    div.className = "rv" + (l.ok ? "" : " miss");
+    div.innerHTML = '<span class="tag">' + (l.ok ? "⭕" : "❌") + ' 問' + (i+1) + '</span> <span class="rq">' + q.q + '</span>'
+      + '<div class="ra">正解：' + q.opts[q.ans] + (l.ok ? "" : '<br>あなたの回答：' + q.opts[order[i].map[l.picked]]) + '</div>';
+    list.appendChild(div);
+  });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+/* wire up */
+$("nextBtn").addEventListener("click", ()=>{ if(cur === N-1){ finish(); } else { cur++; updateVessel(); render(); } });
+$("retryBtn").addEventListener("click", ()=>prepare(shuffle(QUESTIONS.map((_,i)=>i))));
+$("againMissBtn").addEventListener("click", ()=>{
+  if(missIdx.length === 0){ prepare(shuffle(QUESTIONS.map((_,i)=>i))); }
+  else { prepare(shuffle(missIdx.slice())); }
+});
+
+/* start */
+prepare(shuffle(QUESTIONS.map((_,i)=>i)));
+</script>
+</body>
+</html>

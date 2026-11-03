@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 心不全で浮腫(むくみ)が起こる機序として、正しい順序はどれか？",
+      choices: [
+        "心臓のポンプ機能が低下する→静脈側の血圧が上がる→組織液の産生が過剰になる→浮腫が起こる",
+        "浮腫が起こる→心臓のポンプ機能が低下する→静脈側の血圧が下がる",
+        "アルブミンが過剰に増える→膠質浸透圧が上がる→組織液が減る→浮腫が起こる",
+        "心不全は体液の動きとは無関係で、浮腫の原因にはならない"
+      ],
+      correct: 0,
+      explain: "心臓が血液を十分に送り出せなくなると、静脈側に血液が滞って静脈側の血圧(静水圧)が上がります。その結果、静脈側で組織液を引き戻す力が相対的に弱まり、組織液が過剰に貯留して浮腫になります。これはTHEME1(体液の組成・スターリングの原理)の臨床応用です。"
+    },
+    {
+      q: "Q2. 心房中隔欠損や心室中隔欠損などの先天性心疾患について、『進化の途中段階に戻った状態』と表現できる理由は？",
+      choices: [
+        "患者さんの心臓が、魚類と同じ1心房1心室に変化してしまうから",
+        "心房や心室の間に穴が開き、動脈血と静脈血が混ざってしまうため、両生類・爬虫類の混合血の循環に近い状態になるから",
+        "患者さんの血液に含まれるヘモシアニンが増えるから",
+        "患者さんの血管系が開放血管系に変わってしまうから"
+      ],
+      correct: 1,
+      explain: "心房中隔欠損・心室中隔欠損では、本来は完全に分離されているはずの動脈血と静脈血が混ざります。酸素を多く含む動脈血が静脈血で薄められ、全身へ送られる血液の酸素濃度が下がるという点で、両生類・爬虫類の混合血が非効率になる理由とまったく同じロジックです。医学部の面接や小論文で印象に残る一言になります。"
+    },
+    {
+      q: "Q3. 脳梗塞の治療に使われるt-PAについて、正しい説明はどれか？",
+      choices: [
+        "血液凝固を促進して出血を止める薬である",
+        "血栓を溶かす線溶系の薬であり、発症から4.5時間以内が治療のゴールデンタイムとされる",
+        "赤血球の数を増やす薬である",
+        "動脈硬化そのものを完全に治す薬である"
+      ],
+      correct: 1,
+      explain: "t-PAは線溶系(血栓を溶かす仕組み)を担う物質を利用した薬で、脳動脈を塞いだ血栓を溶かします。発症から4.5時間以内がゴールデンタイムとされています。THEME3で学んだ血液凝固・線溶の知識が、そのまま臨床で使われている例です。"
+    },
+    {
+      q: "Q4. 演習4-1で『見た目や直感で間違えやすい』とされた分類の組み合わせとして、正しいものはどれか？",
+      choices: [
+        "ミミズ=開放、タコ=開放、ヒトデ=閉鎖、プラナリア=閉鎖",
+        "ミミズ=閉鎖(環形動物)、タコ=閉鎖(頭足類)、ヒトデ=開放(棘皮動物)、プラナリア・クラゲ=血管系なし",
+        "ミミズ=血管系なし、タコ=開放、ヒトデ=閉鎖、プラナリア=開放",
+        "すべての無脊椎動物は開放血管系である"
+      ],
+      correct: 1,
+      explain: "ミミズ(環形動物)は閉鎖血管系、タコ(頭足類)も閉鎖血管系、ヒトデ(棘皮動物)は開放血管系、プラナリアやクラゲは血管系なしです。『無脊椎動物=開放血管系』『地味な生き物だから開放』といった直感を、系統ではなく生き方(運動能力と代謝)で読む視点に置き換えることが重要です。"
+    },
+    {
+      q: "Q5. バッタは活発に運動するのに、開放血管系で足りる理由として正しいものはどれか？",
+      choices: [
+        "バッタの血液は非常に高い圧力で全身に送られるから",
+        "気管系が全身に伸びて細胞に直接酸素を届けるため、血液は酸素運搬を担わず栄養・老廃物の運搬だけで済み、低効率の開放血管系でも生存できるから",
+        "バッタは運動時に血液を使わないから",
+        "バッタは血管系を持たない動物だから"
+      ],
+      correct: 1,
+      explain: "バッタは体表の気門から伸びる気管系によって、酸素を細胞へ直接届けています。血液(血リンパ)は酸素運搬を担わず、栄養や老廃物の運搬だけを担うため、高効率の閉鎖血管系は不要です。『呼吸と血液の分業』という構図が、この論述のカギになります。"
+    },
+    {
+      q: "Q6. 『二重循環』と『2心房2心室』の関係について、正しい説明はどれか？",
+      choices: [
+        "二重循環と2心房2心室は完全に同じ意味で、どちらも鳥類・哺乳類だけに当てはまる",
+        "二重循環は循環の『経路』(肺循環＋体循環の2ループ)の話、2心房2心室は心臓の『構造』(4つの部屋)の話であり、両生類・爬虫類も不完全ながら二重循環を持つ",
+        "二重循環は魚類の循環のことで、2心房2心室は哺乳類の循環のことである",
+        "両生類と爬虫類は単循環であり、二重循環は持たない"
+      ],
+      correct: 1,
+      explain: "二重循環は肺循環と体循環という2つのループを回る『経路』の話、2心房2心室は心臓の4つの部屋という『構造』の話です。両生類・爬虫類も肺循環と体循環を回しているので二重循環ですが、心室が1つ(爬虫類は仕切りが不完全)のため途中で混合が起こる『不完全な二重循環』です。『二重循環=2心房2心室』と書くと減点されます。"
+    },
+    {
+      q: "Q7. 両生類の心室が1つで動脈血と静脈血がやや混合しても生存できる理由として、正しい組み合わせはどれか？",
+      choices: [
+        "恒温動物であり、酸素を大量に必要とするから",
+        "皮膚呼吸という肺以外の酸素の取り込み経路で補えることと、変温動物で代謝率が低く必要な酸素量が少ないこと",
+        "血液にヘモシアニンを含むため、酸素運搬効率が高いから",
+        "水中でしか生活しないため、酸素が必要ないから"
+      ],
+      correct: 1,
+      explain: "両生類は皮膚呼吸によって肺以外でも酸素を取り込めること、そして変温動物のため代謝率が低く必要とする酸素量が少ないことの2点で、混合血の非効率さを補っています。両生類の循環系は『妥協案』と表現できます。なお爬虫類も恒温ではなく変温動物なので、『恒温=鳥類・哺乳類のみ』と整理しておきましょう。"
+    },
+    {
+      q: "Q8. 収斂進化に関する記述として、正しいものはどれか？",
+      choices: [
+        "共通祖先から受け継いだ形質が、環境に合わせて異なる形に分化する現象である",
+        "異なる系統の生物が、同じ環境要求や機能課題に対して独立に類似した形質を進化させる現象であり、答案では『収斂進化』という用語を明記することが大切である",
+        "進化には優劣があり、閉鎖血管系の動物の方が開放血管系の動物より優れているという考え方である",
+        "コウモリの翼と昆虫の翅は、共通祖先の同じ器官に由来する相同器官である"
+      ],
+      correct: 1,
+      explain: "収斂進化は、異なる系統の生物が同じ課題に独立して類似の形質を進化させる現象です(例：翼・カメラ眼・魚形・閉鎖血管系)。答案では『同じ機能へ独立に』と説明するだけでなく、『収斂進化(収束進化)』という用語を明記します。コウモリの翼と昆虫の翅は由来が違う相似器官、ヒトの腕とコウモリの翼は由来が同じ相同器官です。進化に優劣はなく、あるのは適応だけです。"
+    },
+    {
+      q: "Q9. 総合演習1で、凝固第Ⅹ因子欠損マウスの細菌排除能が低下した理由として、正しい因果の流れはどれか？",
+      choices: [
+        "Ⅹ因子欠損→フィブリン網が形成されない→好中球が切創部に集まらない(さらに止血不成立で細菌も侵入しやすい)→細菌排除能が低下する",
+        "Ⅹ因子欠損→好中球が過剰に増える→細菌を食べすぎて死んでしまう→排除能が低下する",
+        "Ⅹ因子欠損→血ぺいが過剰に形成される→好中球が通れなくなる→排除能が低下する",
+        "Ⅹ因子欠損と細菌排除能には何の関係もない"
+      ],
+      correct: 0,
+      explain: "Ⅹ因子はプロトロンビンをトロンビンに変える反応の中心酵素なので、欠損するとフィブリン網も血ぺいも形成されません。追加情報にある『フィブリンは好中球の走化性因子』が働かないため好中球が集まらず、止血も不成立で細菌の血中侵入も許すため、細菌排除能が低下します。追加情報(走化性)を答案に入れ忘れると大幅減点です。"
+    },
+    {
+      q: "Q10. 総合演習2で、胸腺だけを切除したマウスの骨髄を移植すると『T細胞のみ回復しなかった』。この結果から推論できることは何か？",
+      choices: [
+        "T細胞は胸腺で産生され、骨髄では成熟だけが行われる",
+        "T細胞は骨髄の造血幹細胞から産生されるが、機能的な成熟には胸腺が必要であり、B細胞は骨髄で成熟するため胸腺がなくても回復する",
+        "B細胞も胸腺で成熟するため、B細胞も回復しない",
+        "赤血球と血小板も胸腺で成熟するため、すべて回復しない"
+      ],
+      correct: 1,
+      explain: "T細胞は骨髄の造血幹細胞から作られますが、自己反応性の除去などの選択を経て成熟するのは胸腺です。そのため胸腺がないとT細胞だけが回復しません。B細胞は骨髄で成熟する(Bone marrowのB)ので胸腺が不要で、赤血球・血小板も同様に回復します。『骨髄で産生→胸腺で成熟』の2段階を臓器名入りで書くことが重要です。"
+    },
+    {
+      q: "Q11. 総合演習3の表で、同じ2心房2心室でもハトのO₂消費量(40)がイヌ(20)の2倍になる理由として、最も適切なものはどれか？",
+      choices: [
+        "ハトは変温動物で、体温維持にエネルギーを使わないから",
+        "ハトは体温が41℃と高い恒温動物で、常に大量のエネルギーを消費することに加え、飛翔が極めて代謝コストの高い運動であり、その酸素要求を満たすため高効率な完全分離の循環が必須だから",
+        "ハトはイヌより心臓の部屋の数が多いから",
+        "ハトは開放血管系を持つから"
+      ],
+      correct: 1,
+      explain: "ハトは体温41℃を維持する恒温動物で常に大量のエネルギーを消費し、さらに飛翔は代謝コストの非常に高い運動です。この2つの根拠(高体温と飛翔)を両方使って因果の鎖を組み立てることが、この論述の型です。なお表全体からは『心臓が複雑になるほど単位体重あたりのO₂消費量が増える』という正の相関が読み取れます。"
+    },
+    {
+      q: "Q12. ヒトが激しい運動で心拍数と1回拍出量を増やせるのは閉鎖血管系だからこそ、とされる理由として正しいものはどれか？",
+      choices: [
+        "閉鎖血管系の心臓は開放血管系の心臓より単純に筋肉が強いから",
+        "閉鎖血管系では血液を血管内に閉じ込めて心臓のポンプで加圧でき、血圧・血流量を即座に上げて末梢まで大量の血液を届けられるが、開放血管系では体腔に放出された血液を再加圧できず、この応答は不可能だから",
+        "開放血管系の動物は運動をしないから",
+        "閉鎖血管系では血液が全身を巡らないから"
+      ],
+      correct: 1,
+      explain: "閉鎖血管系の本質は『心臓が強い』ことではなく、『血液を血管に閉じ込めて圧力を管理(血圧調整)できる』ことです。心拍数や1回拍出量を増やせば血圧・血流量が上がり、末梢まで血液が届きます。開放血管系は血管の先が開いていて圧力が逃げてしまうため、同じ応答ができません。『心臓が強い』だけでは不十分、『血圧調整できる』が本質です。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#39後編 確認テスト「臨床への橋渡し+総合演習」</h1>
+        <p>全${questions.length}問 ／ シリーズ完結、最後の力試しです</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！「体液と血液のすべて」シリーズを完璧に理解できています。本当にお疲れ様でした！";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。シリーズ完走まであと一息です。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に二重循環と2心房2心室の区別、総合演習の実験考察の型は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずはTHEME4のまとめ5行から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#39後編 確認テスト「臨床への橋渡し+総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

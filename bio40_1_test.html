@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 心臓の『自動性』の定義として、正しいものはどれか？",
+      choices: [
+        "脳からの命令を受けて、はじめて拍動できる性質",
+        "外部からの指令がなくても、自ら拍動のリズムを生み出せる性質",
+        "自律神経によって拍動数が自動的に調節される性質",
+        "心臓が血液を一方向にだけ送り出す性質"
+      ],
+      correct: 1,
+      explain: "自動性とは、外部からの指令がなくても、心臓自身が拍動のリズムを生み出せる性質です。『自動』は『自（おのずか）ら動く』という意味で、脳からの命令でしか動かない『他律』に対して『自律』とも言えます。自律神経による調節(外から拍動数を変える仕組み)とは別の概念なので注意しましょう。"
+    },
+    {
+      q: "Q2. 摘出したカエルの心臓を栄養液に浸しておくと拍動が続く、という実験事実が示すことは何か？",
+      choices: [
+        "心臓の拍動は、脳からの命令がなければ続かないこと",
+        "栄養液に含まれる成分が、心臓を無理やり動かしていること",
+        "『拍動しろ』という命令は心臓自身が作っており、神経をすべて切り離しても拍動が続くこと",
+        "カエルの心臓だけが特殊で、哺乳類の心臓には当てはまらないこと"
+      ],
+      correct: 2,
+      explain: "脳や神経から切り離しても栄養液中で拍動が続くことから、拍動の指令は心臓自身が作っていると分かります。この性質は哺乳類の心臓でも同様で、ペースメーカー細胞が活動を続けます。『特殊心筋(自動能をもつ心筋細胞)』と『摘出心臓が栄養液中で拍動する』という実験事実は、記述問題ではセットで書きます。"
+    },
+    {
+      q: "Q3. 心臓が左右で完全に分離した4つの部屋(2心房2心室)を持つ理由として、正しいものはどれか？",
+      choices: [
+        "血液を貯めておく容量を増やすため",
+        "動脈血と静脈血を途中で混ぜないため",
+        "心臓の重さを分散して、胸の中に収めやすくするため",
+        "血液が逆流しても問題が起きないようにするため"
+      ],
+      correct: 1,
+      explain: "体中に酸素を配るルート(動脈血)と二酸化炭素を回収するルート(静脈血)を混ぜないために、心臓は左右で完全に分離した4つの部屋を持ちます。混ざってしまうと、肺で酸素を満タンにした血液が薄まり、全身に届く酸素の濃度が下がってしまいます。"
+    },
+    {
+      q: "Q4. 魚類(1心房1心室)と比べたときの、哺乳類の心臓の4室化の意義として、最も適切なものはどれか？",
+      choices: [
+        "肺循環と体循環を直列に分離し、肺を通った後に心臓でもう一度加圧できるため、全身に高い圧で血液を送れるようになった",
+        "血液が心臓を通る回数が1回だけになり、循環が単純になった",
+        "鰓(えら)を通る際の血圧低下を、より大きくできるようになった",
+        "動脈血と静脈血が積極的に混ざるようになり、酸素濃度が安定した"
+      ],
+      correct: 0,
+      explain: "魚類は血液が心臓→鰓→全身→心臓の一方通行で、鰓を通る際に血圧が大きく下がるため、全身への送出力が弱くなります。哺乳類は4室化して『肺に送るポンプ(右心)』と『全身に送るポンプ(左心)』を分け、肺を通った後でもう一度心臓で加圧できるため、全身へ高圧で血液を送れます。キーワードは『4室化＝高圧送血』です。"
+    },
+    {
+      q: "Q5. 心室中隔欠損症(VSD)と心房中隔欠損症(ASD)の違いとして、正しいものはどれか？",
+      choices: [
+        "VSDは心房の仕切りに、ASDは心室の仕切りに穴が開いている",
+        "VSDは心室の仕切りに、ASDは心房の仕切りに穴が開いている",
+        "どちらも心室の仕切りに穴が開いているが、穴の大きさが違う",
+        "VSDは弁の異常、ASDは血管の異常である"
+      ],
+      correct: 1,
+      explain: "名前はそっくりですが、穴の場所がまったく違います。心室の間の仕切り(心室中隔)に穴が開くのが心室中隔欠損症(VSD)、心房の間の仕切り(心房中隔)に穴が開くのが心房中隔欠損症(ASD)です。なお、胎児期だけ開いている心房の穴『卵円孔』が出生後に閉じずに残った状態は『卵円孔開存』と呼びます。"
+    },
+    {
+      q: "Q6. 動脈と静脈の正しい定義は、次のうちどれか？",
+      choices: [
+        "動脈は酸素の多い血液が流れる血管、静脈は二酸化炭素の多い血液が流れる血管",
+        "動脈は壁が厚い血管、静脈は壁が薄い血管",
+        "動脈は心臓から出ていく血管、静脈は心臓に戻ってくる血管",
+        "動脈は体の深部を通る血管、静脈は体表近くを通る血管"
+      ],
+      correct: 2,
+      explain: "動脈と静脈を決めるのは、血液の『中身』ではなく『流れる方向』です。心臓から出ていく血管が動脈、心臓に戻ってくる血管が静脈です。『動脈＝酸素の多い血』という定義は典型的な誤解で、この誤解が肺動脈・肺静脈の問題での失点につながります。"
+    },
+    {
+      q: "Q7. 肺動脈と肺静脈を流れる血液の組み合わせとして、正しいものはどれか？",
+      choices: [
+        "肺動脈：動脈血(O₂が多い)／肺静脈：静脈血(CO₂が多い)",
+        "肺動脈：静脈血(O₂が少なくCO₂が多い)／肺静脈：動脈血(O₂が多くCO₂が少ない)",
+        "肺動脈も肺静脈も、動脈血が流れている",
+        "肺動脈も肺静脈も、静脈血が流れている"
+      ],
+      correct: 1,
+      explain: "肺動脈は右心室から肺へ向かう血管で、ガス交換前の静脈血(O₂少・CO₂多)を運びます。肺静脈は肺から左心房へ戻る血管で、ガス交換後の動脈血(O₂多・CO₂少)を運びます。名前は『方向』で正しくつけられていて、ねじれているのは名前ではなく中身のほうです。"
+    },
+    {
+      q: "Q8. 『肺動脈には動脈血が流れる』と誤って考えてしまう人が多い、最大の理由はどれか？",
+      choices: [
+        "肺動脈だけ血管の壁が薄く、静脈に見えるから",
+        "『動脈』という漢字から、動く血、勢いのよい酸素たっぷりの血を無意識に連想してしまうから",
+        "肺動脈を流れる血液の色が、実際には赤色だから",
+        "教科書に載っている図が、間違った色で描かれているから"
+      ],
+      correct: 1,
+      explain: "これは日本語の漢字のイメージが引き起こす罠です。『動脈』という漢字を見ると、無意識に『動く血＝酸素の多い血＝動脈血』と連想してしまいますが、『動脈』の『動』は『心臓から外へ動いていく(出ていく)』という方向を表しているだけです。作問者もこの連想のクセを知っているため、入試では漢字のイメージで選ぶと間違えるように選択肢が作られます。"
+    },
+    {
+      q: "Q9. 血液が肺循環と体循環の『2周』をしないとガス交換が完了しない理由と、左右の心室壁の厚さについて、正しい説明はどれか？",
+      choices: [
+        "ガス交換の場所が全身の毛細血管と肺の毛細血管の2か所あるため。左心室(全身へ送る)の壁は厚く、右心室(肺へ送る)の壁は薄い",
+        "心臓が左右に分かれているので、自動的に2周してしまうため。左右の心室の壁の厚さは同じ",
+        "ガス交換の場所は肺の1か所だけだが、念のため2周している。右心室の壁は左心室より厚い",
+        "血液が2周するのは、心臓の拍動を2回に分けているため。左心室の壁は薄い"
+      ],
+      correct: 0,
+      explain: "全身の毛細血管でO₂を放ってCO₂を回収し、肺の毛細血管でCO₂を放ってO₂を回収する、というガス交換の場所が2か所あるため、必ず2周しないとガス交換が完了しません。体循環は高圧・長距離で左心室の壁は厚く(約7〜12mm)、肺循環は低圧・短距離で右心室の壁は薄い(約2〜3mm)です。形は目的に合わせて決まっています。"
+    },
+    {
+      q: "Q10. 心臓につながる5本の主要血管のうち、『中を動脈血が流れている』血管の組み合わせとして、正しいものはどれか？",
+      choices: [
+        "大動脈と肺動脈",
+        "上大静脈と下大静脈",
+        "肺動脈と肺静脈",
+        "大動脈と肺静脈"
+      ],
+      correct: 3,
+      explain: "5本は、心臓から出る2本(大動脈・肺動脈)と、心臓に戻る3本(上大静脈・下大静脈・肺静脈)です。中を動脈血が流れているのは大動脈(左心室→全身)と肺静脈(肺→左心房)の2本、静脈血が流れているのは上大静脈・下大静脈・肺動脈の3本です。『方向を決めてから中身を考える』手順で整理すると、間違えません。"
+    },
+    {
+      q: "Q11. 『脳死』と『心臓死』の違い、および自動性との関係として、正しい説明はどれか？",
+      choices: [
+        "脳死は心臓が止まった状態で、心臓死は脳が止まった状態である",
+        "脳死は脳幹を含む脳全体の機能が回復しない形で失われた状態で、人工呼吸器で呼吸を支えれば心臓は自動性で動き続ける。心臓死は心臓の拍動が止まり戻らない状態である",
+        "脳死と心臓死は同じ意味で、呼び方が違うだけである",
+        "脳死になると自動性が失われるため、心臓も同時に止まってしまう"
+      ],
+      correct: 1,
+      explain: "脳死は脳幹を含む脳全体の機能が回復しない形で失われた状態で、人工呼吸器で呼吸を支えている間は、脳の命令が届かなくても心臓が自動性で動き続けます。心臓死は拍動が止まりそのまま戻らない状態です。『心臓は自動性をもつため、脳死後も拍動を続け、そのことが臓器提供を可能にする』という因果関係は、医療系の面接や小論文で問われやすいポイントです。"
+    },
+    {
+      q: "Q12. 心臓のペースメーカーである洞房結節についての説明として、正しいものはどれか？",
+      choices: [
+        "左心室の壁にあり、約20〜40回／分で興奮を作る",
+        "右心房の上部にあり、安静時に約70回／分で自発的に興奮を作る。障害された場合は房室結節などが、より遅いリズムで予備のペースメーカーとして働く",
+        "右心房の上部にあり、約70回／分で興奮を作る。障害されても代わりになる組織は存在しない",
+        "大動脈の入口にあり、血圧を感知して拍動のリズムを決める"
+      ],
+      correct: 1,
+      explain: "洞房結節(SA node)は右心房の上部にあり、安静時に約70回／分の興奮を自発的に作ります(70回×60分×24時間＝約10万回／日)。ペースメーカーという名前は、マラソンで全体のペースを決める先導役に由来します。洞房結節が障害されると、房室結節や房室接合部(約40〜60回／分)、さらに下流のヒス束・プルキンエ線維(約20〜40回／分)が予備のペースメーカーとして働きます。『上流ほど速く、下流ほど遅い』という関係が共通です。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#40前編 確認テスト「心臓の構造と自動性」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！心臓の構造と自動性の基礎が完璧に理解できています。後編の刺激伝導系・演習問題も自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に動脈・静脈の定義と、肺動脈・肺静脈の中身の整理は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは『名前で方向、中身で色』の考え方から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#40前編 確認テスト「心臓の構造と自動性」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

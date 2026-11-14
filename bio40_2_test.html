@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 洞房結節(SA node)の位置と、安静時の拍動数の組み合わせとして正しいものはどれか？",
+      choices: [
+        "左心室の壁・約20〜40回／分",
+        "心室中隔の中・約40〜60回／分",
+        "右心房の上部・約70回／分",
+        "大動脈の入口・約100回／分"
+      ],
+      correct: 2,
+      explain: "洞房結節は右心房の上部(血液が戻ってくる入口のあたり)にあり、安静時に約70回／分の電気的興奮を自発的に作ります。70回×60分×24時間で約10万回／日となり、『1日10万回の拍動』の正体はこの洞房結節のリズムです。『ペースメーカー』はpace(歩調)＋maker(作るもの)が語源です。"
+    },
+    {
+      q: "Q2. 洞房結節が障害されたとき、予備のペースメーカーとして働く組織と、その拍動数の関係として正しいものはどれか？",
+      choices: [
+        "房室結節や房室接合部(約40〜60回／分)、さらに下流のヒス束・プルキンエ線維(約20〜40回／分)が代わりに働き、上流ほど速く下流ほど遅い",
+        "代わりになる組織は存在せず、洞房結節が壊れた時点で心臓は必ず停止する",
+        "下流のプルキンエ線維ほど速いリズムで興奮を作るため、洞房結節の代わりになる",
+        "延髄が直接、心筋を拍動させる"
+      ],
+      correct: 0,
+      explain: "洞房結節が障害されても、房室結節や房室接合部(約40〜60回／分)、さらに下のヒス束・プルキンエ線維(約20〜40回／分)が予備のペースメーカーとして働きます。数値は資料によって幅がありますが、『上流ほど速く、下流ほど遅い』という関係は共通です。『予備のペースメーカーが複数ある』ことまで書けると、記述で差がつきます。"
+    },
+    {
+      q: "Q3. 刺激伝導系で興奮が伝わる順序として、正しいものはどれか？",
+      choices: [
+        "洞房結節→ヒス束→房室結節→プルキンエ繊維",
+        "洞房結節→房室結節→ヒス束→プルキンエ繊維",
+        "房室結節→洞房結節→ヒス束→プルキンエ繊維",
+        "プルキンエ繊維→ヒス束→房室結節→洞房結節"
+      ],
+      correct: 1,
+      explain: "正しい順序は『洞房結節→房室結節→ヒス束→プルキンエ繊維』で、語呂合わせは『ド(洞)ホ(房)ヒ(ヒス)プ(プルキンエ)』です。出発点は洞房結節、終点はプルキンエ繊維。この両端を押さえるだけで、選択肢の多くを消去法で即座に消せます。"
+    },
+    {
+      q: "Q4. 房室結節とヒス束では、房室結節のほうが先に興奮する。その理由として最も適切なものはどれか？",
+      choices: [
+        "房室結節のほうが、拍動数が少ないから",
+        "ヒス束のほうが、細胞が小さいから",
+        "房室結節とヒス束の順序は決まっておらず、どちらが先でもよいから",
+        "房室結節は心房と心室の『境界』にあり、ヒス束はその先の心室中隔の中を下る道なので、位置関係として房室結節のほうが上流(心房寄り)だから"
+      ],
+      correct: 3,
+      explain: "房室結節は心房と心室の『境界』に位置し、ヒス束はその先、心室中隔の中を下っていきます。興奮は『心房→心室中隔→心室壁』という心臓内部の動線に沿って上から下へ流れるので、位置関係から房室結節が先、ヒス束が後です。『房』は心房の『房』と覚えると整理しやすくなります。"
+    },
+    {
+      q: "Q5. 刺激伝導系の興奮が『心房→心室』の順で伝わる(心房の収縮のあとに心室が収縮する)ことの意義として、正しいものはどれか？",
+      choices: [
+        "心室に先に血液をためてから、心房が送り出すため",
+        "まず心房が収縮して血液を心室に送り込んでため、少し間を置いて心室が収縮して勢いよく送り出す、という『ためてから送る』順序でポンプとして効率よく働けるため",
+        "心房と心室が同時に収縮するほうが効率的だが、物理的にできないため",
+        "心室を休ませる時間を確保して、心筋の疲労を防ぐため"
+      ],
+      correct: 1,
+      explain: "まず心房全体が収縮して血液を心室へ送り込み(ためる)、少し間を置いて心室全体が収縮し、勢いよく全身(または肺)へ送り出します。『ためてから送る』この順序だからこそ、心臓は効率よくポンプの仕事ができます。記述では、この『ためてから送る』趣旨を書くことが大切です。"
+    },
+    {
+      q: "Q6. もし房室結節での約0.1秒の遅延がなかったとしたら、どうなると説明されたか？",
+      choices: [
+        "心室が心房より先に収縮するようになり、血液が逆流する",
+        "心拍数が極端に低下して、心臓が停止する",
+        "心房と心室が同時に収縮してしまい、ためる前に送り出そうとするため、血液が送れないまま心臓が空回りする",
+        "心室の壁が薄くなり、血液を送り出せなくなる"
+      ],
+      correct: 2,
+      explain: "心房は心室に血液を『ためる』役割、心室はためた血液を『送り出す』役割です。もし同時に収縮すれば、ためる前に送り出そうとしてしまい、血液がうまく送れず心臓は空回りします。だから房室結節は『交通整理係』として、心房が収縮し終わってから心室が収縮するよう、約0.1秒の間を作っています。"
+    },
+    {
+      q: "Q7. 心電図のP波・QRS群・T波が表しているものの組み合わせとして、正しいものはどれか？",
+      choices: [
+        "P波＝心房の興奮、QRS群＝心室の興奮、T波＝興奮した心室が元の状態に戻る過程",
+        "P波＝心室の興奮、QRS群＝心房の興奮、T波＝心房が元の状態に戻る過程",
+        "P波＝洞房結節の休止、QRS群＝房室結節の休止、T波＝ヒス束の休止",
+        "P波・QRS群・T波はいずれも心房の波で、心室の波は心電図には現れない"
+      ],
+      correct: 0,
+      explain: "P波は心房が興奮した合図、QRS群は心室が興奮した合図、T波は興奮した心室が元の状態に戻っていく過程を表します。P波から約0.1秒(100ms)遅れてQRS群が現れるのが房室結節の遅延で、1拍(P波から次のP波まで)は約0.85秒、60秒÷0.85秒≒約70回／分となり、洞房結節の拍動数と一致します。図は模式図なので、波の形を細かく覚える必要はありません。"
+    },
+    {
+      q: "Q8. 房室ブロックと、心電図上のPR間隔について、正しい説明はどれか？",
+      choices: [
+        "房室ブロックは、遅延が全くなくなった状態で、PR間隔は0に近づく",
+        "房室ブロックは、洞房結節が興奮を作れなくなった状態である",
+        "PR間隔とは、QRS群の始まりからT波の終わりまでの時間のことである",
+        "房室ブロックは房室結節での遅延が大きすぎる(伝導が悪い)状態で、PR間隔(P波の始まりからQRS群の始まりまで、正常値0.12〜0.20秒)の延長として現れ、重症例では人工ペースメーカーを埋め込む"
+      ],
+      correct: 3,
+      explain: "房室ブロックは、房室結節での遅延が大きすぎて、心房から心室への興奮がなかなか伝わらない状態です。心電図ではPR間隔(P波の始まりからQRS群の始まりまで)の延長として現れ、正常値は0.12〜0.20秒で、0.20秒を超えると房室結節での伝導が悪いサインです。重症になると心室が十分に拍動できなくなるため、人工ペースメーカーを埋め込む治療が行われます。"
+    },
+    {
+      q: "Q9. 自律神経による心拍調節について、神経の種類・伝達物質・心拍への作用の組み合わせとして正しいものはどれか？",
+      choices: [
+        "交感神経＝アセチルコリン＝心拍↑／副交感神経＝ノルアドレナリン＝心拍↓",
+        "交感神経＝ノルアドレナリン＝心拍↑(運動時)／副交感神経(迷走神経)＝アセチルコリン＝心拍↓(安静時)",
+        "交感神経も副交感神経も、ノルアドレナリンを放出して心拍を上げる",
+        "交感神経も副交感神経も、洞房結節ではなく心室に直接作用する"
+      ],
+      correct: 1,
+      explain: "交感神経(アクセル)は、ノルアドレナリンを放出して洞房結節を刺激し、心拍と収縮力を上げます(運動時、心拍70→180)。副交感神経(ブレーキ、迷走神経)は、アセチルコリンを放出して洞房結節を抑制し、心拍と収縮力を下げます(安静時、心拍70→55)。どちらの作用点も洞房結節で、ペースメーカーのスピードを上から調整しています。『交感＝ノルアドレナリン＝↑、副交感＝アセチルコリン＝↓、作用点は洞房結節』の3点セットで覚えましょう。"
+    },
+    {
+      q: "Q10. 演習3(自動性×調節)で誤りとされた『延髄からの指示が止まると、心臓は拍動を停止する』が間違っている理由は？",
+      choices: [
+        "延髄は心臓とは全く関係のない器官だから",
+        "延髄からの指示が止まると、心拍数はむしろ急激に上がるから",
+        "延髄の指示は自動性の上に乗る『調節』にすぎず、拍動の『基礎』は心臓自身が持つ自動性であるため、指示が止まっても心臓は動き続けるから(摘出したカエルの心臓が拍動し続けることが証拠)",
+        "副交感神経が働くと、心臓は完全に停止するから"
+      ],
+      correct: 2,
+      explain: "心臓の拍動の基礎は、心臓自身が持つ自動性(洞房結節による自発的な興奮)です。延髄の命令はその上に乗る『調節』にすぎないので、延髄からの指示が止まっても心臓は動き続けます。摘出したカエルの心臓が栄養液中で拍動し続けるという実験事実が、まさにその証拠です。『無くても動くか？→動く＝自動性』『止まる＝依存性』という切り分けで判断します。"
+    },
+    {
+      q: "Q11. プルキンエ繊維が果たしている役割として、最も適切なものはどれか？",
+      choices: [
+        "伝導速度の速い専用道路として、心室全体に興奮を一気に配り、心室がほぼ同時に収縮して血液をまとめて押し出せるようにする",
+        "心房全体に興奮を配り、心房を一斉に収縮させる",
+        "房室結節で興奮を約0.1秒遅らせる",
+        "心拍数を延髄の指示に応じて上げ下げする"
+      ],
+      correct: 0,
+      explain: "プルキンエ繊維は伝導速度の速い専用道路として、心室全体に興奮を一気に配ります。もし興奮が心筋を伝ってゆっくり広がるだけなら、心室は端から順に縮んでしまい、血液をまとめて押し出せません。専用道路があるから心室全体がほぼ同時に収縮でき、ポンプとして成立します。なお、遅延を作るのは房室結節の役割です。"
+    },
+    {
+      q: "Q12. 演習1(肺動脈の盲点)の選択肢のうち、肺動脈についての記述として正しいものはどれか？",
+      choices: [
+        "解剖学的に動脈と呼ばれる血管であり、内部を流れる血液は酸素に富む",
+        "右心室から起こり、肺に向けて静脈血を運搬する血管である",
+        "肺静脈と同じく、心臓から肺に向かう血管である",
+        "生体内で最も血圧の高い血管であり、弾性動脈に分類される"
+      ],
+      correct: 1,
+      explain: "正解は『右心室から起こり、肺に向けて静脈血を運搬する血管』で、出発点・方向・中身の3条件がすべて正しい選択肢です。『動脈だから酸素に富む』は中身が誤り(動脈の定義は方向で決まり、肺動脈は静脈血)、『肺静脈と同じく心臓から肺へ向かう』は方向が誤り(肺静脈は肺から心臓へ戻る)、『最も血圧が高い』は圧が誤り(最も高いのは大動脈)です。選択肢を方向・中身・圧・出発点の4軸に分解して吟味するのがコツです。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#40後編 確認テスト「刺激伝導系・自律神経+THEME1総合演習」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！THEME1「心臓の構造と自動性」が完璧に理解できています。次回「血管系とリンパ系」もスムーズに進めるはずです。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に刺激伝導系の順序と房室結節での遅延の意義、自律神経と伝達物質の対応は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは『ドホヒプ』と『ためてから送る』の考え方から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#40後編 確認テスト「刺激伝導系・自律神経+THEME1総合演習」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>

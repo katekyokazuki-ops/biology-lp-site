@@ -1,0 +1,390 @@
+<div id="quiz-root"></div>
+<style>
+  #quiz-root {
+    --navy: #0f1c3f;
+    --navy-deep: #08122b;
+    --accent: #c9a24b;
+    --ink: #1c2333;
+    --paper: #f7f8fb;
+    font-family: "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0;
+  }
+  #quiz-root .qz-header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: #fff;
+    padding: 28px 24px;
+    border-radius: 14px 14px 0 0;
+  }
+  #quiz-root .qz-header h1 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+  }
+  #quiz-root .qz-header p {
+    margin: 0;
+    font-size: 13px;
+    color: #cdd6ee;
+  }
+  #quiz-root .qz-progress-wrap {
+    background: #e2e5ee;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 16px 24px 0;
+  }
+  #quiz-root .qz-progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  #quiz-root .qz-body {
+    background: #fff;
+    padding: 20px 24px 28px;
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 4px 18px rgba(15,28,63,0.08);
+  }
+  #quiz-root .qz-qcount {
+    font-size: 12px;
+    color: var(--navy);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  #quiz-root .qz-question {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+  #quiz-root .qz-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--paper);
+    border: 1.5px solid #dde1ec;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: var(--ink);
+  }
+  #quiz-root .qz-choice:hover:not(:disabled) {
+    border-color: var(--navy);
+    background: #eef1f9;
+  }
+  #quiz-root .qz-choice.correct {
+    background: #e8f5ec;
+    border-color: #3fa564;
+    color: #1f6b3b;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice.wrong {
+    background: #fbeaea;
+    border-color: #d4645f;
+    color: #a83a35;
+    font-weight: 700;
+  }
+  #quiz-root .qz-choice:disabled { cursor: default; }
+  #quiz-root .qz-explain {
+    margin-top: 14px;
+    background: #f1f3fb;
+    border-left: 4px solid var(--navy);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    border-radius: 6px;
+    display: none;
+  }
+  #quiz-root .qz-explain.show { display: block; }
+  #quiz-root .qz-nextbtn {
+    margin-top: 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: none;
+  }
+  #quiz-root .qz-nextbtn.show { display: inline-block; }
+  #quiz-root .qz-nextbtn:hover { background: var(--navy-deep); }
+  #quiz-root .qz-result {
+    text-align: center;
+    padding: 10px 0;
+  }
+  #quiz-root .qz-result .score {
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 10px 0 4px;
+  }
+  #quiz-root .qz-result .score span { font-size: 18px; color: #7a8199; }
+  #quiz-root .qz-result .msg {
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  #quiz-root .qz-retry {
+    background: var(--accent);
+    color: #3a2d0c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 22px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  #quiz-root .qz-review-item {
+    text-align: left;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  #quiz-root .qz-review-item b { color: var(--navy); }
+  #quiz-root .qz-review-item.ng { border-left: 4px solid #d4645f; }
+  #quiz-root .qz-review-item.ok { border-left: 4px solid #3fa564; }
+</style>
+<script>
+(function(){
+  const questions = [
+    {
+      q: "Q1. 動脈の壁が厚く、静脈の壁が薄い理由として、講義の考え方に最も合うものはどれか？",
+      choices: [
+        "動脈は心臓から遠いため、丈夫に作られているから",
+        "動脈は心臓から出た直後の高い血圧に耐える必要があり、静脈は血圧が下がった後なので壁が薄くてもよく、その代わり逆流を防ぐ弁に投資しているから",
+        "静脈は血液の量が少ないため、壁を薄くして節約しているから",
+        "動脈と静脈の壁の厚さは、血圧とは無関係に決まっているから"
+      ],
+      correct: 1,
+      explain: "血管の壁の構造は、その場所の血圧(水の勢い)で決まります。動脈は心臓から出た直後の高圧に耐えるために厚い壁と平滑筋に投資し、静脈は圧が下がった後なので薄い壁でよく、その代わり逆流を防ぐ弁に投資しています。血流の順(心臓→動脈→毛細血管→静脈)は血圧が下がっていく『圧力の坂道』の順でもあります。"
+    },
+    {
+      q: "Q2. 動脈の壁の3層構造について、正しい説明はどれか？",
+      choices: [
+        "一番外側の外膜が、心臓から押し出された血圧を直接受け止める",
+        "内膜は平滑筋と弾性繊維からなり、血圧を押し返す",
+        "中膜は内皮細胞からなり、血栓ができないようにつるつるしている",
+        "血圧を直接受けるのは内膜と中膜で、中膜(平滑筋・弾性繊維)が押し返す。外膜は結合組織で血管を支持・固定する層である"
+      ],
+      correct: 3,
+      explain: "血液に直接触れる内膜(内皮細胞・内弾性板)と、それを支える中膜(平滑筋・弾性繊維)が血圧を受け止め、実際に押し返すのは中膜です。外膜はコラーゲンなどの結合組織で、血管を周囲に固定して形を保つ層であり、圧力を受ける層ではありません。風船が内側から押されるとき、圧を最初に受けるのは内側の面、というイメージで整理できます。"
+    },
+    {
+      q: "Q3. 心臓は間欠的に血液を押し出しているのに、血液が途切れず流れ続ける理由は？",
+      choices: [
+        "大動脈などの弾性動脈が、心臓の収縮時に壁がふくらんでエネルギーを蓄え、心臓の弛緩時に元に戻る力で血液を押し出す(ウィンドケッセル効果)から",
+        "毛細血管が自ら収縮して血液を送り出しているから",
+        "静脈の弁が、血液を一定の速度で心臓へ引き戻しているから",
+        "心臓が常に休まず血液を押し出し続けているから"
+      ],
+      correct: 0,
+      explain: "弾性動脈(大動脈など)は中膜に弾性繊維が多く、心臓が収縮した際に壁がふくらんで圧のエネルギーを蓄え、心臓が弛緩して圧が下がった瞬間に、元に戻ろうとする力で血液を押し出します。これがウィンドケッセル効果で、大動脈の弾力は単なる丈夫さではなく、血流をなめらかにする装置です。動脈硬化で壁が硬くなるとこの働きが失われ、心臓に余計な負担がかかります。"
+    },
+    {
+      q: "Q4. 立ったまま長時間動かないと足がむくむ理由として、正しい因果の流れはどれか？",
+      choices: [
+        "水分を摂りすぎたため、血液が薄まるから",
+        "動脈の壁が厚くなりすぎて、血液が流れにくくなるから",
+        "脚の筋肉が収縮しないため筋肉ポンプが働かず、静脈の血液が重力で足に溜まって静脈圧が上がり、毛細血管内圧が上昇して血管外に水分が漏れ出すから",
+        "リンパ液が血液に変わってしまうから"
+      ],
+      correct: 2,
+      explain: "静脈は低圧で、しかも下半身では重力に逆らって血液を心臓へ戻す必要があります。その助けになるのが弁と、脚の骨格筋の収縮による筋肉ポンプです。立ったまま動かないと筋肉ポンプが働かず、静脈圧の上昇→毛細血管内圧の上昇→血管外への水分漏出という3段階でむくみ(浮腫)が起こります。長時間のフライトでも同じ仕組みです。"
+    },
+    {
+      q: "Q5. 毛細血管の血流が、動脈よりもはるかに遅くなる理由は？",
+      choices: [
+        "毛細血管は1本1本が細く、細い管ほど必ず血流が遅くなるから",
+        "毛細血管は数が膨大で、全部合わせた総断面積が大動脈よりはるかに大きく、断面積が大きいほど流速が遅くなるから",
+        "毛細血管の壁が厚く、血液が通りにくいから",
+        "毛細血管には弁がたくさんあり、血液をせき止めているから"
+      ],
+      correct: 1,
+      explain: "1本1本は細くても、毛細血管は数が膨大なため総断面積が最大になり、その分流速が最も遅くなります(約0.5mm/秒)。この遅さが、拡散による物質交換に必要な時間を生みます。もし血液が新幹線のように通過したら、拡散が間に合わず交換できません。遅いことが機能そのものです。"
+    },
+    {
+      q: "Q6. 毛細血管の壁が、1層の内皮細胞だけという非常に薄い構造でも破れない理由は？",
+      choices: [
+        "毛細血管の内皮細胞は、動脈の平滑筋と同じ強さを持っているから",
+        "毛細血管の周囲を、外膜が厚く覆っているから",
+        "毛細血管には、血液が流れていないから",
+        "細動脈・毛細血管という細い管の抵抗によって血圧が大きく低下しており、薄い壁にはほとんど高圧がかからないから"
+      ],
+      correct: 3,
+      explain: "毛細血管のような細い管は血流への抵抗が大きく、この抵抗によって血圧は大きく低下します。圧がすでに下がっている場所だからこそ、薄い壁にできます。もし毛細血管に動脈と同じ高圧がかかっていたら、薄い壁は破裂してしまいます。『圧が下がる場所だからこそ、薄くできる』という構造と機能の対応です。"
+    },
+    {
+      q: "Q7. 炎症(虫刺されの腫れ)が起こるメカニズムの順序として、正しいものはどれか？",
+      choices: [
+        "異物などの刺激でヒスタミン(肥満細胞)やプロスタグランジンが放出される→内皮細胞が収縮して隙間ができる(透過性亢進)→血漿・水分が組織へ漏れて腫れる→白血球が走化性で血管外へ遊走する",
+        "白血球が血管外へ遊走する→ヒスタミンが放出される→内皮細胞の隙間が閉じる→腫れが引く",
+        "水分が組織へ漏れる→ヒスタミンが放出される→内皮細胞が収縮する→白血球が遊走する",
+        "プロスタグランジンが血管を収縮させる→血流が減る→腫れが起きる"
+      ],
+      correct: 0,
+      explain: "異物が入ると肥満細胞などがヒスタミンを放出し、組織が傷つくとプロスタグランジンがつくられます。ヒスタミンが受容体に結合すると内皮細胞が収縮して隙間ができ(透過性亢進)、血漿成分が組織へ漏れて腫れ(浮腫)になります。その隙間から白血球(最初に好中球)が走化性によって血管外へ抜け出し、異物へ向かいます。腫れは『攻撃の結果』ではなく『防御の準備』です。"
+    },
+    {
+      q: "Q8. 抗ヒスタミン薬とNSAIDs(ロキソプロフェンなど)の作用点の違いとして、正しいものはどれか？",
+      choices: [
+        "抗ヒスタミン薬はプロスタグランジンの合成を抑え、NSAIDsはヒスタミンの放出を抑える",
+        "どちらも白血球を直接破壊して炎症を止める",
+        "抗ヒスタミン薬はヒスタミンが受容体に結合するのを妨げて痒み・腫れを抑え、NSAIDsはCOX(シクロオキシゲナーゼ)の働きを抑えてプロスタグランジンの合成を減らし痛み・熱を下げる",
+        "どちらもCOXを阻害する、同じ作用点の薬である"
+      ],
+      correct: 2,
+      explain: "薬は名前ではなく、炎症のどのステップを止めるかで分類します。抗ヒスタミン薬はヒスタミンの作用(受容体への結合)を邪魔するので血管が広がらず水も漏れず、痒みと腫れを抑えます。NSAIDsはプロスタグランジンをつくる酵素COXを阻害するので、痛みと熱が下がります。なお、アセトアミノフェンは解熱・鎮痛作用はあるものの抗炎症作用は弱く、NSAIDsには分類されません。"
+    },
+    {
+      q: "Q9. 動脈血と静脈血の色の違いと、『静脈血は青い』という俗説についての説明として、正しいものはどれか？",
+      choices: [
+        "静脈血の色は、実際に青色をしている",
+        "ヘモグロビンに酸素が結合している動脈血(HbO₂)は鮮紅色、酸素を放出した静脈血(脱酸素Hb)は暗赤色であり、静脈が青く見えるのは皮膚越しに見るための光学的な現象で、実際の血液は暗い赤色である",
+        "動脈血と静脈血の色の違いは、ヘモグロビンの量の違いによる",
+        "静脈血は、皮膚を通さずに見ても青く見える"
+      ],
+      correct: 1,
+      explain: "血液の色を決めるのは、ヘモグロビンに酸素が結合しているかどうかです(色は酸素の有無を映す鏡)。酸素と結合したHbO₂は鮮紅色、酸素を放出した脱酸素Hbは暗赤色です。静脈血が青く見えるのは、赤い光が皮膚や組織で吸収されやすく、青い光が相対的に散乱されやすいという光学的な現象で、血液の色が変わっているわけではありません。"
+    },
+    {
+      q: "Q10. 『肺動脈には静脈血が流れ、肺静脈には動脈血が流れる』理由として、講義の考え方に合うものはどれか？",
+      choices: [
+        "血管名(動脈・静脈)は心臓との方向関係(出るか戻るか)で決まり、中身(動脈血・静脈血)は直前のガス交換(酸素を受け取ったか渡したか)で決まる、という独立した2つの基準だから",
+        "肺の血管だけが、特別に名前を間違えてつけられているから",
+        "動脈血はすべての動脈に流れ、静脈血はすべての静脈に流れるという原則に、肺だけが従わないから",
+        "肺動脈と肺静脈では、血液の流れる向きが他の血管と逆になっているから"
+      ],
+      correct: 0,
+      explain: "動脈・静脈は『心臓から出るか、心臓に戻るか』という方向で決まり、動脈血・静脈血は『酸素を多く含むか』というガス交換の状態で決まる、別々の基準です。肺動脈は右心室から肺へ出る血管なので動脈ですが、中身は全身で酸素を渡した後の静脈血です。肺静脈は肺から左心房へ戻る血管なので静脈ですが、中身は肺で酸素を受け取った動脈血です。血管の名前は『どこへ向かうか』、中身は『どこから来たか』で決まります。"
+    },
+    {
+      q: "Q11. 門脈についての説明として、正しいものはどれか？",
+      choices: [
+        "心臓から肝臓へ、酸素に富む動脈血を送る動脈である",
+        "リンパ液を肝臓へ運ぶ、リンパ管の一種である",
+        "毛細血管を通らずに、消化管から肝臓へ血液を直接送る太い管である",
+        "消化管の毛細血管から集めた栄養に富む静脈血を、肝臓の毛細血管へ運ぶ静脈で、毛細血管を2回通る特殊な経路をとる。肝臓で栄養の加工や有害物質の解毒を受けてから全身へ送られる"
+      ],
+      correct: 3,
+      explain: "門脈は、小腸などの毛細血管から集めた静脈血を、もう一度肝臓で毛細血管に分散させる特殊な静脈です。『交換できる場所』を2回つくることで、1回目は消化管での吸収、2回目は肝臓での処理(代謝・解毒)を行います。肝臓は『税関であり工場』で、アンモニアや薬、アルコールなどを無害化してから全身へ送ります。肝臓には肝門脈(栄養に富む静脈血)と肝動脈(酸素に富む動脈血)の2つの血流があります。"
+    },
+    {
+      q: "Q12. リンパ系について、正しい説明はどれか？",
+      choices: [
+        "心臓から送り出されたリンパ液が、全身を循環して心臓に戻る",
+        "リンパ液は組織液とは全く異なる成分で、血液から直接つくられる",
+        "毛細血管から押し出された水(組織液)の余りを回収し、リンパ管・リンパ節を経て鎖骨下静脈に合流させる一方通行の系で、成分は組織液とほぼ同じ。リンパ管に入ったものをリンパ液と呼ぶ",
+        "リンパ管は動脈と同じく、心臓のようなポンプによって液を送り出している"
+      ],
+      correct: 2,
+      explain: "リンパ系は、毛細血管からしみ出した組織液の余りを回収する『一方通行の川』です(組織→リンパ管→リンパ節→鎖骨下静脈→心臓)。組織液とリンパ液は成分がほぼ同じで、リンパ管に入ったものをリンパ液と呼びます。心臓のようなポンプはなく、弁と骨格筋の圧迫(さらにリンパ管自身の収縮)で流れます。『リンパ液は心臓から送り出される』は誤りで、『心臓に戻るが静脈を経由する』が正しい表現です。"
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  const answers = [];
+  const root = document.getElementById('quiz-root');
+
+  function render(){
+    if (current >= questions.length){
+      renderResult();
+      return;
+    }
+    const q = questions[current];
+    const pct = Math.round((current/questions.length)*100);
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#41前編 確認テスト「血管系とリンパ系」</h1>
+        <p>全${questions.length}問 ／ 理解できたか自分でチェックしてみましょう</p>
+      </div>
+      <div class="qz-progress-wrap"><div class="qz-progress-bar" style="width:${pct}%"></div></div>
+      <div class="qz-body">
+        <div class="qz-qcount">問題 ${current+1} / ${questions.length}</div>
+        <div class="qz-question">${q.q}</div>
+        <div class="qz-choices">
+          ${q.choices.map((c,i)=>`<button class="qz-choice" data-i="${i}">${c}</button>`).join('')}
+        </div>
+        <div class="qz-explain" id="qz-explain"></div>
+        <button class="qz-nextbtn" id="qz-next">${current === questions.length-1 ? '結果を見る' : '次の問題へ'}</button>
+      </div>
+    `;
+    const buttons = root.querySelectorAll('.qz-choice');
+    buttons.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        buttons.forEach(b=>b.disabled = true);
+        const isCorrect = i === q.correct;
+        if (isCorrect){ score++; btn.classList.add('correct'); }
+        else {
+          btn.classList.add('wrong');
+          buttons[q.correct].classList.add('correct');
+        }
+        answers.push({q: q.q, chosen: q.choices[i], correctAns: q.choices[q.correct], isCorrect});
+        const ex = document.getElementById('qz-explain');
+        ex.textContent = q.explain;
+        ex.classList.add('show');
+        document.getElementById('qz-next').classList.add('show');
+      });
+    });
+    document.getElementById('qz-next').addEventListener('click', ()=>{
+      current++;
+      render();
+    });
+  }
+
+  function renderResult(){
+    const total = questions.length;
+    const rate = Math.round((score/total)*100);
+    let msg = "";
+    if (rate === 100) msg = "全問正解！血管系の構造と機能、炎症、動脈血・静脈血の整理が完璧に理解できています。後編のリンパ節・演習問題も自信を持って進みましょう。";
+    else if (rate >= 75) msg = "よく理解できています。間違えた問題だけ台本を見返して仕上げましょう。";
+    else if (rate >= 50) msg = "基礎は掴めています。特に血圧の坂道という考え方と、血管名と中身を分ける2軸(方向×中身)は要復習です。";
+    else msg = "まだ不安でも心配無用！動画をもう一度見返して、まずは『血管の構造は血圧で決まる』という考え方から復習しましょう。";
+
+    root.innerHTML = `
+      <div class="qz-header">
+        <h1>高校生物#41前編 確認テスト「血管系とリンパ系」</h1>
+        <p>結果発表</p>
+      </div>
+      <div class="qz-body">
+        <div class="qz-result">
+          <div class="score">${score} <span>/ ${total}問正解（${rate}%）</span></div>
+          <div class="msg">${msg}</div>
+          <button class="qz-retry" id="qz-retry">もう一度挑戦する</button>
+        </div>
+        <div style="margin-top:22px;">
+          <div style="font-weight:700; font-size:13px; color:var(--navy); margin-bottom:8px;">▼ 復習リスト</div>
+          ${answers.map(a=>`
+            <div class="qz-review-item ${a.isCorrect ? 'ok' : 'ng'}">
+              <b>${a.isCorrect ? '○' : '×'}</b> ${a.q}<br>
+              ${a.isCorrect ? '' : `あなたの回答：${a.chosen}<br>正解：${a.correctAns}<br>`}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    document.getElementById('qz-retry').addEventListener('click', ()=>{
+      current = 0; score = 0; answers.length = 0;
+      render();
+    });
+  }
+
+  render();
+})();
+</script>
